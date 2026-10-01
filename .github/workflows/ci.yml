@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          # Matches the VM's Ubuntu 22.04 Python exactly (CLAUDE.md overrides
+          # the PRD's "3.11+" for this reason) so CI catches anything that
+          # only works on a newer interpreter before it reaches the VM.
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Lint (ruff)
+        run: |
+          ruff check .
+          ruff format --check .
+
+      - name: Test (pytest, with coverage)
+        run: pytest --cov=app --cov-report=term-missing

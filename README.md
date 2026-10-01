@@ -49,6 +49,9 @@ that logic lives). Phase 2 (Gemini-assisted capture, effort estimates, risk
 radar) plugs into the extension points already in the code
 (`app/services/hooks.py`, feature flags in `.env`) without touching Phase 1.
 
+See [`docs/decisions/`](docs/decisions/) for why Flask/SQLite/a VM/vanilla JS
+over the obvious alternatives.
+
 ## Local setup (~5 minutes)
 
 ```bash
