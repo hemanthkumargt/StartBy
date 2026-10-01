@@ -34,6 +34,7 @@ def serialize_entry(row: sqlite3.Row) -> dict:
     return {
         "id": row["id"],
         "task_id": row["task_id"],
+        "task_title": row["task_title"],
         "action": row["action"],
         "field": row["field"],
         "old_value": row["old_value"],

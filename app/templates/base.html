@@ -13,6 +13,9 @@
     <a class="app-header__brand" href="{{ url_for('pages.home_page') }}">StartBy</a>
     {% if current_user.is_authenticated %}
     <nav class="app-header__nav">
+      <a href="{{ url_for('pages.home_page') }}">Dashboard</a>
+      <a href="{{ url_for('pages.tasks_page') }}">Tasks</a>
+      <a href="{{ url_for('pages.activity_page') }}">Activity</a>
       <span class="app-header__user">{{ current_user.name }}</span>
       <button id="logout-btn" type="button">Log out</button>
     </nav>
@@ -21,6 +24,7 @@
   <main class="app-main">
     {% block content %}{% endblock %}
   </main>
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
   <script type="module" src="{{ url_for('static', filename='js/api.js') }}"></script>
   {% block scripts %}{% endblock %}
 </body>

@@ -1,9 +1,58 @@
 {% extends "base.html" %}
 {% block title %}StartBy{% endblock %}
 {% block content %}
-<section class="placeholder-card">
+<section class="dashboard">
   <h1>Welcome, {{ current_user.name }}.</h1>
-  <p>The dashboard (counters, quick-add, due-next list) lands in Sprint S3.</p>
-  <p>For now: auth, the database and the health check are wired up and working.</p>
+
+  <div class="counter-grid">
+    <div class="counter-card">
+      <p class="counter-card__value" id="count-total">—</p>
+      <p class="counter-card__label">Total</p>
+    </div>
+    <div class="counter-card">
+      <p class="counter-card__value" id="count-pending">—</p>
+      <p class="counter-card__label">Pending</p>
+    </div>
+    <div class="counter-card">
+      <p class="counter-card__value" id="count-completed">—</p>
+      <p class="counter-card__label">Completed</p>
+    </div>
+    <div class="counter-card counter-card--overdue">
+      <p class="counter-card__value" id="count-overdue">—</p>
+      <p class="counter-card__label">Overdue</p>
+    </div>
+  </div>
+
+  <div class="dashboard__columns">
+    <div class="dashboard__quick-add">
+      <h2>Quick add</h2>
+      <form id="quick-add-form" novalidate>
+        <label for="quick-add-title">Title</label>
+        <input id="quick-add-title" name="title" type="text" required maxlength="200" placeholder="What do you need to do?">
+
+        <label for="quick-add-tag">Tag</label>
+        <select id="quick-add-tag" name="tag">
+          <option value="work">Work</option>
+          <option value="study">Study</option>
+          <option value="personal" selected>Personal</option>
+        </select>
+
+        <label for="quick-add-due">Due date (optional)</label>
+        <input id="quick-add-due" name="due_at" type="datetime-local">
+
+        <p id="quick-add-error" class="form-error" role="alert" hidden></p>
+        <button type="submit">Add task</button>
+      </form>
+    </div>
+
+    <div class="dashboard__due-next">
+      <h2>Due next</h2>
+      <ul id="due-next-list" class="due-next-list"></ul>
+      <p id="due-next-empty" class="empty-state" hidden>Nothing due soon — you're all caught up.</p>
+    </div>
+  </div>
 </section>
+{% endblock %}
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 {% endblock %}

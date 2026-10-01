@@ -25,3 +25,15 @@ def register_page():
 @login_required
 def home_page():
     return render_template("home.html")
+
+
+@bp.get("/tasks")
+@login_required
+def tasks_page():
+    return render_template("tasks.html")
+
+
+@bp.get("/activity")
+@login_required
+def activity_page():
+    return render_template("activity.html")

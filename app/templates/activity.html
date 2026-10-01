@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Activity — StartBy{% endblock %}
+{% block content %}
+<section class="activity-page">
+  <h1>Activity</h1>
+  <ul id="activity-list" class="activity-list"></ul>
+  <p id="activity-empty" class="empty-state" hidden>No activity yet — add a task to get started.</p>
+</section>
+{% endblock %}
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='js/activity.js') }}"></script>
+{% endblock %}

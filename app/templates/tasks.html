@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Tasks — StartBy{% endblock %}
+{% block content %}
+<section class="tasks-page">
+  <div class="tasks-page__toolbar">
+    <div class="tabs" role="tablist" aria-label="Filter by status">
+      <button type="button" data-status-filter="" aria-selected="true">All</button>
+      <button type="button" data-status-filter="pending" aria-selected="false">Pending</button>
+      <button type="button" data-status-filter="done" aria-selected="false">Done</button>
+    </div>
+    <button type="button" id="new-task-btn" class="btn-primary">+ New task</button>
+  </div>
+
+  <div class="tasks-page__filters">
+    <div class="chips" role="group" aria-label="Filter by tag">
+      <button type="button" data-tag-filter="" aria-selected="true">All tags</button>
+      <button type="button" data-tag-filter="work" aria-selected="false">Work</button>
+      <button type="button" data-tag-filter="study" aria-selected="false">Study</button>
+      <button type="button" data-tag-filter="personal" aria-selected="false">Personal</button>
+    </div>
+    <input type="search" id="task-search" placeholder="Search tasks…" aria-label="Search tasks">
+  </div>
+
+  <ul id="task-list" class="task-list"></ul>
+  <div id="task-empty-state" class="empty-state" hidden>
+    <p>No tasks here yet.</p>
+    <button type="button" onclick="document.getElementById('new-task-btn').click()">Add your first task</button>
+  </div>
+</section>
+
+<dialog id="task-modal" class="task-modal">
+  <form id="task-form" novalidate>
+    <h2 id="task-modal-title">New task</h2>
+    <input type="hidden" name="id">
+
+    <label for="task-title-input">Title</label>
+    <input id="task-title-input" name="title" type="text" required maxlength="200">
+
+    <label for="task-notes-input">Notes</label>
+    <textarea id="task-notes-input" name="notes" rows="3"></textarea>
+
+    <label for="task-tag-input">Tag</label>
+    <select id="task-tag-input" name="tag">
+      <option value="work">Work</option>
+      <option value="study">Study</option>
+      <option value="personal" selected>Personal</option>
+    </select>
+
+    <label for="task-due-input">Due date</label>
+    <input id="task-due-input" name="due_at" type="datetime-local">
+
+    <p id="task-form-error" class="form-error" role="alert" hidden></p>
+
+    <div class="modal-actions">
+      <button type="button" id="task-cancel-btn">Cancel</button>
+      <button type="submit" id="task-save-btn">Save</button>
+    </div>
+  </form>
+</dialog>
+{% endblock %}
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='js/tasks.js') }}"></script>
+{% endblock %}

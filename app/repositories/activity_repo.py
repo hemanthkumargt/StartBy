@@ -27,12 +27,17 @@ def insert(
 def list_for_user(
     conn: sqlite3.Connection, user_id: int, *, limit: int = 50, before_id: int | None = None
 ) -> list[sqlite3.Row]:
-    sql = "SELECT * FROM activity_log WHERE user_id = ?"
+    sql = """
+        SELECT activity_log.*, tasks.title AS task_title
+        FROM activity_log
+        LEFT JOIN tasks ON tasks.id = activity_log.task_id
+        WHERE activity_log.user_id = ?
+    """
     params: list = [user_id]
     if before_id is not None:
-        sql += " AND id < ?"
+        sql += " AND activity_log.id < ?"
         params.append(before_id)
-    sql += " ORDER BY id DESC LIMIT ?"
+    sql += " ORDER BY activity_log.id DESC LIMIT ?"
     params.append(limit)
     return conn.execute(sql, params).fetchall()
 
