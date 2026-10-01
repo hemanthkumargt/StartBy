@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="{{ 'dark' if (current_user.is_authenticated and current_user.dark_mode) else 'light' }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,6 +16,10 @@
       <a href="{{ url_for('pages.home_page') }}">Dashboard</a>
       <a href="{{ url_for('pages.tasks_page') }}">Tasks</a>
       <a href="{{ url_for('pages.activity_page') }}">Activity</a>
+      <a href="{{ url_for('pages.settings_page') }}">Settings</a>
+      <button id="theme-toggle-btn" type="button" aria-label="Toggle dark mode">
+        {{ '☀️' if current_user.dark_mode else '🌙' }}
+      </button>
       <span class="app-header__user">{{ current_user.name }}</span>
       <button id="logout-btn" type="button">Log out</button>
     </nav>
@@ -26,6 +30,9 @@
   </main>
   <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
   <script type="module" src="{{ url_for('static', filename='js/api.js') }}"></script>
+  {% if current_user.is_authenticated %}
+  <script type="module" src="{{ url_for('static', filename='js/theme.js') }}"></script>
+  {% endif %}
   {% block scripts %}{% endblock %}
 </body>
 </html>

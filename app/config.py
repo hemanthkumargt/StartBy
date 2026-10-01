@@ -24,4 +24,7 @@ class Config:
         self.FEATURE_SMART_CAPTURE = env.get("FEATURE_SMART_CAPTURE", "0") == "1"
         self.FEATURE_INSIGHTS = env.get("FEATURE_INSIGHTS", "0") == "1"
 
+        self.SEED_USER_EMAIL = env.get("SEED_USER_EMAIL", "demo@startby.local")
+        self.SEED_USER_PASSWORD = env.get("SEED_USER_PASSWORD", "change-me")
+
         self.WTF_CSRF_ENABLED = True

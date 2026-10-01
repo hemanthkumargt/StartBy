@@ -47,3 +47,10 @@ def update_settings(
     )
     conn.commit()
     return find_by_id(conn, user_id)
+
+
+def delete_by_email(conn: sqlite3.Connection, email: str) -> None:
+    """Cascades to that user's tasks, activity log and reminders_sent rows
+    (ON DELETE CASCADE in 001_init.sql) — used by scripts/seed.py --reset."""
+    conn.execute("DELETE FROM users WHERE email = ?", (email,))
+    conn.commit()

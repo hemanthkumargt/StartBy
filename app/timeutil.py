@@ -5,7 +5,7 @@ user's timezone happens only in templates/JS, never here. Routing every call
 through this module lets tests freeze time with freezegun.
 """
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 UTC_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -60,3 +60,7 @@ def is_before_now(iso_value: str) -> bool:
     zero-padded 'YYYY-MM-DDTHH:MM:SS', which sorts identically to its
     chronological order."""
     return iso_value < utcnow_iso()
+
+
+def add_hours_iso(iso_value: str, hours: float) -> str:
+    return to_iso(parse_iso(iso_value) + timedelta(hours=hours))

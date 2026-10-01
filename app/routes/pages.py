@@ -37,3 +37,9 @@ def tasks_page():
 @login_required
 def activity_page():
     return render_template("activity.html")
+
+
+@bp.get("/settings")
+@login_required
+def settings_page():
+    return render_template("settings.html")

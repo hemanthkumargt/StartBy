@@ -26,11 +26,17 @@ def create_app(config: Config | None = None) -> Flask:
         row = user_repo.find_by_id(db.get_db(), int(user_id))
         return User(row) if row is not None else None
 
-    from app.routes import auth, health, pages, tasks
+    from app.routes import auth, cron, health, pages, settings, tasks
 
     app.register_blueprint(health.bp)
     app.register_blueprint(auth.bp)
     app.register_blueprint(tasks.bp)
+    app.register_blueprint(settings.bp)
+    app.register_blueprint(cron.bp)
     app.register_blueprint(pages.bp)
+
+    # Cloud Scheduler calls this with a shared secret header, not a browser
+    # session — it carries no CSRF token to check. X-Cron-Secret is its auth.
+    csrf.exempt(cron.bp)
 
     return app

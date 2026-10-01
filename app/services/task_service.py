@@ -7,7 +7,7 @@ import sqlite3
 from app import timeutil
 from app.constants import TAGS, TITLE_MAX_LENGTH
 from app.errors import ApiError
-from app.repositories import task_repo
+from app.repositories import reminder_repo, task_repo
 from app.services import activity_service, hooks
 
 PATCHABLE_FIELDS = ("title", "notes", "tag", "due_at")
@@ -153,6 +153,11 @@ def update_task(conn: sqlite3.Connection, *, user_id: int, task_id: int, fields:
             old_value=None if old_value is None else str(old_value),
             new_value=None if new_value is None else str(new_value),
         )
+
+    if "due_at" in updates:
+        # I8: a new deadline can remind again, so the old due_soon/overdue
+        # reminder records for this task no longer apply.
+        reminder_repo.clear_for_task(conn, task_id)
 
     task = serialize_task(updated_row)
     hooks.on_task_updated(task, [c[0] for c in changes])

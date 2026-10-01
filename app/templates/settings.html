@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Settings — StartBy{% endblock %}
+{% block content %}
+<section class="auth-card">
+  <h1>Settings</h1>
+  <form id="settings-form" novalidate>
+    <label class="settings-toggle-row" for="dark-mode-checkbox">
+      <span>Dark mode</span>
+      <input id="dark-mode-checkbox" name="dark_mode" type="checkbox" {% if current_user.dark_mode %}checked{% endif %}>
+    </label>
+
+    <label for="timezone-select">Timezone</label>
+    <select id="timezone-select" name="timezone">
+      {% for tz in ["Asia/Kolkata", "Asia/Kathmandu", "Asia/Dhaka", "Asia/Dubai", "Asia/Singapore", "UTC", "Europe/London", "America/New_York"] %}
+      <option value="{{ tz }}" {% if current_user.timezone == tz %}selected{% endif %}>{{ tz }}</option>
+      {% endfor %}
+    </select>
+
+    <p id="settings-error" class="form-error" role="alert" hidden></p>
+    <button type="submit">Save settings</button>
+  </form>
+</section>
+{% endblock %}
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='js/settings.js') }}"></script>
+{% endblock %}
