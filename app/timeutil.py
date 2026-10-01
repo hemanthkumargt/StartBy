@@ -41,3 +41,22 @@ def local_to_utc_iso(local_dt: datetime, tz_name: str) -> str:
 
 def utc_iso_to_local(value: str, tz_name: str) -> datetime:
     return parse_iso(value).astimezone(ZoneInfo(tz_name))
+
+
+def normalize_due_at(value: str) -> str:
+    """Accept an ISO-8601 string (with or without an offset, 'Z' included)
+    from the API and return it as a stored UTC ISO string. A naive string
+    with no offset is assumed to already be UTC. Raises ValueError if it
+    cannot be parsed."""
+    v = value.strip()
+    if v.endswith("Z"):
+        v = v[:-1] + "+00:00"
+    dt = datetime.fromisoformat(v)
+    return to_iso(dt)
+
+
+def is_before_now(iso_value: str) -> bool:
+    """String comparison is safe here: to_iso always produces a fixed-width
+    zero-padded 'YYYY-MM-DDTHH:MM:SS', which sorts identically to its
+    chronological order."""
+    return iso_value < utcnow_iso()

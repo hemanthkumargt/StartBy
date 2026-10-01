@@ -4,15 +4,21 @@ import sqlite3
 
 
 def create(
-    conn: sqlite3.Connection, *, name: str, email: str, password_hash: str, timezone: str
+    conn: sqlite3.Connection,
+    *,
+    name: str,
+    email: str,
+    password_hash: str,
+    timezone: str,
+    created_at: str,
 ) -> sqlite3.Row:
     cur = conn.execute(
         """
-        INSERT INTO users (name, email, password_hash, timezone)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO users (name, email, password_hash, timezone, created_at)
+        VALUES (?, ?, ?, ?, ?)
         RETURNING id, name, email, password_hash, timezone, dark_mode, created_at
         """,
-        (name, email, password_hash, timezone),
+        (name, email, password_hash, timezone, created_at),
     )
     row = cur.fetchone()
     conn.commit()
@@ -20,15 +26,11 @@ def create(
 
 
 def find_by_email(conn: sqlite3.Connection, email: str) -> sqlite3.Row | None:
-    return conn.execute(
-        "SELECT * FROM users WHERE email = ?", (email,)
-    ).fetchone()
+    return conn.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
 
 
 def find_by_id(conn: sqlite3.Connection, user_id: int) -> sqlite3.Row | None:
-    return conn.execute(
-        "SELECT * FROM users WHERE id = ?", (user_id,)
-    ).fetchone()
+    return conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
 
 
 def update_settings(

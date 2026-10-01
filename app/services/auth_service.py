@@ -5,6 +5,7 @@ import sqlite3
 
 from werkzeug.security import check_password_hash, generate_password_hash
 
+from app import timeutil
 from app.errors import ApiError
 from app.models import User
 from app.repositories import user_repo
@@ -32,7 +33,12 @@ def register(
 
     password_hash = generate_password_hash(password)
     row = user_repo.create(
-        conn, name=name, email=email, password_hash=password_hash, timezone=timezone
+        conn,
+        name=name,
+        email=email,
+        password_hash=password_hash,
+        timezone=timezone,
+        created_at=timeutil.utcnow_iso(),
     )
     return User(row)
 
