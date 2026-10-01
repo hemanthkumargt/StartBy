@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}StartBy{% endblock %}
+{% block content %}
+<section class="placeholder-card">
+  <h1>Welcome, {{ current_user.name }}.</h1>
+  <p>The dashboard (counters, quick-add, due-next list) lands in Sprint S3.</p>
+  <p>For now: auth, the database and the health check are wired up and working.</p>
+</section>
+{% endblock %}

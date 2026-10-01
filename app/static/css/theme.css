@@ -1,0 +1,31 @@
+/* Colour tokens only. Dark mode toggle lands in S4; variables exist from
+   the start so nothing else has to change when it does. */
+:root {
+  --color-bg: #f7f7f8;
+  --color-surface: #ffffff;
+  --color-text: #1b1d21;
+  --color-text-muted: #5b5f66;
+  --color-border: #d9dbe0;
+  --color-primary: #2f6fed;
+  --color-primary-text: #ffffff;
+  --color-danger: #d1393f;
+
+  --color-tag-work: #2f6fed;
+  --color-tag-study: #7c3fd1;
+  --color-tag-personal: #1f9d55;
+
+  --color-badge-pending: #b9790a;
+  --color-badge-done: #1f9d55;
+  --color-badge-overdue: #d1393f;
+}
+
+[data-theme="dark"] {
+  --color-bg: #15161a;
+  --color-surface: #1e2025;
+  --color-text: #eceef1;
+  --color-text-muted: #9aa0aa;
+  --color-border: #33363d;
+  --color-primary: #5b8cf7;
+  --color-primary-text: #0c0d10;
+  --color-danger: #ef5b60;
+}

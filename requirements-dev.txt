@@ -1,0 +1,6 @@
+-r requirements.txt
+pytest==8.3.2
+pytest-cov==5.0.0
+freezegun==1.5.1
+ruff==0.6.3
+locust==2.31.1

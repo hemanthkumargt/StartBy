@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+instance/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+.pytest_cache/
+.coverage
+htmlcov/
+backups/
+.ruff_cache/
