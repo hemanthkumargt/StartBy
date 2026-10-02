@@ -15,7 +15,7 @@ You are the lead engineer on StartBy, a task manager web app for a Cognizant-run
 2. Work ONE sprint at a time, in the order in the PRD's Implementation plan (S0 → S8).
 3. At the start of each sprint: restate its scope and exit gate in 3–5 lines, list the files you will create or change, then build.
 4. At the end of each sprint, stop and report (format in section 10). Do not start the next sprint until I say "go".
-5. Phase 2 work (S5+) only after `v1.0` is tagged. Every Phase 2 feature sits behind its feature flag; with flags off, behaviour must equal v1.0.
+5. **Phase 2 is out of scope. Do not build it.** Team decision (2026-10-02): ship only what the hackathon brief actually asked for (Phase 1 — PRD.md's main body). Skip Sprints S5 and S6 entirely; after `v1.0` is tagged, go straight to S7 (hardening) and S8 (present), scoped to Phase 1 only — drop any Phase-2-specific items from their checklists (Gemini/capture edge cases, the v1.1 tag). If Phase 2 is ever wanted later, it's a new, explicit decision, not a default resumption.
 6. Never weaken, skip or delete a test to make CI pass. Fix the code, or ask.
 7. Ask before adding any dependency not listed in section 5.
 8. Small commits, Conventional Commits style: `feat(tasks): add soft delete`, `test(reminders): idempotency`, `fix(ui): modal overflow on 360px`.
@@ -31,6 +31,8 @@ You are the lead engineer on StartBy, a task manager web app for a Cognizant-run
 * No paid APIs. Gemini via a free Google AI Studio key only.
 
 ### Gemini free tier
+
+*Not applicable — Phase 2 is out of scope (section 2.5). Kept here only in case that decision is revisited later.*
 
 * Free tier is limited to Flash / Flash-Lite models and rate-limited; limits change and are shown per project in AI Studio. Read the model name from `GEMINI_MODEL` in `.env`; never hard-code it.
 * Handle HTTP 429 and timeouts: 10 s timeout, one retry with backoff, then fall back to the regex + `dateparser` extractor. The app must never crash or hang because of Gemini.
@@ -79,7 +81,9 @@ You may search GitHub for other well-maintained Flask CRUD / task-manager exampl
 
 ## 5. Allowed dependencies
 
-Runtime: `flask`, `flask-login`, `flask-wtf` (CSRF), `python-dotenv`, `gunicorn`, `dateparser`, `google-genai` (S6 only), `pypdf` (S6 only, text extraction fallback). Dev: `pytest`, `pytest-cov`, `freezegun`, `ruff`, `locust`. Frontend: no frameworks, no CDN scripts. Vanilla JS modules + CSS only.
+Runtime: `flask`, `flask-login`, `flask-wtf` (CSRF), `python-dotenv`, `gunicorn`, `dateparser`. Dev: `pytest`, `pytest-cov`, `freezegun`, `ruff`, `locust`. Frontend: no frameworks, no CDN scripts. Vanilla JS modules + CSS only.
+
+`google-genai` and `pypdf` were reserved for Phase 2 (S6) smart capture; not needed — Phase 2 is out of scope (section 2.5).
 
 ## 6. Architecture rules
 
@@ -95,7 +99,7 @@ Runtime: `flask`, `flask-login`, `flask-wtf` (CSRF), `python-dotenv`, `gunicorn`
 
 * `ruff check` and `ruff format` clean.
 * Type hints on all service and repository functions.
-* Every PRD logic invariant (I1–I15) has a named test, e.g. `test_I7_reminder_sent_once`.
+* Every Phase 1 PRD logic invariant (I1–I9) has a named test, e.g. `test_I7_reminder_sent_once`. I10–I15 are Phase 2 and out of scope.
 * Coverage target: 85%+ on `services/` and `repositories/`.
 * Escape all user content in templates (Jinja autoescape on; never use `|safe` on user data).
 * Accessibility basics: labels on inputs, focus trap in modal, colour never the only signal.
@@ -109,8 +113,8 @@ Runtime: `flask`, `flask-login`, `flask-wtf` (CSRF), `python-dotenv`, `gunicorn`
 
 ## 9. Sample data
 
-* `scripts/seed.py` creates a demo user (credentials from `.env`) and ~30 realistic student tasks across tags, with a mix of overdue, due today, due this week, done.
-* From S6: `--history` flag adds ~200 synthetic completed tasks with realistic actual/estimate ratios per tag (e.g. study ~1.6×, work ~1.3×, personal ~1.1×), clearly marked `source='seed'`. `--reset` wipes and reseeds the demo account before presentations.
+* `scripts/seed.py` creates a demo user (credentials from `.env`) and ~30 realistic student tasks across tags, with a mix of overdue, due today, due this week, done. `--reset` wipes and reseeds the demo account before presentations. Done.
+* The S6 `--history` flag (200 synthetic completed tasks for the estimate-multiplier feature) is Phase 2 and out of scope.
 
 ## 10. End-of-sprint report (always this format)
 
