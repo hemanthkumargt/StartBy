@@ -102,15 +102,4 @@ reminders, per-tag estimate correction, Gemini-assisted "smart capture" from
 pasted text or a PDF (with a regex + `dateparser` fallback if Gemini is
 unavailable), and an overload-warning report card.
 
-## Credits
 
-Patterns adopted from (no code copied — see `CLAUDE.md` section 4):
-
-- [Flask's official tutorial ("flaskr")](https://github.com/pallets/flask/tree/main/examples/tutorial) —
-  app factory, blueprints, a per-request DB connection, pytest fixtures with
-  a temp database.
-- Miguel Grinberg's [Flask Mega-Tutorial](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world) —
-  Flask-Login usage, config from environment variables, Gunicorn + Nginx +
-  systemd deployment shape.
-- [Vikunja](https://vikunja.io/) — feature/UX ideas only (it's AGPL-licensed,
-  so no code was taken from it).
