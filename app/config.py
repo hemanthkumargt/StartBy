@@ -1,4 +1,5 @@
 import os
+import secrets
 
 
 class Config:
@@ -7,7 +8,12 @@ class Config:
     def __init__(self, env: dict[str, str] | None = None) -> None:
         env = env if env is not None else os.environ
 
-        self.SECRET_KEY = env.get("SECRET_KEY", "dev-secret-key-change-me")
+        # No fixed fallback: a hardcoded default would be a known value
+        # checked into this public repo, letting anyone forge a session
+        # cookie if .env ever fails to load in production. A fresh random
+        # key fails safe instead — sessions just won't survive a restart
+        # until SECRET_KEY is actually set.
+        self.SECRET_KEY = env.get("SECRET_KEY") or secrets.token_hex(32)
         self.DATABASE_PATH = env.get("DATABASE_PATH", "instance/app.db")
         self.DEFAULT_TIMEZONE = env.get("DEFAULT_TIMEZONE", "Asia/Kolkata")
         self.CRON_SECRET = env.get("CRON_SECRET", "")

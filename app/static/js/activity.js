@@ -1,12 +1,7 @@
 import { apiFetch } from "./api.js";
 import { showToast } from "./toast.js";
 import { formatDateTime, relativeTime } from "./datetime.js";
-
-function escapeHtml(str) {
-  const div = document.createElement("div");
-  div.textContent = str;
-  return div.innerHTML;
-}
+import { escapeHtml } from "./dom.js";
 
 function describe(entry) {
   const title = entry.task_title || "a deleted task";
@@ -41,7 +36,7 @@ if (activityList) {
         li.className = "activity-entry";
         li.innerHTML = `
           <p class="activity-entry__text">${escapeHtml(describe(entry))}</p>
-          <time class="activity-entry__time" datetime="${entry.at}">${relativeTime(entry.at)}</time>
+          <time class="activity-entry__time" datetime="${escapeHtml(entry.at)}">${escapeHtml(relativeTime(entry.at))}</time>
         `;
         activityList.appendChild(li);
       }

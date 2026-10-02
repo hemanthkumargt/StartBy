@@ -61,6 +61,24 @@ def test_send_succeeds_and_delivers_the_message(monkeypatch):
     assert "Due soon" in message
 
 
+def test_send_returns_false_for_a_subject_with_an_embedded_newline(monkeypatch):
+    """Regression guard: a task title containing a raw newline makes
+    MIMEText's header assignment raise email.errors.HeaderParseError, which
+    is not a subtype of (smtplib.SMTPException, OSError) — the old except
+    clause let it propagate uncaught, crashing the whole cron batch. send()
+    must swallow it and return False like any other delivery failure."""
+    monkeypatch.setattr(notifier_module, "RETRY_BACKOFF_SECONDS", 0)
+    monkeypatch.setattr(notifier_module.time, "sleep", lambda _seconds: None)
+    monkeypatch.setattr(smtplib, "SMTP", _WorksSmtp)
+
+    notifier = SmtpNotifier(host="smtp.example.com", port=587, user="a@b.com", password="x")
+    result = notifier.send(
+        to="user@example.com", subject='Reminder: "Pay fees\nBcc: evil@example.com"', body="body"
+    )
+
+    assert result is False
+
+
 def test_get_notifier_reads_config():
     config = {
         "SMTP_HOST": "smtp.gmail.com",

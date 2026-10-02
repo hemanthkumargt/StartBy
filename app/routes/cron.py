@@ -1,3 +1,5 @@
+import hmac
+
 from flask import Blueprint, current_app, jsonify, request
 
 from app import timeutil
@@ -13,7 +15,9 @@ bp = Blueprint("cron", __name__, url_prefix="/api/cron")
 def send_reminders():
     expected = current_app.config["CRON_SECRET"]
     provided = request.headers.get("X-Cron-Secret", "")
-    if not expected or provided != expected:
+    # Constant-time compare: a plain != leaks per-byte timing information
+    # on this auth boundary.
+    if not expected or not hmac.compare_digest(provided, expected):
         raise ApiError("unauthorized", "Invalid cron secret", 401)
 
     notifier = get_notifier(current_app.config)

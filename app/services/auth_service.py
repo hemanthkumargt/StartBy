@@ -9,16 +9,18 @@ from app import timeutil
 from app.errors import ApiError
 from app.models import User
 from app.repositories import user_repo
+from app.validation import require_str
 
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 MIN_PASSWORD_LENGTH = 8
 
 
 def register(
-    conn: sqlite3.Connection, *, name: str, email: str, password: str, timezone: str
+    conn: sqlite3.Connection, *, name: object, email: object, password: object, timezone: str
 ) -> User:
-    name = (name or "").strip()
-    email = (email or "").strip().lower()
+    name = require_str(name, "name").strip()
+    email = require_str(email, "email").strip().lower()
+    password = require_str(password, "password")
 
     if not name:
         raise ApiError("validation", "Name is required", 422)
@@ -43,9 +45,10 @@ def register(
     return User(row)
 
 
-def authenticate(conn: sqlite3.Connection, *, email: str, password: str) -> User:
-    email = (email or "").strip().lower()
+def authenticate(conn: sqlite3.Connection, *, email: object, password: object) -> User:
+    email = require_str(email, "email").strip().lower()
+    password = require_str(password, "password")
     row = user_repo.find_by_email(conn, email)
-    if row is None or not check_password_hash(row["password_hash"], password or ""):
+    if row is None or not check_password_hash(row["password_hash"], password):
         raise ApiError("invalid_credentials", "Incorrect email or password", 401)
     return User(row)

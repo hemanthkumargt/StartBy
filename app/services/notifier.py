@@ -2,9 +2,11 @@
 later without touching reminder_service (PRD extension-point rule).
 
 PRD safety rule: external calls fail safe. A 10s timeout, one retry with a
-short backoff, and SMTPException/OSError are swallowed — send() returns
-False rather than raising, so a down SMTP server never crashes the cron
-endpoint and a failed send is simply retried on the next cron run (it is
+short backoff, and every exception the attempt could raise (a network
+failure, or the email package itself rejecting a malformed header) is
+swallowed — send() returns False rather than raising, so neither a down
+SMTP server nor a task title the email package objects to ever crashes the
+cron endpoint. A failed send is simply retried on the next cron run (it is
 never recorded in reminders_sent on failure)."""
 
 import logging
@@ -35,7 +37,7 @@ class SmtpNotifier(Notifier):
             try:
                 self._send_once(to, subject, body)
                 return True
-            except (smtplib.SMTPException, OSError) as exc:
+            except Exception as exc:  # noqa: BLE001 — must never raise, see module docstring
                 logger.error("smtp_send_failed attempt=%s to=%s error=%s", attempt, to, exc)
                 if attempt == 1:
                     time.sleep(RETRY_BACKOFF_SECONDS)

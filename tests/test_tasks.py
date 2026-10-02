@@ -67,6 +67,30 @@ def test_create_task_rejects_unknown_tag(client):
     assert response.status_code == 422
 
 
+def test_create_task_rejects_non_string_title_with_422_not_500(client):
+    """Regression guard: (value or "").strip() used to crash with an
+    uncaught AttributeError on a truthy non-string JSON value instead of
+    returning a validation error."""
+    register(client)
+    response = create_task(client, title=123)
+    assert response.status_code == 422
+    assert response.get_json()["error"]["code"] == "validation"
+
+
+def test_create_task_rejects_non_string_notes_with_422_not_500(client):
+    register(client)
+    response = create_task(client, notes=["not", "a", "string"])
+    assert response.status_code == 422
+    assert response.get_json()["error"]["code"] == "validation"
+
+
+def test_update_task_rejects_non_string_title_with_422_not_500(client):
+    register(client)
+    task = create_task(client).get_json()
+    response = client.patch(f"/api/tasks/{task['id']}", json={"title": True})
+    assert response.status_code == 422
+
+
 def test_create_task_logs_one_activity_row(client):
     register(client)
     create_task(client)

@@ -9,12 +9,13 @@ from app.constants import TAGS, TITLE_MAX_LENGTH
 from app.errors import ApiError
 from app.repositories import reminder_repo, task_repo
 from app.services import activity_service, hooks
+from app.validation import require_str
 
 PATCHABLE_FIELDS = ("title", "notes", "tag", "due_at")
 
 
-def _validate_title(title: str) -> str:
-    title = (title or "").strip()
+def _validate_title(title: object) -> str:
+    title = require_str(title, "title").strip()
     if not title:
         raise ApiError("validation", "Title is required", 422)
     if len(title) > TITLE_MAX_LENGTH:
@@ -76,7 +77,7 @@ def create_task(
     title = _validate_title(title)
     tag = _validate_tag(tag) if tag is not None else "personal"
     due_at = _validate_due_at(due_at)
-    notes = (notes or "").strip() or None
+    notes = require_str(notes, "notes").strip() or None
 
     row = task_repo.create(
         conn,
@@ -131,7 +132,7 @@ def update_task(conn: sqlite3.Connection, *, user_id: int, task_id: int, fields:
         elif name == "due_at":
             value = _validate_due_at(value)
         elif name == "notes":
-            value = (value or "").strip() or None
+            value = require_str(value, "notes").strip() or None
 
         old_value = row[name]
         if value != old_value:
@@ -189,6 +190,12 @@ def reopen_task(conn: sqlite3.Connection, *, user_id: int, task_id: int) -> dict
         conn, task_id, status="pending", completed_at=None, updated_at=timeutil.utcnow_iso()
     )
     activity_service.record(conn, user_id=user_id, task_id=task_id, action="reopened")
+
+    # I8: reopening re-activates whatever due_at the task already had, so a
+    # still-overdue reopened task must be able to remind again too — same
+    # reasoning as update_task's due_at branch, not just a due_at change.
+    reminder_repo.clear_for_task(conn, task_id)
+
     return serialize_task(updated_row)
 
 

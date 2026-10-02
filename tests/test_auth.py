@@ -23,11 +23,37 @@ def test_register_rejects_invalid_email(client):
     assert response.status_code == 422
 
 
+def test_register_rejects_blank_name(client):
+    response = register(client, name="   ")
+    assert response.status_code == 422
+    assert response.get_json()["error"]["code"] == "validation"
+
+
 def test_register_rejects_duplicate_email(client):
     register(client)
     response = register(client, name="Second Ada")
     assert response.status_code == 422
     assert response.get_json()["error"]["code"] == "email_taken"
+
+
+def test_register_rejects_non_string_name_with_422_not_500(client):
+    """Regression guard: (name or "").strip() used to crash with an
+    uncaught AttributeError on a truthy non-string JSON value (e.g. a
+    number or list) instead of returning a validation error."""
+    response = client.post(
+        "/api/auth/register",
+        json={"name": 123, "email": "ada@example.com", "password": "password123"},
+    )
+    assert response.status_code == 422
+    assert response.get_json()["error"]["code"] == "validation"
+
+
+def test_register_rejects_non_string_password_with_422_not_500(client):
+    response = client.post(
+        "/api/auth/register",
+        json={"name": "Ada", "email": "ada@example.com", "password": 12345678},
+    )
+    assert response.status_code == 422
 
 
 def test_login_with_correct_credentials(client):
@@ -52,7 +78,8 @@ def test_login_rejects_unknown_email(client):
 
 def test_logout_requires_login(client):
     response = client.post("/api/auth/logout")
-    assert response.status_code in (302, 401)
+    assert response.status_code == 401
+    assert response.get_json()["error"]["code"] == "unauthorized"
 
 
 def test_logout_ends_session(client):
@@ -61,7 +88,7 @@ def test_logout_ends_session(client):
     assert response.status_code == 204
 
     home = client.get("/")
-    assert home.status_code in (302, 401)
+    assert home.status_code == 302
 
 
 def test_home_page_requires_login(client):

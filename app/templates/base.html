@@ -4,6 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="{{ csrf_token() }}">
+  {% if current_user.is_authenticated %}
+  <meta name="user-timezone" content="{{ current_user.timezone }}">
+  {% endif %}
   <title>{% block title %}StartBy{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">

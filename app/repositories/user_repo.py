@@ -34,19 +34,17 @@ def find_by_id(conn: sqlite3.Connection, user_id: int) -> sqlite3.Row | None:
 
 
 def update_settings(
-    conn: sqlite3.Connection, user_id: int, *, dark_mode: bool | None, timezone: str | None
+    conn: sqlite3.Connection, user_id: int, *, dark_mode: int, timezone: str
 ) -> sqlite3.Row | None:
-    row = find_by_id(conn, user_id)
-    if row is None:
-        return None
-    new_dark_mode = int(dark_mode) if dark_mode is not None else row["dark_mode"]
-    new_timezone = timezone if timezone is not None else row["timezone"]
-    conn.execute(
-        "UPDATE users SET dark_mode = ?, timezone = ? WHERE id = ?",
-        (new_dark_mode, new_timezone, user_id),
+    """Pure write: both values are final (the "keep existing value if
+    omitted" merge is a business rule and lives in user_service, not here)."""
+    cur = conn.execute(
+        "UPDATE users SET dark_mode = ?, timezone = ? WHERE id = ? RETURNING *",
+        (dark_mode, timezone, user_id),
     )
+    row = cur.fetchone()
     conn.commit()
-    return find_by_id(conn, user_id)
+    return row
 
 
 def delete_by_email(conn: sqlite3.Connection, email: str) -> None:

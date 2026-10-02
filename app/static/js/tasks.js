@@ -1,12 +1,7 @@
 import { apiFetch } from "./api.js";
 import { showToast } from "./toast.js";
 import { formatDateTime, fromLocalInputValue, toLocalInputValue } from "./datetime.js";
-
-function escapeHtml(str) {
-  const div = document.createElement("div");
-  div.textContent = str;
-  return div.innerHTML;
-}
+import { escapeHtml } from "./dom.js";
 
 // The one function every page uses to render a task — new badges or fields
 // slot in here only (PRD extension-point rule). `handlers` is optional:
@@ -203,6 +198,11 @@ if (taskList) {
       modal.close();
       showToast("Task saved", "success");
       await loadTasks();
+      // loadTasks() rebuilds the whole list, destroying whatever focus
+      // <dialog> just restored (the Edit button that opened it) — without
+      // this, focus silently drops to <body> and a keyboard/screen-reader
+      // user loses their place entirely.
+      newTaskBtn.focus();
     } catch (err) {
       formError.textContent = err.message;
       formError.hidden = false;

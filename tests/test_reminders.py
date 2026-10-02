@@ -78,6 +78,26 @@ def test_I8_moving_due_date_allows_a_new_due_soon_reminder(client, monkeypatch):
 
 
 @freeze_time("2026-10-03T12:00:00")
+def test_I8_reopening_a_still_overdue_task_allows_a_new_overdue_reminder(client, monkeypatch):
+    """Regression guard: reopen_task() used to skip the reminders_sent
+    clear that update_task() does for due_at changes, so a task that went
+    overdue -> reminded -> completed -> reopened (still overdue) could
+    never be reminded about again."""
+    monkeypatch.setattr(SmtpNotifier, "send", lambda self, **kw: True)
+    register(client)
+    task = create_task(client, due_at="2026-10-01T09:00:00").get_json()  # already overdue
+
+    first = client.post("/api/cron/reminders", headers=CRON_HEADERS).get_json()
+    assert first["overdue_sent"] == 1
+
+    client.post(f"/api/tasks/{task['id']}/complete")
+    client.post(f"/api/tasks/{task['id']}/reopen")
+
+    second = client.post("/api/cron/reminders", headers=CRON_HEADERS).get_json()
+    assert second["overdue_sent"] == 1
+
+
+@freeze_time("2026-10-03T12:00:00")
 def test_smtp_failure_is_not_recorded_as_sent_and_retries_next_run(client, monkeypatch):
     register(client)
     create_task(client, due_at="2026-10-03T18:00:00")
