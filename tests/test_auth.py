@@ -76,6 +76,27 @@ def test_login_rejects_unknown_email(client):
     assert response.status_code == 401
 
 
+def test_login_hashes_password_even_for_an_unknown_email(client, monkeypatch):
+    """Regression guard: authenticate() used to short-circuit on `row is
+    None`, skipping check_password_hash entirely for an unknown email.
+    Response-timing alone would then reveal whether an account exists. It
+    must now run the (deliberately slow) hash check unconditionally."""
+    calls = []
+    import app.services.auth_service as auth_service_module
+
+    original = auth_service_module.check_password_hash
+
+    def spy(*args, **kwargs):
+        calls.append(args)
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(auth_service_module, "check_password_hash", spy)
+
+    login(client, email="nobody@example.com")
+
+    assert len(calls) == 1
+
+
 def test_logout_requires_login(client):
     response = client.post("/api/auth/logout")
     assert response.status_code == 401

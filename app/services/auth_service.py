@@ -14,6 +14,12 @@ from app.validation import require_str
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 MIN_PASSWORD_LENGTH = 8
 
+# Hashed once at import time and used whenever the email doesn't match any
+# account, so authenticate() always pays the same hashing cost — without
+# this, an unknown email returns faster than a wrong password and response
+# timing alone reveals which accounts exist.
+_DUMMY_PASSWORD_HASH = generate_password_hash("not-a-real-password-used-only-for-timing-safety")
+
 
 def register(
     conn: sqlite3.Connection, *, name: object, email: object, password: object, timezone: str
@@ -49,6 +55,8 @@ def authenticate(conn: sqlite3.Connection, *, email: object, password: object) -
     email = require_str(email, "email").strip().lower()
     password = require_str(password, "password")
     row = user_repo.find_by_email(conn, email)
-    if row is None or not check_password_hash(row["password_hash"], password):
+    password_hash = row["password_hash"] if row is not None else _DUMMY_PASSWORD_HASH
+    password_ok = check_password_hash(password_hash, password)
+    if row is None or not password_ok:
         raise ApiError("invalid_credentials", "Incorrect email or password", 401)
     return User(row)

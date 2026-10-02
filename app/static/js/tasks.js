@@ -132,9 +132,19 @@ if (taskList) {
     }
   }
 
+  // Tab/tag clicks and the debounced search can each fire a loadTasks()
+  // while an earlier one is still in flight; without a sequence guard, a
+  // slower earlier response can land after a faster later one and
+  // overwrite the list with results that no longer match the active
+  // filters. Each call stamps its own number and only applies its result
+  // if no newer call has started since.
+  let loadSeq = 0;
+
   async function loadTasks() {
+    const seq = ++loadSeq;
     try {
       const tasks = await apiFetch(buildQuery());
+      if (seq !== loadSeq) return;
       taskList.innerHTML = "";
       emptyState.hidden = tasks.length > 0;
       for (const task of tasks) {
@@ -143,6 +153,7 @@ if (taskList) {
         );
       }
     } catch (err) {
+      if (seq !== loadSeq) return;
       showToast(err.message, "error");
     }
   }

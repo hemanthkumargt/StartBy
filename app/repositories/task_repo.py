@@ -72,9 +72,20 @@ def list_active_for_user(
     return conn.execute(sql, params).fetchall()
 
 
+_UPDATABLE_COLUMNS = frozenset({"title", "notes", "tag", "due_at"})
+
+
 def update_fields(
     conn: sqlite3.Connection, task_id: int, fields: dict, *, updated_at: str
 ) -> sqlite3.Row:
+    """Column names can't be parameterised, so they're f-string-interpolated
+    below — this whitelist is what makes that safe regardless of what a
+    caller passes, rather than relying entirely on the service layer's own
+    filtering (defense in depth)."""
+    invalid = set(fields) - _UPDATABLE_COLUMNS
+    if invalid:
+        raise ValueError(f"update_fields: disallowed column(s) {sorted(invalid)}")
+
     assignments = ", ".join(f"{name} = ?" for name in fields)
     params = [*fields.values(), updated_at, task_id]
     conn.execute(
