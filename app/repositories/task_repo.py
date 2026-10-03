@@ -144,6 +144,24 @@ def complete(
     return conn.execute("SELECT * FROM tasks WHERE id = ?", (task_id,)).fetchone()
 
 
+def update_actual_hours(
+    conn: sqlite3.Connection, task_id: int, *, actual_hours: float | None, updated_at: str
+) -> sqlite3.Row:
+    """Corrects an already-done task's actual_hours without touching status
+    or completed_at — used when /complete is called again on a task that's
+    already done (a retried request, a second tab) and still carries a real
+    value worth keeping, rather than that value being silently dropped by
+    complete_task's ordinary idempotent-complete no-op. Deliberately narrow:
+    actual_hours isn't in PATCHABLE_FIELDS/_UPDATABLE_COLUMNS, so it can't be
+    freely rewritten the way estimate_hours can on a pending task."""
+    conn.execute(
+        "UPDATE tasks SET actual_hours = ?, updated_at = ? WHERE id = ?",
+        (actual_hours, updated_at, task_id),
+    )
+    conn.commit()
+    return conn.execute("SELECT * FROM tasks WHERE id = ?", (task_id,)).fetchone()
+
+
 def estimate_actual_pairs_for_user(conn: sqlite3.Connection, user_id: int) -> list[sqlite3.Row]:
     """Every (tag, estimate_hours, actual_hours) row for this user's
     completed, non-deleted tasks with both recorded — I13's raw input.

@@ -25,41 +25,51 @@ from app.db import get_db  # noqa: E402
 from app.repositories import user_repo  # noqa: E402
 from app.services import auth_service, task_service  # noqa: E402
 
-# (title, tag, days_from_now or None, already_done)
+# (title, tag, days_from_now or None, already_done, estimate_hours)
 # Mix: ~5 overdue, ~4 due today, ~6 due this week, ~5 due later,
 #      ~4 no due date, ~6 already done — 30 total, spread across all 3 tags.
+# estimate_hours is always set (FEATURE_ESTIMATES needs it to show anything
+# at all in the risk radar / "Do this now" card) regardless of whether the
+# flag happens to be on for THIS run of the app — the data should already
+# be there for whenever it's turned on.
 SAMPLE_TASKS = [
-    ("Submit DBMS assignment 3", "study", -3, False),
-    ("Pay hostel mess fee", "personal", -2, False),
-    ("Return library books", "personal", -1, False),
-    ("Reply to placement cell email", "work", -1, False),
-    ("Lab record submission — OS course", "study", -1, False),
-    ("Team standup notes", "work", 0, False),
-    ("Buy groceries for the week", "personal", 0, False),
-    ("Revise OS notes before class", "study", 0, False),
-    ("Call home", "personal", 0, False),
-    ("Group project meeting prep", "work", 1, False),
-    ("Finish LeetCode daily problem", "study", 1, False),
-    ("Gym session", "personal", 2, False),
-    ("Review PR from teammate", "work", 2, False),
-    ("Study for DBMS midterm", "study", 3, False),
-    ("Clean room before inspection", "personal", 4, False),
-    ("Attend placement seminar", "work", 5, False),
-    ("Draft weekly status report", "work", 10, False),
-    ("Plan weekend trip", "personal", 12, False),
-    ("Read research paper for seminar", "study", 14, False),
-    ("Renew gym membership", "personal", 20, False),
-    ("Organise class notes", "study", None, False),
-    ("Fix laptop keyboard", "personal", None, False),
-    ("Update resume", "work", None, False),
-    ("Explore internship postings", "work", None, False),
-    ("Submit hackathon registration", "work", -5, True),
-    ("Finish Python assignment", "study", -4, True),
-    ("Wash clothes", "personal", -3, True),
-    ("Attend orientation session", "work", -6, True),
-    ("Complete DSA practice set 2", "study", -2, True),
-    ("Book exam hall ticket", "personal", -7, True),
+    ("Submit DBMS assignment 3", "study", -3, False, 3.0),
+    ("Pay hostel mess fee", "personal", -2, False, 0.5),
+    ("Return library books", "personal", -1, False, 0.5),
+    ("Reply to placement cell email", "work", -1, False, 0.5),
+    ("Lab record submission — OS course", "study", -1, False, 2.0),
+    ("Team standup notes", "work", 0, False, 0.25),
+    ("Buy groceries for the week", "personal", 0, False, 1.0),
+    ("Revise OS notes before class", "study", 0, False, 1.5),
+    ("Call home", "personal", 0, False, 0.25),
+    ("Group project meeting prep", "work", 1, False, 1.0),
+    ("Finish LeetCode daily problem", "study", 1, False, 1.0),
+    ("Gym session", "personal", 2, False, 1.0),
+    ("Review PR from teammate", "work", 2, False, 0.5),
+    ("Study for DBMS midterm", "study", 3, False, 5.0),
+    ("Clean room before inspection", "personal", 4, False, 1.0),
+    ("Attend placement seminar", "work", 5, False, 2.0),
+    ("Draft weekly status report", "work", 10, False, 1.5),
+    ("Plan weekend trip", "personal", 12, False, 1.0),
+    ("Read research paper for seminar", "study", 14, False, 2.0),
+    ("Renew gym membership", "personal", 20, False, 0.25),
+    ("Organise class notes", "study", None, False, 1.0),
+    ("Fix laptop keyboard", "personal", None, False, 1.0),
+    ("Update resume", "work", None, False, 2.0),
+    ("Explore internship postings", "work", None, False, 1.5),
+    ("Submit hackathon registration", "work", -5, True, 0.5),
+    ("Finish Python assignment", "study", -4, True, 2.0),
+    ("Wash clothes", "personal", -3, True, 1.0),
+    ("Attend orientation session", "work", -6, True, 1.0),
+    ("Complete DSA practice set 2", "study", -2, True, 2.5),
+    ("Book exam hall ticket", "personal", -7, True, 0.5),
 ]
+
+# From CLAUDE.md section 9's own target ratios for the (not-yet-built)
+# --history flag — applied here too, to the handful of tasks this base seed
+# already completes, so the per-tag multiplier has something to learn from
+# even before --history exists.
+ACTUAL_HOURS_RATIO_BY_TAG = {"study": 1.6, "work": 1.3, "personal": 1.1}
 
 
 def build_due_at(days_offset: int | None, tz_name: str) -> str | None:
@@ -102,17 +112,33 @@ def main() -> None:
         )
         print(f"Created demo user {email}")
 
+        # Passed regardless of the running app's own FEATURE_ESTIMATES
+        # setting — estimate_hours/actual_hours are seeded so the feature
+        # has real data to show the moment the flag is turned on, not
+        # gated by whether it happens to be on during this seed run.
+        estimates_flags = {"estimates": True}
+
         tz_name = app.config["DEFAULT_TIMEZONE"]
-        for title, tag, days_offset, done in SAMPLE_TASKS:
+        for title, tag, days_offset, done, estimate_hours in SAMPLE_TASKS:
             task = task_service.create_task(
                 conn,
                 user_id=user.id,
                 title=title,
                 tag=tag,
                 due_at=build_due_at(days_offset, tz_name),
+                estimate_hours=estimate_hours,
+                flags=estimates_flags,
             )
             if done:
-                task_service.complete_task(conn, user_id=user.id, task_id=task["id"])
+                actual_hours = round(estimate_hours * ACTUAL_HOURS_RATIO_BY_TAG[tag], 2)
+                task_service.complete_task(
+                    conn,
+                    user_id=user.id,
+                    task_id=task["id"],
+                    actual_hours=actual_hours,
+                    actual_hours_provided=True,
+                    flags=estimates_flags,
+                )
 
         print(f"Seeded {len(SAMPLE_TASKS)} tasks across work/study/personal.")
 

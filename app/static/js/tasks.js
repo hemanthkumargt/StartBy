@@ -338,5 +338,14 @@ if (taskList) {
     }
   });
 
+  // Risk/start_by (I12) recompute fresh on every read, but only the page
+  // that triggers a read sees that — this list left open in one tab while
+  // a same-tag task completes in another doesn't otherwise learn its risk
+  // badges are now stale. Re-fetching on return-to-tab is a cheap, no-infra
+  // way to close that gap instead of polling on an interval.
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") loadTasks();
+  });
+
   loadTasks();
 }

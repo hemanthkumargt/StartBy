@@ -507,6 +507,77 @@ def test_recompleting_with_a_new_actual_hours_overwrites_the_previous_value(esti
     assert done_again["actual_hours"] == 1.0
 
 
+def test_recompleting_an_already_done_task_still_records_a_new_actual_hours(estimates_client):
+    """Regression guard: complete_task's idempotent-complete no-op used to
+    return the task unchanged before even looking at actual_hours, so a
+    retried request or a second tab answering the dialog would silently
+    drop a real data point instead of recording it."""
+    register(estimates_client)
+    task = create_task(estimates_client, estimate_hours=2.0).get_json()
+    first = estimates_client.post(
+        f"/api/tasks/{task['id']}/complete", json={"actual_hours": 3.5}
+    ).get_json()
+    assert first["actual_hours"] == 3.5
+
+    retried = estimates_client.post(
+        f"/api/tasks/{task['id']}/complete", json={"actual_hours": 4.0}
+    ).get_json()
+    assert retried["status"] == "done"
+    assert retried["actual_hours"] == 4.0
+
+
+def test_recompleting_an_already_done_task_without_actual_hours_is_a_true_no_op(estimates_client):
+    register(estimates_client)
+    task = create_task(estimates_client, estimate_hours=2.0).get_json()
+    first = estimates_client.post(
+        f"/api/tasks/{task['id']}/complete", json={"actual_hours": 3.5}
+    ).get_json()
+
+    again = estimates_client.post(f"/api/tasks/{task['id']}/complete").get_json()
+    assert again["actual_hours"] == 3.5
+    assert again["completed_at"] == first["completed_at"]
+
+
+def test_estimate_hours_cannot_be_patched_on_a_done_task(estimates_client):
+    """I13 guard: estimate_hours feeds the historical (estimate, actual)
+    ratio the per-tag multiplier learns from — editing it after completion
+    would silently rewrite that history."""
+    register(estimates_client)
+    task = create_task(estimates_client, estimate_hours=2.0).get_json()
+    estimates_client.post(f"/api/tasks/{task['id']}/complete", json={"actual_hours": 4.0})
+
+    response = estimates_client.patch(f"/api/tasks/{task['id']}", json={"estimate_hours": 8.0})
+    done = response.get_json()
+    assert done["estimate_hours"] == 2.0
+
+
+def test_tag_cannot_be_patched_on_a_done_task(estimates_client):
+    """I13 guard: tag selects which bucket a completed task's (estimate,
+    actual) ratio feeds into — changing it after completion would move
+    history into the wrong tag's learned multiplier."""
+    register(estimates_client)
+    task = create_task(estimates_client, tag="study", estimate_hours=2.0).get_json()
+    estimates_client.post(f"/api/tasks/{task['id']}/complete", json={"actual_hours": 4.0})
+
+    response = estimates_client.patch(f"/api/tasks/{task['id']}", json={"tag": "work"})
+    done = response.get_json()
+    assert done["tag"] == "study"
+
+
+def test_title_and_notes_remain_editable_on_a_done_task(estimates_client):
+    """The I13 guard only locks estimate_hours/tag — everything else on a
+    done task (fixing a typo) should still work."""
+    register(estimates_client)
+    task = create_task(estimates_client, estimate_hours=2.0).get_json()
+    estimates_client.post(f"/api/tasks/{task['id']}/complete", json={"actual_hours": 4.0})
+
+    updated = estimates_client.patch(
+        f"/api/tasks/{task['id']}", json={"title": "Fixed typo", "notes": "done well"}
+    ).get_json()
+    assert updated["title"] == "Fixed typo"
+    assert updated["notes"] == "done well"
+
+
 def test_flag_on_rejects_non_numeric_actual_hours(estimates_client):
     register(estimates_client)
     task = create_task(estimates_client, estimate_hours=2.0).get_json()
@@ -543,6 +614,32 @@ def test_I13_completed_task_history_corrects_future_start_by_for_same_tag(estima
     # multiplier = 1.718134... (matches the PRD's rounded 1.72 worked
     # example); 2.0h * that * 1.15 buffer = lead time before 18:00.
     assert new_task["start_by"] == "2026-10-10T14:02:53"
+
+
+def test_I11_completing_a_sibling_recomputes_an_existing_pending_tasks_start_by(estimates_client):
+    """I11: 'completing a task recomputes pending tasks of the same tag.'
+    Unlike the worked-example test above (which creates a NEW task after
+    the history exists), this takes a task that was already pending BEFORE
+    any history existed, never touches it directly, and confirms its
+    start_by has shifted on the next read purely because a sibling of the
+    same tag was completed in between."""
+    register(estimates_client)
+    existing = create_task(
+        estimates_client, tag="study", estimate_hours=2.0, due_at="2026-10-10T18:00:00"
+    ).get_json()
+    # No history yet: cold-start 1.5x default.
+    assert existing["start_by"] == "2026-10-10T14:33:00"
+
+    for estimate, actual in [(1.0, 2.0), (2.0, 5.0), (3.0, 6.0)]:
+        t = create_task(
+            estimates_client, tag="study", estimate_hours=estimate, due_at="2026-10-05T00:00:00"
+        ).get_json()
+        estimates_client.post(f"/api/tasks/{t['id']}/complete", json={"actual_hours": actual})
+
+    refetched = estimates_client.get(f"/api/tasks/{existing['id']}").get_json()
+    # Same task, never edited — start_by now reflects the ~1.718x learned
+    # from its siblings' completions.
+    assert refetched["start_by"] == "2026-10-10T14:02:53"
 
 
 def test_I13_history_in_one_tag_does_not_affect_another_tag(estimates_client):

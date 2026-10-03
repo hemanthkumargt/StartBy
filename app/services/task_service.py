@@ -26,8 +26,18 @@ PATCHABLE_FIELDS = ("title", "notes", "tag", "due_at", "estimate_hours")
 _FIELD_REQUIRES_FLAG = {"estimate_hours": "estimates"}
 
 
-def _field_is_patchable(name: str, flags: dict) -> bool:
+# I13's per-tag multiplier is learned from (tag, estimate_hours, actual_hours)
+# triples recorded at completion time. estimate_hours and tag are both
+# inputs to that pairing, so editing either one on an already-done task
+# would silently rewrite history the multiplier already learned from —
+# unlike a pending task, where there's no history yet to corrupt.
+_FIELDS_LOCKED_AFTER_COMPLETION = frozenset({"estimate_hours", "tag"})
+
+
+def _field_is_patchable(name: str, flags: dict, status: str) -> bool:
     if name not in PATCHABLE_FIELDS:
+        return False
+    if status == "done" and name in _FIELDS_LOCKED_AFTER_COMPLETION:
         return False
     required_flag = _FIELD_REQUIRES_FLAG.get(name)
     return required_flag is None or flags.get(required_flag, False)
@@ -222,7 +232,7 @@ def update_task(
     changes: list[tuple[str, object, object]] = []
 
     for name, value in fields.items():
-        if not _field_is_patchable(name, flags):
+        if not _field_is_patchable(name, flags, row["status"]):
             continue
         if name == "title":
             value = _validate_title(value)
@@ -256,10 +266,11 @@ def update_task(
             new_value=None if new_value is None else str(new_value),
         )
 
-    if "due_at" in updates or "estimate_hours" in updates:
-        # I8/I11: a new deadline OR a new estimate can move start_by
-        # (I10: start_by = due_at - estimate * multiplier * buffer), so the
-        # old due_soon/overdue/start_now reminder records for this task no
+    if "due_at" in updates or "estimate_hours" in updates or "tag" in updates:
+        # I8/I11: a new deadline, a new estimate, OR a new tag can move
+        # start_by (I10: start_by = due_at - estimate * multiplier * buffer,
+        # and multiplier is looked up per tag per I13), so the old
+        # due_soon/overdue/start_now reminder records for this task no
         # longer apply to whatever start_by now is.
         reminder_repo.clear_for_task(conn, task_id)
 
@@ -281,10 +292,6 @@ def complete_task(
 ) -> dict:
     flags = flags or {}
     row = _get_active_or_404(conn, user_id, task_id)
-    if row["status"] == "done":
-        return serialize_task(row, flags=flags, multipliers=_multipliers_for(conn, user_id, flags))
-
-    now = timeutil.utcnow_iso()
     # actual_hours_provided distinguishes "no value this time" (e.g. a
     # reopen-then-recomplete where the user skipped the prompt) from
     # "explicitly cleared" — a reopen that was only fixing a typo shouldn't
@@ -294,6 +301,30 @@ def complete_task(
     validated_actual_hours = (
         _validate_hours(actual_hours, "actual_hours") if update_actual_hours else None
     )
+
+    if row["status"] == "done":
+        if update_actual_hours and validated_actual_hours != row["actual_hours"]:
+            # A repeat /complete call on an already-done task (a retried
+            # request, the dialog answered from a second tab) still carries
+            # a real value worth keeping, not the ordinary no-op below.
+            updated_row = task_repo.update_actual_hours(
+                conn, task_id, actual_hours=validated_actual_hours, updated_at=timeutil.utcnow_iso()
+            )
+            activity_service.record(
+                conn,
+                user_id=user_id,
+                task_id=task_id,
+                action="updated",
+                field="actual_hours",
+                old_value=None if row["actual_hours"] is None else str(row["actual_hours"]),
+                new_value=str(validated_actual_hours),
+            )
+            return serialize_task(
+                updated_row, flags=flags, multipliers=_multipliers_for(conn, user_id, flags)
+            )
+        return serialize_task(row, flags=flags, multipliers=_multipliers_for(conn, user_id, flags))
+
+    now = timeutil.utcnow_iso()
     updated_row = task_repo.complete(
         conn,
         task_id,

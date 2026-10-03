@@ -1,7 +1,7 @@
 import pytest
 from freezegun import freeze_time
 
-from app.constants import MULTIPLIER_MAX, MULTIPLIER_MIN
+from app.constants import DEFAULT_MULTIPLIER, MULTIPLIER_MAX, MULTIPLIER_MIN
 from app.services import estimate_service
 
 
@@ -120,3 +120,15 @@ def test_multipliers_by_tag_keeps_tags_independent():
     result = estimate_service.multipliers_by_tag(rows)
     assert result["work"] != result["personal"]
     assert set(result.keys()) == {"work", "personal"}
+
+
+def test_no_history_fallback_matches_multiplier_from_history_at_n_zero():
+    """Pins the equivalence task_service._multipliers_for and
+    reminder_service rely on: a tag with no history falls back to the
+    plain constant DEFAULT_MULTIPLIER (skipping multiplier_from_history
+    entirely, as an optimization) rather than calling
+    multiplier_from_history(0, 0.0) and clamping. That's only safe because
+    the two are identical today — if DEFAULT_MULTIPLIER is ever changed to
+    a value outside [MULTIPLIER_MIN, MULTIPLIER_MAX], this test fails
+    instead of the two silently diverging."""
+    assert DEFAULT_MULTIPLIER == estimate_service.multiplier_from_history(0, 0.0)

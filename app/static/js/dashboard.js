@@ -87,5 +87,15 @@ if (quickAddForm) {
     }
   });
 
+  // Risk/start_by (I12) recompute fresh on every read, but only the page
+  // that triggers a read sees that — a dashboard left open in one tab
+  // while a same-tag task is completed in another doesn't otherwise learn
+  // its "Do this now" card or risk badges are now stale. Re-fetching on
+  // return-to-tab is a cheap, no-infra way to close that gap instead of
+  // polling on an interval.
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") loadDashboard();
+  });
+
   loadDashboard();
 }

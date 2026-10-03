@@ -202,6 +202,63 @@ def test_I8_changing_estimate_alone_allows_a_new_start_now_reminder(estimates_cl
     assert second["start_now_sent"] == 1
 
 
+def test_I8_changing_tag_alone_allows_a_new_start_now_reminder(estimates_client, monkeypatch):
+    """I13: a task's tag selects which per-tag multiplier its start_by uses,
+    so a tag-only edit (due_at/estimate_hours untouched) can move start_by
+    into or out of red just as much as an estimate edit can — it must clear
+    an old start_now reminder the same way."""
+    monkeypatch.setattr(SmtpNotifier, "send", lambda self, **kw: True)
+    with freeze_time("2026-10-01T00:00:00"):
+        register(estimates_client)
+        # "study" history pushes its multiplier to ~1.718x (I13 worked example).
+        for estimate, actual in [(1.0, 2.0), (2.0, 5.0), (3.0, 6.0)]:
+            t = create_task(estimates_client, tag="study", estimate_hours=estimate).get_json()
+            estimates_client.post(f"/api/tasks/{t['id']}/complete", json={"actual_hours": actual})
+
+    with freeze_time("2026-10-10T14:15:00"):
+        # Under study's ~1.718x, start_by ~14:02:53 -> already red.
+        task = create_task(
+            estimates_client, tag="study", due_at="2026-10-10T18:00:00", estimate_hours=2.0
+        ).get_json()
+        first = estimates_client.post("/api/cron/reminders", headers=CRON_HEADERS).get_json()
+        assert first["start_now_sent"] == 1
+
+        # personal has no history -> default 1.5x -> start_by 14:33, not red yet.
+        estimates_client.patch(f"/api/tasks/{task['id']}", json={"tag": "personal"})
+        # Back to study -> red again, same due_at/estimate throughout.
+        estimates_client.patch(f"/api/tasks/{task['id']}", json={"tag": "study"})
+
+        second = estimates_client.post("/api/cron/reminders", headers=CRON_HEADERS).get_json()
+        assert second["start_now_sent"] == 1
+
+
+@freeze_time("2026-10-03T12:00:00")
+def test_I15_flag_on_cron_response_always_has_start_now_sent_key_even_when_budget_is_spent(
+    app, monkeypatch
+):
+    """The start_now_sent key's presence must depend only on the flag, not
+    on whether due_soon/overdue sends happened to exhaust the shared
+    cron-run budget first."""
+    app.config["FEATURE_ESTIMATES"] = True
+    monkeypatch.setattr(SmtpNotifier, "send", lambda self, **kw: True)
+    with app.test_client() as client:
+        register(client)
+        create_task(client, due_at="2026-10-03T18:00:00")
+
+        with app.app_context():
+            from app.feature_flags import read_feature_flags
+            from app.services.notifier import get_notifier
+
+            result = reminder_service.run_reminders(
+                get_db(),
+                get_notifier(app.config),
+                now_iso="2026-10-03T12:00:00",
+                max_per_run=0,
+                flags=read_feature_flags(app.config),
+            )
+    assert result == {"due_soon_sent": 0, "overdue_sent": 0, "start_now_sent": 0}
+
+
 def test_I13_start_now_reminder_uses_the_learned_multiplier_not_the_cold_start_default(
     estimates_client, monkeypatch
 ):

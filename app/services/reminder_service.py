@@ -42,6 +42,41 @@ def _send_candidates(
     return sent_count, budget
 
 
+def _find_start_now_candidates(conn: sqlite3.Connection, now_iso: str) -> list[sqlite3.Row]:
+    """Pending tasks that are actually red right now, ordered by start_by
+    (most overdue first — that's what "red" measures, and what
+    pick_do_this_now already prioritizes by for the same reason)."""
+    # I13: the same per-user-per-tag multiplier task_service uses for the
+    # dashboard/API, not the cold-start default — otherwise a tag with
+    # learned history could show red on the dashboard while this cron,
+    # still on 1.5x, disagrees about whether it's actually red yet (or the
+    # reverse). Cached per user since one cron run spans every user's
+    # candidates, unlike task_service's one-user-per-request.
+    multipliers_by_user: dict[int, dict[str, float]] = {}
+
+    def multiplier_for(row: sqlite3.Row) -> float:
+        user_id = row["user_id"]
+        if user_id not in multipliers_by_user:
+            multipliers_by_user[user_id] = estimate_service.multipliers_by_tag(
+                task_repo.estimate_actual_pairs_for_user(conn, user_id)
+            )
+        return multipliers_by_user[user_id].get(row["tag"], DEFAULT_MULTIPLIER)
+
+    # A task further out than the longest possible lead time can never be
+    # red yet however its own estimate/multiplier work out, so the repo can
+    # prune it in SQL via the existing due_at index instead of this service
+    # layer fetching and discarding it every run.
+    horizon_iso = timeutil.add_hours_iso(now_iso, estimate_service.MAX_LEAD_TIME_HOURS)
+    red_by_start_by = []
+    for row in reminder_repo.find_start_now_candidates(conn, due_before_iso=horizon_iso):
+        start_by = estimate_service.compute_start_by(
+            row["due_at"], row["estimate_hours"], multiplier_for(row)
+        )
+        if estimate_service.compute_risk(row["status"], start_by) == "red":
+            red_by_start_by.append((start_by, row))
+    return [row for _, row in sorted(red_by_start_by, key=lambda pair: pair[0])]
+
+
 def run_reminders(
     conn: sqlite3.Connection,
     notifier: Notifier,
@@ -83,49 +118,19 @@ def run_reminders(
 
     # I15: with the flag off, start_by doesn't conceptually exist, so this
     # whole reminder kind — including the key in the response — is a no-op,
-    # not just zero. Also skipped once budget is already spent: candidates
-    # can't be pre-filtered to "actually red" in SQL (start_by isn't a
-    # stored column), so there's no point paying for the fetch at all if
-    # nothing could be sent from it anyway.
-    if flags.get("estimates", False) and budget > 0:
-        # I13: the same per-user-per-tag multiplier task_service uses for
-        # the dashboard/API, not the cold-start default — otherwise a tag
-        # with learned history could show red on the dashboard while this
-        # cron, still on 1.5x, disagrees about whether it's actually red
-        # yet (or the reverse). Cached per user since one cron run spans
-        # every user's candidates, unlike task_service's one-user-per-request.
-        multipliers_by_user: dict[int, dict[str, float]] = {}
-
-        def multiplier_for(row: sqlite3.Row) -> float:
-            user_id = row["user_id"]
-            if user_id not in multipliers_by_user:
-                multipliers_by_user[user_id] = estimate_service.multipliers_by_tag(
-                    task_repo.estimate_actual_pairs_for_user(conn, user_id)
-                )
-            return multipliers_by_user[user_id].get(row["tag"], DEFAULT_MULTIPLIER)
-
-        # A task further out than the longest possible lead time can never
-        # be red yet however its own estimate/multiplier work out, so the
-        # repo can prune it in SQL via the existing due_at index instead of
-        # this service layer fetching and discarding it every run.
-        horizon_iso = timeutil.add_hours_iso(now_iso, estimate_service.MAX_LEAD_TIME_HOURS)
-        red_by_start_by = []
-        for row in reminder_repo.find_start_now_candidates(conn, due_before_iso=horizon_iso):
-            start_by = estimate_service.compute_start_by(
-                row["due_at"], row["estimate_hours"], multiplier_for(row)
-            )
-            if estimate_service.compute_risk(row["status"], start_by) == "red":
-                red_by_start_by.append((start_by, row))
-        # SQL ordered by due_at (its only candidate-pruning column), but the
-        # budget should go to the most overdue-by-start_by task first —
-        # that's what "red" actually measures, and what pick_do_this_now
-        # already prioritizes by for the same reason.
-        red_candidates = [row for _, row in sorted(red_by_start_by, key=lambda pair: pair[0])]
-
+    # not just zero. The key's presence depends only on the flag: whether
+    # budget happened to run out first must not change the response shape,
+    # only the count (0) it reports.
+    if flags.get("estimates", False):
+        # Skipped once budget is already spent: candidates can't be
+        # pre-filtered to "actually red" in SQL (start_by isn't a stored
+        # column), so there's no point paying for the fetch at all if
+        # nothing could be sent from it anyway.
+        candidates = _find_start_now_candidates(conn, now_iso) if budget > 0 else []
         start_now_sent, budget = _send_candidates(
             conn,
             notifier,
-            red_candidates,
+            candidates,
             kind="start_now",
             subject=lambda row: f'Time to start: "{row["title"]}"',
             body=lambda row: (
