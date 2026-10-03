@@ -459,6 +459,107 @@ def test_risk_is_none_once_task_is_done(estimates_client):
         assert done["risk"] == "none"
 
 
+# --- Phase 2: per-tag estimate-correction multiplier (I13) ---
+
+
+def test_flag_on_complete_records_actual_hours(estimates_client):
+    register(estimates_client)
+    task = create_task(estimates_client, estimate_hours=2.0).get_json()
+
+    done = estimates_client.post(
+        f"/api/tasks/{task['id']}/complete", json={"actual_hours": 3.5}
+    ).get_json()
+    assert done["actual_hours"] == 3.5
+
+
+def test_flag_on_complete_without_actual_hours_leaves_it_null(estimates_client):
+    register(estimates_client)
+    task = create_task(estimates_client, estimate_hours=2.0).get_json()
+
+    done = estimates_client.post(f"/api/tasks/{task['id']}/complete").get_json()
+    assert done["actual_hours"] is None
+
+
+def test_recompleting_without_actual_hours_preserves_the_previous_value(estimates_client):
+    """A reopen is often just to fix an unrelated typo — skipping the
+    actual-hours prompt on the recomplete shouldn't silently erase a real
+    data point that was already recorded."""
+    register(estimates_client)
+    task = create_task(estimates_client, estimate_hours=2.0).get_json()
+    estimates_client.post(f"/api/tasks/{task['id']}/complete", json={"actual_hours": 3.5})
+
+    estimates_client.post(f"/api/tasks/{task['id']}/reopen")
+    done_again = estimates_client.post(f"/api/tasks/{task['id']}/complete").get_json()
+
+    assert done_again["actual_hours"] == 3.5
+
+
+def test_recompleting_with_a_new_actual_hours_overwrites_the_previous_value(estimates_client):
+    register(estimates_client)
+    task = create_task(estimates_client, estimate_hours=2.0).get_json()
+    estimates_client.post(f"/api/tasks/{task['id']}/complete", json={"actual_hours": 3.5})
+
+    estimates_client.post(f"/api/tasks/{task['id']}/reopen")
+    done_again = estimates_client.post(
+        f"/api/tasks/{task['id']}/complete", json={"actual_hours": 1.0}
+    ).get_json()
+
+    assert done_again["actual_hours"] == 1.0
+
+
+def test_flag_on_rejects_non_numeric_actual_hours(estimates_client):
+    register(estimates_client)
+    task = create_task(estimates_client, estimate_hours=2.0).get_json()
+
+    response = estimates_client.post(
+        f"/api/tasks/{task['id']}/complete", json={"actual_hours": "a while"}
+    )
+    assert response.status_code == 422
+
+
+def test_I15_flag_off_complete_ignores_actual_hours_and_response_has_no_key(client):
+    register(client)
+    task = create_task(client).get_json()
+
+    done = client.post(f"/api/tasks/{task['id']}/complete", json={"actual_hours": 3.5}).get_json()
+    assert "actual_hours" not in done
+
+
+def test_I13_completed_task_history_corrects_future_start_by_for_same_tag(estimates_client):
+    """The worked example (3 tasks at ratio 2.0, 2.5, 2.0 -> 1.72x), but
+    end-to-end: complete 3 study tasks with those ratios, then confirm a
+    new study task's start_by uses the learned 1.72x instead of the 1.5x
+    cold-start default."""
+    register(estimates_client)
+    for estimate, actual in [(1.0, 2.0), (2.0, 5.0), (3.0, 6.0)]:
+        t = create_task(
+            estimates_client, tag="study", estimate_hours=estimate, due_at="2026-10-10T18:00:00"
+        ).get_json()
+        estimates_client.post(f"/api/tasks/{t['id']}/complete", json={"actual_hours": actual})
+
+    new_task = create_task(
+        estimates_client, tag="study", estimate_hours=2.0, due_at="2026-10-10T18:00:00"
+    ).get_json()
+    # multiplier = 1.718134... (matches the PRD's rounded 1.72 worked
+    # example); 2.0h * that * 1.15 buffer = lead time before 18:00.
+    assert new_task["start_by"] == "2026-10-10T14:02:53"
+
+
+def test_I13_history_in_one_tag_does_not_affect_another_tag(estimates_client):
+    register(estimates_client)
+    t = create_task(
+        estimates_client, tag="study", estimate_hours=1.0, due_at="2026-10-10T18:00:00"
+    ).get_json()
+    estimates_client.post(f"/api/tasks/{t['id']}/complete", json={"actual_hours": 3.0})
+
+    work_task = create_task(
+        estimates_client, tag="work", estimate_hours=2.0, due_at="2026-10-10T18:00:00"
+    ).get_json()
+    # work has no history of its own, so it still gets the 1.5x cold-start
+    # default regardless of study's learned multiplier.
+    assert work_task["start_by"] == "2026-10-10T14:33:00"
+
+
 def test_list_filters_by_status_tag_and_search(client):
     register(client)
     create_task(client, title="Write report", tag="work")

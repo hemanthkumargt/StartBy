@@ -16,6 +16,8 @@ next read, with no separate recompute step to trigger.
 """
 
 import math
+import sqlite3
+from collections.abc import Iterable
 
 from app import timeutil
 from app.constants import (
@@ -71,6 +73,25 @@ def compute_risk(status: str, start_by: str | None) -> str:
     if timeutil.is_now_at_or_after(amber_from):
         return "amber"
     return "green"
+
+
+def multipliers_by_tag(rows: Iterable[sqlite3.Row]) -> dict[str, float]:
+    """I13, per tag. rows: each with tag/estimate_hours/actual_hours
+    (task_repo.estimate_actual_pairs_for_user's shape) — one query per
+    request rather than one per task, since every task of the same tag
+    would otherwise redo the identical history lookup. A tag with no
+    history simply isn't a key here; callers fall back to
+    DEFAULT_MULTIPLIER, which is exactly what multiplier_from_history(0,
+    0.0) would have returned anyway."""
+    log_ratios_by_tag: dict[str, list[float]] = {}
+    for row in rows:
+        log_ratios_by_tag.setdefault(row["tag"], []).append(
+            math.log(row["actual_hours"] / row["estimate_hours"])
+        )
+    return {
+        tag: multiplier_from_history(len(ratios), sum(ratios) / len(ratios))
+        for tag, ratios in log_ratios_by_tag.items()
+    }
 
 
 def pick_do_this_now(tasks: list[dict]) -> dict | None:

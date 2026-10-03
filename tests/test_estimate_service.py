@@ -1,3 +1,4 @@
+import pytest
 from freezegun import freeze_time
 
 from app.constants import MULTIPLIER_MAX, MULTIPLIER_MIN
@@ -93,3 +94,29 @@ def test_pick_do_this_now_is_none_when_nothing_is_urgent():
 
 def test_pick_do_this_now_is_none_for_an_empty_list():
     assert estimate_service.pick_do_this_now([]) is None
+
+
+def test_I13_multipliers_by_tag_worked_example():
+    # PRD's own worked example: 3 completed "study" tasks at actual/estimate
+    # ratios 2.0, 2.5, 2.0 -> multiplier 1.72.
+    rows = [
+        {"tag": "study", "estimate_hours": 1.0, "actual_hours": 2.0},
+        {"tag": "study", "estimate_hours": 2.0, "actual_hours": 5.0},
+        {"tag": "study", "estimate_hours": 3.0, "actual_hours": 6.0},
+    ]
+    result = estimate_service.multipliers_by_tag(rows)
+    assert result["study"] == pytest.approx(1.72, abs=0.01)
+
+
+def test_multipliers_by_tag_has_no_key_for_a_tag_with_no_history():
+    assert estimate_service.multipliers_by_tag([]) == {}
+
+
+def test_multipliers_by_tag_keeps_tags_independent():
+    rows = [
+        {"tag": "work", "estimate_hours": 2.0, "actual_hours": 2.0},  # ratio 1.0
+        {"tag": "personal", "estimate_hours": 2.0, "actual_hours": 4.0},  # ratio 2.0
+    ]
+    result = estimate_service.multipliers_by_tag(rows)
+    assert result["work"] != result["personal"]
+    assert set(result.keys()) == {"work", "personal"}

@@ -202,6 +202,35 @@ def test_I8_changing_estimate_alone_allows_a_new_start_now_reminder(estimates_cl
     assert second["start_now_sent"] == 1
 
 
+def test_I13_start_now_reminder_uses_the_learned_multiplier_not_the_cold_start_default(
+    estimates_client, monkeypatch
+):
+    """Regression guard: reminder_service must agree with the
+    dashboard/task API about whether a task is actually red. Builds the
+    same tag history as the I13 worked example (ratios 2.0/2.5/2.0 ->
+    1.718x), then freezes time at a point that is RED under that learned
+    multiplier but only AMBER under the 1.5x cold-start default -- if
+    reminder_service were still using the default, no reminder would fire
+    here."""
+    monkeypatch.setattr(SmtpNotifier, "send", lambda self, **kw: True)
+    with freeze_time("2026-10-01T00:00:00"):
+        register(estimates_client)
+        for estimate, actual in [(1.0, 2.0), (2.0, 5.0), (3.0, 6.0)]:
+            t = create_task(estimates_client, estimate_hours=estimate).get_json()
+            estimates_client.post(f"/api/tasks/{t['id']}/complete", json={"actual_hours": actual})
+
+    with freeze_time("2026-10-10T14:15:00"):
+        task = create_task(
+            estimates_client, estimate_hours=2.0, due_at="2026-10-10T18:00:00"
+        ).get_json()
+        # Learned multiplier (~1.718x) -> start_by ~14:02:53, already past.
+        assert task["risk"] == "red"
+        # The 1.5x cold-start default would give 14:33:00, not yet passed.
+
+        result = estimates_client.post("/api/cron/reminders", headers=CRON_HEADERS).get_json()
+        assert result["start_now_sent"] == 1
+
+
 @freeze_time("2026-10-03T12:00:00")
 def test_run_reminders_respects_max_per_run_budget(app, monkeypatch):
     monkeypatch.setattr(SmtpNotifier, "send", lambda self, **kw: True)

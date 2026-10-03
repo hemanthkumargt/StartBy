@@ -87,11 +87,90 @@ export function renderTaskCard(task, handlers = {}) {
 // Shared with any page that renders a completable task card (tasks.js's own
 // list and dashboard.js's "Do this now" card) — one implementation rather
 // than each page copying its own complete/reopen POST + error handling.
+// I13's per-tag multiplier needs a history of (estimate_hours, actual_hours)
+// pairs to learn from — this is where that history gets one data point,
+// "one-tap" at the moment of completion rather than a separate form. Only
+// asked when there's something to compare against (an estimate was set) and
+// only on the pending -> done transition, not plain re-toggles or reopens.
+// A JS-created <dialog>, not window.prompt(): prompt() isn't guaranteed to
+// be available (it throws rather than blocks in some embedded/automated
+// contexts), and a <dialog> matches the app's own modal convention (native
+// focus trap + Esc-close, CLAUDE.md quality bar) instead of introducing a
+// second, inconsistent kind of popup.
+//
+// A fresh dialog per call, removed on close — not a reused singleton.
+// Reuse was tried first and had two real bugs: (1) dialog.returnValue only
+// changes on a method="dialog" submit, so Escape-dismissing a later prompt
+// would silently resolve with the PREVIOUS prompt's "save" returnValue
+// still set, turning a cancel into an accidental save; (2) two completions
+// toggled before either resolves would fight over the one open dialog —
+// the second showModal() throws InvalidStateError, and if both are
+// eventually answered, each other's close listener can resolve the wrong
+// task's Promise with the wrong input. A fresh element per call has no
+// shared state for either bug to live in.
+function promptForActualHours(task) {
+  return new Promise((resolve) => {
+    const dialog = document.createElement("dialog");
+    dialog.className = "task-modal";
+    dialog.innerHTML = `
+      <form method="dialog">
+        <h2 class="actual-hours-prompt__title"></h2>
+        <label for="actual-hours-input">Actual hours (optional)</label>
+        <input id="actual-hours-input" type="number" step="0.25" min="0.25" max="100" placeholder="e.g. 2.5">
+        <div class="modal-actions">
+          <button type="submit" value="skip">Skip</button>
+          <button type="submit" value="save">Save</button>
+        </div>
+      </form>
+    `;
+    dialog.querySelector(".actual-hours-prompt__title").textContent =
+      `How many hours did "${task.title}" actually take?`;
+    const input = dialog.querySelector("#actual-hours-input");
+    const saveBtn = dialog.querySelector('button[value="save"]');
+
+    // A single-input form implicitly submits via its first submit button
+    // in DOM order on Enter — "Skip" here, since it's visually first —
+    // which would silently discard a number the user just typed. Bind
+    // Enter to Save explicitly instead of relying on that default.
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        saveBtn.click();
+      }
+    });
+
+    dialog.addEventListener(
+      "close",
+      () => {
+        const hours = Number(input.value);
+        resolve(
+          dialog.returnValue === "save" && input.value.trim() !== "" && !Number.isNaN(hours)
+            ? hours
+            : undefined
+        );
+        dialog.remove();
+      },
+      { once: true }
+    );
+
+    document.body.appendChild(dialog);
+    dialog.showModal();
+    input.focus();
+  });
+}
+
 export async function toggleComplete(task, onDone) {
-  const path =
-    task.status === "done" ? `/api/tasks/${task.id}/reopen` : `/api/tasks/${task.id}/complete`;
+  const isCompleting = task.status !== "done";
+  const path = isCompleting ? `/api/tasks/${task.id}/complete` : `/api/tasks/${task.id}/reopen`;
+  let actualHours;
+  if (isCompleting && "estimate_hours" in task && task.estimate_hours != null) {
+    actualHours = await promptForActualHours(task);
+  }
   try {
-    await apiFetch(path, { method: "POST" });
+    await apiFetch(path, {
+      method: "POST",
+      ...(actualHours !== undefined ? { body: JSON.stringify({ actual_hours: actualHours }) } : {}),
+    });
     await onDone();
   } catch (err) {
     showToast(err.message, "error");

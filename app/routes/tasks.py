@@ -75,8 +75,21 @@ def update_task(task_id: int):
 @bp.post("/tasks/<int:task_id>/complete")
 @login_required
 def complete_task(task_id: int):
+    # Unlike create/update, a plain complete with no body at all is the
+    # common case (the checkbox toggle) — actual_hours is an optional
+    # "one-tap" extra, not a required field, so an empty/missing body is
+    # fine here rather than the 422 _json_body() would raise.
+    body = request.get_json(silent=True)
+    # Presence, not just truthiness: {"actual_hours": null} (explicit clear)
+    # and no body at all (nothing to say about it) must be distinguishable.
+    actual_hours_provided = isinstance(body, dict) and "actual_hours" in body
     task = task_service.complete_task(
-        get_db(), user_id=current_user.id, task_id=task_id, flags=_flags()
+        get_db(),
+        user_id=current_user.id,
+        task_id=task_id,
+        actual_hours=body.get("actual_hours") if actual_hours_provided else None,
+        actual_hours_provided=actual_hours_provided,
+        flags=_flags(),
     )
     return jsonify(task), 200
 

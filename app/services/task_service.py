@@ -5,7 +5,13 @@ repositories stay SQL-only)."""
 import sqlite3
 
 from app import timeutil
-from app.constants import MAX_ESTIMATE_HOURS, MIN_ESTIMATE_HOURS, TAGS, TITLE_MAX_LENGTH
+from app.constants import (
+    DEFAULT_MULTIPLIER,
+    MAX_ESTIMATE_HOURS,
+    MIN_ESTIMATE_HOURS,
+    TAGS,
+    TITLE_MAX_LENGTH,
+)
 from app.errors import ApiError
 from app.repositories import reminder_repo, task_repo
 from app.services import activity_service, estimate_service, hooks
@@ -51,25 +57,41 @@ def _validate_due_at(due_at: str | None) -> str | None:
         raise ApiError("validation", "due_at must be a valid ISO-8601 datetime", 422) from exc
 
 
-def _validate_estimate_hours(value: object) -> float | None:
+def _validate_hours(value: object, field_name: str) -> float | None:
+    """Shared by estimate_hours and actual_hours — same unit, same
+    realistic range."""
     if value is None or value == "":
         return None
     # bool is a subclass of int in Python, so it must be excluded explicitly
     # or True/False would silently pass as 1.0/0.0.
     if isinstance(value, bool) or not isinstance(value, int | float):
-        raise ApiError("validation", "estimate_hours must be a number", 422)
+        raise ApiError("validation", f"{field_name} must be a number", 422)
     value = float(value)
     if not (MIN_ESTIMATE_HOURS <= value <= MAX_ESTIMATE_HOURS):
         raise ApiError(
             "validation",
-            f"estimate_hours must be between {MIN_ESTIMATE_HOURS} and {MAX_ESTIMATE_HOURS}",
+            f"{field_name} must be between {MIN_ESTIMATE_HOURS} and {MAX_ESTIMATE_HOURS}",
             422,
         )
     return value
 
 
-def serialize_task(row: sqlite3.Row, *, flags: dict | None = None) -> dict:
+def _multipliers_for(conn: sqlite3.Connection, user_id: int, flags: dict) -> dict[str, float]:
+    """I13's per-tag multiplier, computed once per request (not once per
+    task — every task of the same tag would otherwise redo the identical
+    history query) and skipped entirely when the flag is off."""
+    if not flags.get("estimates", False):
+        return {}
+    return estimate_service.multipliers_by_tag(
+        task_repo.estimate_actual_pairs_for_user(conn, user_id)
+    )
+
+
+def serialize_task(
+    row: sqlite3.Row, *, flags: dict | None = None, multipliers: dict[str, float] | None = None
+) -> dict:
     flags = flags or {}
+    multipliers = multipliers or {}
     is_overdue = (
         row["status"] == "pending"
         and row["due_at"] is not None
@@ -92,15 +114,16 @@ def serialize_task(row: sqlite3.Row, *, flags: dict | None = None) -> dict:
         # response is byte-identical to v1.0's shape, not just its values.
         start_by = None
         if row["estimate_hours"] is not None:
-            # No per-tag history yet (that's Feature 4) — n=0 correctly
-            # gives the formula's own neutral multiplier, 1.5x. Skipped
-            # entirely (not just defaulted) when there's no estimate, since
-            # start_by is None either way and the call would be wasted.
-            multiplier = estimate_service.multiplier_from_history(0, 0.0)
+            # I13: a tag with no completed-task history (no key in
+            # multipliers) falls back to DEFAULT_MULTIPLIER — exactly what
+            # multiplier_from_history(0, 0.0) would compute anyway, just
+            # without redoing that lookup for every task of the tag.
+            multiplier = multipliers.get(row["tag"], DEFAULT_MULTIPLIER)
             start_by = estimate_service.compute_start_by(
                 row["due_at"], row["estimate_hours"], multiplier
             )
         task["estimate_hours"] = row["estimate_hours"]
+        task["actual_hours"] = row["actual_hours"]
         task["start_by"] = start_by
         # I12 risk radar. Adaptive Replanning (CLAUDE.md 2.5): risk is always
         # computed fresh from the current status/start_by (never stored), so
@@ -136,7 +159,7 @@ def create_task(
     due_at = _validate_due_at(due_at)
     notes = require_str(notes, "notes").strip() or None
     estimate_hours = (
-        _validate_estimate_hours(estimate_hours) if flags.get("estimates", False) else None
+        _validate_hours(estimate_hours, "estimate_hours") if flags.get("estimates", False) else None
     )
 
     row = task_repo.create(
@@ -151,7 +174,7 @@ def create_task(
     )
     activity_service.record(conn, user_id=user_id, task_id=row["id"], action="created")
 
-    task = serialize_task(row, flags=flags)
+    task = serialize_task(row, flags=flags, multipliers=_multipliers_for(conn, user_id, flags))
     hooks.on_task_created(task)
     return task
 
@@ -159,7 +182,9 @@ def create_task(
 def get_task(
     conn: sqlite3.Connection, *, user_id: int, task_id: int, flags: dict | None = None
 ) -> dict:
-    return serialize_task(_get_active_or_404(conn, user_id, task_id), flags=flags)
+    flags = flags or {}
+    row = _get_active_or_404(conn, user_id, task_id)
+    return serialize_task(row, flags=flags, multipliers=_multipliers_for(conn, user_id, flags))
 
 
 def list_tasks(
@@ -171,13 +196,15 @@ def list_tasks(
     q: str | None = None,
     flags: dict | None = None,
 ) -> list[dict]:
+    flags = flags or {}
     if status is not None and status not in ("pending", "done"):
         raise ApiError("validation", "status must be 'pending' or 'done'", 422)
     if tag is not None and tag not in TAGS:
         raise ApiError("validation", f"tag must be one of {', '.join(TAGS)}", 422)
 
     rows = task_repo.list_active_for_user(conn, user_id, status=status, tag=tag, q=q)
-    return [serialize_task(row, flags=flags) for row in rows]
+    multipliers = _multipliers_for(conn, user_id, flags)
+    return [serialize_task(row, flags=flags, multipliers=multipliers) for row in rows]
 
 
 def update_task(
@@ -206,7 +233,7 @@ def update_task(
         elif name == "notes":
             value = require_str(value, "notes").strip() or None
         elif name == "estimate_hours":
-            value = _validate_estimate_hours(value)
+            value = _validate_hours(value, "estimate_hours")
 
         old_value = row[name]
         if value != old_value:
@@ -214,7 +241,7 @@ def update_task(
             changes.append((name, old_value, value))
 
     if not updates:
-        return serialize_task(row, flags=flags)
+        return serialize_task(row, flags=flags, multipliers=_multipliers_for(conn, user_id, flags))
 
     updated_row = task_repo.update_fields(conn, task_id, updates, updated_at=timeutil.utcnow_iso())
 
@@ -236,25 +263,53 @@ def update_task(
         # longer apply to whatever start_by now is.
         reminder_repo.clear_for_task(conn, task_id)
 
-    task = serialize_task(updated_row, flags=flags)
+    task = serialize_task(
+        updated_row, flags=flags, multipliers=_multipliers_for(conn, user_id, flags)
+    )
     hooks.on_task_updated(task, [c[0] for c in changes])
     return task
 
 
 def complete_task(
-    conn: sqlite3.Connection, *, user_id: int, task_id: int, flags: dict | None = None
+    conn: sqlite3.Connection,
+    *,
+    user_id: int,
+    task_id: int,
+    actual_hours: object = None,
+    actual_hours_provided: bool = False,
+    flags: dict | None = None,
 ) -> dict:
+    flags = flags or {}
     row = _get_active_or_404(conn, user_id, task_id)
     if row["status"] == "done":
-        return serialize_task(row, flags=flags)
+        return serialize_task(row, flags=flags, multipliers=_multipliers_for(conn, user_id, flags))
 
     now = timeutil.utcnow_iso()
-    updated_row = task_repo.set_status(
-        conn, task_id, status="done", completed_at=now, updated_at=now
+    # actual_hours_provided distinguishes "no value this time" (e.g. a
+    # reopen-then-recomplete where the user skipped the prompt) from
+    # "explicitly cleared" — a reopen that was only fixing a typo shouldn't
+    # silently wipe a previously-recorded actual_hours just because this
+    # completion didn't re-enter one.
+    update_actual_hours = flags.get("estimates", False) and actual_hours_provided
+    validated_actual_hours = (
+        _validate_hours(actual_hours, "actual_hours") if update_actual_hours else None
+    )
+    updated_row = task_repo.complete(
+        conn,
+        task_id,
+        completed_at=now,
+        updated_at=now,
+        actual_hours=validated_actual_hours,
+        update_actual_hours=update_actual_hours,
     )
     activity_service.record(conn, user_id=user_id, task_id=task_id, action="completed")
 
-    task = serialize_task(updated_row, flags=flags)
+    # Computed after the write: this completion's own actual_hours (if any)
+    # is part of the history a sibling task of the same tag should see in
+    # this same response, not just on the next read.
+    task = serialize_task(
+        updated_row, flags=flags, multipliers=_multipliers_for(conn, user_id, flags)
+    )
     hooks.on_task_completed(task)
     return task
 
@@ -262,9 +317,10 @@ def complete_task(
 def reopen_task(
     conn: sqlite3.Connection, *, user_id: int, task_id: int, flags: dict | None = None
 ) -> dict:
+    flags = flags or {}
     row = _get_active_or_404(conn, user_id, task_id)
     if row["status"] == "pending":
-        return serialize_task(row, flags=flags)
+        return serialize_task(row, flags=flags, multipliers=_multipliers_for(conn, user_id, flags))
 
     updated_row = task_repo.set_status(
         conn, task_id, status="pending", completed_at=None, updated_at=timeutil.utcnow_iso()
@@ -276,7 +332,9 @@ def reopen_task(
     # reasoning as update_task's due_at branch, not just a due_at change.
     reminder_repo.clear_for_task(conn, task_id)
 
-    return serialize_task(updated_row, flags=flags)
+    return serialize_task(
+        updated_row, flags=flags, multipliers=_multipliers_for(conn, user_id, flags)
+    )
 
 
 def delete_task(conn: sqlite3.Connection, *, user_id: int, task_id: int) -> None:
@@ -287,9 +345,11 @@ def delete_task(conn: sqlite3.Connection, *, user_id: int, task_id: int) -> None
 
 def get_dashboard(conn: sqlite3.Connection, *, user_id: int, flags: dict | None = None) -> dict:
     flags = flags or {}
+    multipliers = _multipliers_for(conn, user_id, flags)
     counts = task_repo.counts_for_user(conn, user_id, now_iso=timeutil.utcnow_iso())
     due_next = [
-        serialize_task(row, flags=flags) for row in task_repo.due_next_for_user(conn, user_id)
+        serialize_task(row, flags=flags, multipliers=multipliers)
+        for row in task_repo.due_next_for_user(conn, user_id)
     ]
     dashboard = {**counts, "due_next": due_next}
     if flags.get("estimates", False):
@@ -297,7 +357,7 @@ def get_dashboard(conn: sqlite3.Connection, *, user_id: int, flags: dict | None 
         # with a due_at (due_next's own query), since risk comes from
         # start_by rather than due_at directly.
         pending = [
-            serialize_task(row, flags=flags)
+            serialize_task(row, flags=flags, multipliers=multipliers)
             for row in task_repo.list_active_for_user(conn, user_id, status="pending")
         ]
         dashboard["do_this_now"] = estimate_service.pick_do_this_now(pending)

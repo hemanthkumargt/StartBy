@@ -7,7 +7,8 @@ import sqlite3
 from collections.abc import Callable, Iterable
 
 from app import timeutil
-from app.repositories import reminder_repo
+from app.constants import DEFAULT_MULTIPLIER
+from app.repositories import reminder_repo, task_repo
 from app.services import estimate_service
 from app.services.notifier import Notifier
 
@@ -87,7 +88,22 @@ def run_reminders(
     # stored column), so there's no point paying for the fetch at all if
     # nothing could be sent from it anyway.
     if flags.get("estimates", False) and budget > 0:
-        multiplier = estimate_service.multiplier_from_history(0, 0.0)
+        # I13: the same per-user-per-tag multiplier task_service uses for
+        # the dashboard/API, not the cold-start default — otherwise a tag
+        # with learned history could show red on the dashboard while this
+        # cron, still on 1.5x, disagrees about whether it's actually red
+        # yet (or the reverse). Cached per user since one cron run spans
+        # every user's candidates, unlike task_service's one-user-per-request.
+        multipliers_by_user: dict[int, dict[str, float]] = {}
+
+        def multiplier_for(row: sqlite3.Row) -> float:
+            user_id = row["user_id"]
+            if user_id not in multipliers_by_user:
+                multipliers_by_user[user_id] = estimate_service.multipliers_by_tag(
+                    task_repo.estimate_actual_pairs_for_user(conn, user_id)
+                )
+            return multipliers_by_user[user_id].get(row["tag"], DEFAULT_MULTIPLIER)
+
         # A task further out than the longest possible lead time can never
         # be red yet however its own estimate/multiplier work out, so the
         # repo can prune it in SQL via the existing due_at index instead of
@@ -96,7 +112,7 @@ def run_reminders(
         red_by_start_by = []
         for row in reminder_repo.find_start_now_candidates(conn, due_before_iso=horizon_iso):
             start_by = estimate_service.compute_start_by(
-                row["due_at"], row["estimate_hours"], multiplier
+                row["due_at"], row["estimate_hours"], multiplier_for(row)
             )
             if estimate_service.compute_risk(row["status"], start_by) == "red":
                 red_by_start_by.append((start_by, row))

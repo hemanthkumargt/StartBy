@@ -114,6 +114,50 @@ def set_status(
     return conn.execute("SELECT * FROM tasks WHERE id = ?", (task_id,)).fetchone()
 
 
+def complete(
+    conn: sqlite3.Connection,
+    task_id: int,
+    *,
+    completed_at: str,
+    updated_at: str,
+    actual_hours: float | None = None,
+    update_actual_hours: bool = False,
+) -> sqlite3.Row:
+    """Separate from set_status (which reopen_task also uses) because only
+    completing ever writes actual_hours. update_actual_hours distinguishes
+    "no value was given this time" (leave whatever's already there, e.g. a
+    reopen-then-recomplete with no new number entered) from "given as
+    empty/cleared" (actual_hours=None, update_actual_hours=True writes
+    NULL) — a plain None default can't tell those apart on its own."""
+    if update_actual_hours:
+        conn.execute(
+            "UPDATE tasks SET status = 'done', completed_at = ?, updated_at = ?, actual_hours = ? "
+            "WHERE id = ?",
+            (completed_at, updated_at, actual_hours, task_id),
+        )
+    else:
+        conn.execute(
+            "UPDATE tasks SET status = 'done', completed_at = ?, updated_at = ? WHERE id = ?",
+            (completed_at, updated_at, task_id),
+        )
+    conn.commit()
+    return conn.execute("SELECT * FROM tasks WHERE id = ?", (task_id,)).fetchone()
+
+
+def estimate_actual_pairs_for_user(conn: sqlite3.Connection, user_id: int) -> list[sqlite3.Row]:
+    """Every (tag, estimate_hours, actual_hours) row for this user's
+    completed, non-deleted tasks with both recorded — I13's raw input.
+    Grouping by tag and the log-ratio math happen in the service layer."""
+    return conn.execute(
+        """
+        SELECT tag, estimate_hours, actual_hours FROM tasks
+        WHERE user_id = ? AND status = 'done' AND deleted_at IS NULL
+          AND estimate_hours IS NOT NULL AND actual_hours IS NOT NULL
+        """,
+        (user_id,),
+    ).fetchall()
+
+
 def soft_delete(conn: sqlite3.Connection, task_id: int, *, deleted_at: str) -> None:
     conn.execute("UPDATE tasks SET deleted_at = ? WHERE id = ?", (deleted_at, task_id))
     conn.commit()

@@ -58,8 +58,8 @@ def find_start_now_candidates(
     here instead of it being fetched and discarded every run."""
     return conn.execute(
         """
-        SELECT tasks.id AS task_id, tasks.title, tasks.status, tasks.due_at,
-               tasks.estimate_hours, users.email, users.name AS user_name
+        SELECT tasks.id AS task_id, tasks.user_id, tasks.title, tasks.status, tasks.tag,
+               tasks.due_at, tasks.estimate_hours, users.email, users.name AS user_name
         FROM tasks
         JOIN users ON users.id = tasks.user_id
         LEFT JOIN reminders_sent rs ON rs.task_id = tasks.id AND rs.kind = 'start_now'
