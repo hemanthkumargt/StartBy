@@ -60,3 +60,39 @@ def authenticate(conn: sqlite3.Connection, *, email: object, password: object) -
     if row is None or not password_ok:
         raise ApiError("invalid_credentials", "Incorrect email or password", 401)
     return User(row)
+
+
+def social_authenticate_or_register(
+    conn: sqlite3.Connection,
+    *,
+    provider: str,
+    email: object,
+    name: object,
+    timezone: str,
+) -> User:
+    import secrets
+
+    email_str = require_str(email, "email").strip().lower()
+    name_str = require_str(name, "name").strip() if name else ""
+
+    if not EMAIL_RE.match(email_str):
+        raise ApiError("validation", "A valid email is required", 422)
+
+    if not name_str:
+        name_str = email_str.split("@")[0].replace(".", " ").title()
+
+    existing = user_repo.find_by_email(conn, email_str)
+    if existing is not None:
+        return User(existing)
+
+    random_password = secrets.token_urlsafe(32)
+    password_hash = generate_password_hash(random_password)
+    row = user_repo.create(
+        conn,
+        name=name_str,
+        email=email_str,
+        password_hash=password_hash,
+        timezone=timezone,
+        created_at=timeutil.utcnow_iso(),
+    )
+    return User(row)

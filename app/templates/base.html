@@ -1,41 +1,899 @@
 <!doctype html>
-<html lang="en" data-theme="{{ 'dark' if (current_user.is_authenticated and current_user.dark_mode) else 'light' }}">
+<html lang="en" data-theme="{{ 'dark' if (current_user.is_authenticated and current_user.dark_mode) else 'dark' }}">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="{{ csrf_token() }}">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2310b981'/%3E%3Cpath d='M16 6L6 11l10 5 10-5-10-5zM6 21l10 5 10-5M6 16l10 5 10-5' stroke='%23ffffff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
   {% if current_user.is_authenticated %}
   <meta name="user-timezone" content="{{ current_user.timezone }}">
+  {% else %}
+  <script>
+    try {
+      const savedTheme = localStorage.getItem('kairo_theme') || localStorage.getItem('kairo-theme') || localStorage.getItem('startby-theme');
+      if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    } catch (e) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  </script>
   {% endif %}
-  <title>{% block title %}StartBy{% endblock %}</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  <title>{% block title %}Kairo — Intelligent Task Workspace{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}?v=20">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}?v=20">
+  <style>
+    /* Emerald & Obsidian High-End Fintech Design System */
+    body {
+      background-color: var(--color-bg) !important;
+      background-image: none !important;
+    }
+    .app-shell {
+      background: var(--color-bg) !important;
+    }
+
+    /* Brand Monogram & Website Icon */
+    .brand-monogram__logo {
+      width: 32px !important;
+      height: 32px !important;
+      border-radius: 8px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35) !important;
+      color: #ffffff !important;
+      flex-shrink: 0 !important;
+    }
+
+    .brand-monogram__name {
+      font-size: 1.15rem !important;
+      font-weight: 800 !important;
+      letter-spacing: -0.025em !important;
+      color: var(--color-text) !important;
+    }
+
+    /* Sleek Emerald Sidebar Navigation */
+    .app-sidebar__nav {
+      gap: 0.25rem !important;
+    }
+
+    .nav-item {
+      display: flex !important;
+      align-items: center !important;
+      gap: 0.75rem !important;
+      padding: 0.55rem 0.8rem !important;
+      border-radius: 8px !important;
+      font-weight: 500 !important;
+      font-size: 0.88rem !important;
+      background: transparent !important;
+      color: var(--color-text-secondary) !important;
+      border: 1px solid transparent !important;
+      box-shadow: none !important;
+      transform: none !important;
+      transition: all 0.15s ease !important;
+    }
+
+    .nav-item:hover {
+      background: var(--color-surface-hover) !important;
+      color: var(--color-text) !important;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    .nav-item:active {
+      transform: scale(0.98) !important;
+    }
+
+    .nav-item--active {
+      background: rgba(16, 185, 129, 0.1) !important;
+      color: var(--color-primary) !important;
+      border: 1px solid rgba(16, 185, 129, 0.25) !important;
+      font-weight: 600 !important;
+      box-shadow: none !important;
+    }
+
+    .nav-item--active .icon svg,
+    .nav-item--active svg {
+      stroke: var(--color-primary) !important;
+    }
+
+    [data-theme="dark"] .nav-item {
+      background: transparent !important;
+      border-color: transparent !important;
+      color: #94a3b8 !important;
+      box-shadow: none !important;
+    }
+
+    [data-theme="dark"] .nav-item:hover {
+      background: rgba(255, 255, 255, 0.05) !important;
+      color: #ffffff !important;
+    }
+
+    [data-theme="dark"] .nav-item--active {
+      background: rgba(16, 185, 129, 0.14) !important;
+      border-color: rgba(16, 185, 129, 0.3) !important;
+      color: #34d399 !important;
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.18) !important;
+    }
+
+    [data-theme="dark"] .nav-item--active .icon svg,
+    [data-theme="dark"] .nav-item--active svg {
+      stroke: #34d399 !important;
+    }
+
+    /* Emerald New Task Button */
+    .btn-sidebar-add {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+      color: #ffffff !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.35) !important;
+      border-radius: 8px !important;
+      font-weight: 600 !important;
+      transition: all 0.15s ease !important;
+      transform: none !important;
+    }
+
+    .btn-sidebar-add:hover {
+      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.5) !important;
+      transform: translateY(-1px) !important;
+    }
+
+    .btn-sidebar-add:active {
+      transform: translateY(0) scale(0.98) !important;
+    }
+
+    /* Sleek Cards (Hairline Borders & Dark Slate Surfaces) */
+    .card, .counter-card, .dashboard__quick-add, .dashboard__due-next, .settings-card, .activity-stream-card, .dashboard__analytics-card, .dashboard__shortcuts-card {
+      background: var(--color-surface) !important;
+      border: 1px solid var(--color-border) !important;
+      border-radius: 12px !important;
+      box-shadow: var(--shadow-xs) !important;
+      transform: none !important;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+    }
+
+    .card:hover, .counter-card:hover, .dashboard__quick-add:hover, .dashboard__due-next:hover, .settings-card:hover, .dashboard__analytics-card:hover, .dashboard__shortcuts-card:hover {
+      border-color: var(--color-border-hover) !important;
+      box-shadow: var(--shadow-sm) !important;
+      transform: none !important;
+    }
+
+    [data-theme="dark"] .card, 
+    [data-theme="dark"] .counter-card, 
+    [data-theme="dark"] .dashboard__quick-add, 
+    [data-theme="dark"] .dashboard__due-next, 
+    [data-theme="dark"] .settings-card, 
+    [data-theme="dark"] .activity-stream-card,
+    [data-theme="dark"] .dashboard__analytics-card,
+    [data-theme="dark"] .dashboard__shortcuts-card {
+      background: #0c131d !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45) !important;
+    }
+
+    [data-theme="dark"] .card:hover, 
+    [data-theme="dark"] .counter-card:hover, 
+    [data-theme="dark"] .dashboard__quick-add:hover, 
+    [data-theme="dark"] .dashboard__due-next:hover, 
+    [data-theme="dark"] .settings-card:hover,
+    [data-theme="dark"] .dashboard__analytics-card:hover,
+    [data-theme="dark"] .dashboard__shortcuts-card:hover {
+      border-color: rgba(16, 185, 129, 0.3) !important;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.55), 0 0 14px rgba(16, 185, 129, 0.08) !important;
+    }
+
+    /* Counter Cards Top Accent Borders */
+    .counter-card--completed {
+      border-top: 2px solid #10b981 !important;
+    }
+    .counter-card--overdue {
+      border-top: 2px solid #f43f5e !important;
+    }
+    .counter-card--pending {
+      border-top: 2px solid #f59e0b !important;
+    }
+    .counter-card--total {
+      border-top: 2px solid #0284c7 !important;
+    }
+
+    /* Buttons */
+    .btn {
+      border-radius: 8px !important;
+      font-weight: 600 !important;
+      box-shadow: none !important;
+      border: 1px solid transparent !important;
+      transition: all 0.15s ease !important;
+      transform: none !important;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px) !important;
+    }
+
+    .btn:active {
+      transform: translateY(0) scale(0.98) !important;
+    }
+
+    .btn--primary {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+      color: #ffffff !important;
+      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.35) !important;
+    }
+
+    .btn--primary:hover {
+      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.5) !important;
+    }
+
+    .btn--secondary {
+      background: var(--color-surface) !important;
+      border: 1px solid var(--color-border) !important;
+      color: var(--color-text) !important;
+    }
+
+    .btn--secondary:hover {
+      background: var(--color-surface-hover) !important;
+      border-color: var(--color-border-hover) !important;
+    }
+
+    /* Status Badge & Pulse Dot */
+    .focus-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 12px;
+      border-radius: 9999px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      font-size: 12px;
+      font-weight: 600;
+      color: #059669;
+    }
+
+    [data-theme="dark"] .focus-status-badge {
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .focus-pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+      display: inline-block;
+    }
+
+    /* User Profile Avatar with Online Status Indicator */
+    .user-avatar {
+      position: relative !important;
+      width: 34px !important;
+      height: 34px !important;
+      border-radius: 50% !important;
+      background: linear-gradient(135deg, #10b981 0%, #047857 100%) !important;
+      color: #ffffff !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      font-size: 0.85rem !important;
+      font-weight: 700 !important;
+      flex-shrink: 0 !important;
+      border: 1.5px solid rgba(52, 211, 153, 0.4) !important;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3) !important;
+    }
+
+    .user-avatar__indicator {
+      position: absolute !important;
+      bottom: -1px !important;
+      right: -1px !important;
+      width: 9px !important;
+      height: 9px !important;
+      border-radius: 50% !important;
+      background: #34d399 !important;
+      border: 2px solid var(--color-surface) !important;
+      box-shadow: 0 0 6px rgba(52, 211, 153, 0.8) !important;
+    }
+
+    /* Momentum Tag */
+    .momentum-tag {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 4px 9px;
+      border-radius: 6px;
+      background: rgba(16, 185, 129, 0.12);
+      color: #059669;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+
+    [data-theme="dark"] .momentum-tag {
+      color: #34d399;
+      border-color: rgba(16, 185, 129, 0.35);
+    }
+
+    .momentum-tag--warning {
+      background: rgba(244, 63, 94, 0.12) !important;
+      color: #f43f5e !important;
+      border-color: rgba(244, 63, 94, 0.25) !important;
+    }
+
+    .momentum-tag--high {
+      background: rgba(52, 211, 153, 0.18) !important;
+      color: #34d399 !important;
+      border-color: rgba(52, 211, 153, 0.35) !important;
+      box-shadow: 0 0 12px rgba(52, 211, 153, 0.2) !important;
+    }
+
+    /* Precision Micro-Badges & Tags */
+    .tag-chip {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 5px !important;
+      height: 20px !important;
+      padding: 0 7px !important;
+      border-radius: 4px !important;
+      font-size: 11px !important;
+      font-weight: 500 !important;
+      letter-spacing: 0.01em !important;
+      text-transform: capitalize !important;
+      background: var(--color-surface-subtle) !important;
+      border: 1px solid var(--color-border) !important;
+      color: var(--color-text-secondary) !important;
+      box-shadow: none !important;
+      line-height: 1 !important;
+    }
+    .tag-chip svg {
+      width: 10px !important;
+      height: 10px !important;
+      color: var(--color-text-muted) !important;
+      flex-shrink: 0 !important;
+    }
+    .badge {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 4px !important;
+      height: 20px !important;
+      padding: 0 7px !important;
+      border-radius: 4px !important;
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.015em !important;
+      line-height: 1 !important;
+      box-shadow: none !important;
+    }
+    .badge svg {
+      width: 10px !important;
+      height: 10px !important;
+      flex-shrink: 0 !important;
+    }
+    .badge--overdue {
+      background: rgba(244, 63, 94, 0.08) !important;
+      border: 1px solid rgba(244, 63, 94, 0.25) !important;
+      color: #e11d48 !important;
+    }
+    .badge--pending {
+      background: rgba(245, 158, 11, 0.08) !important;
+      border: 1px solid rgba(245, 158, 11, 0.25) !important;
+      color: #d97706 !important;
+    }
+    .badge--done {
+      background: rgba(16, 185, 129, 0.08) !important;
+      border: 1px solid rgba(16, 185, 129, 0.25) !important;
+      color: #059669 !important;
+    }
+    [data-theme="dark"] .badge--overdue {
+      background: rgba(248, 113, 113, 0.12) !important;
+      border-color: rgba(248, 113, 113, 0.3) !important;
+      color: #fca5a5 !important;
+    }
+    [data-theme="dark"] .badge--pending {
+      background: rgba(251, 191, 36, 0.12) !important;
+      border-color: rgba(251, 191, 36, 0.3) !important;
+      color: #fde68a !important;
+    }
+    [data-theme="dark"] .badge--done {
+      background: rgba(52, 211, 153, 0.12) !important;
+      border-color: rgba(52, 211, 153, 0.3) !important;
+      color: #6ee7b7 !important;
+    }
+
+    .task-card__due {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 4px !important;
+      height: 20px !important;
+      color: var(--color-text-muted) !important;
+      font-size: 11px !important;
+      font-weight: 500 !important;
+    }
+    .task-card__due svg {
+      width: 11px !important;
+      height: 11px !important;
+      flex-shrink: 0 !important;
+    }
+
+    /* Dashboard Secondary Analytics & Shortcuts Grid */
+    .dashboard__secondary-grid {
+      display: grid !important;
+      gap: 1.75rem !important;
+      grid-template-columns: 1fr !important;
+      margin-top: 1.75rem !important;
+    }
+
+    @media (min-width: 900px) {
+      .dashboard__secondary-grid {
+        grid-template-columns: 1.25fr 1fr !important;
+      }
+    }
+
+    .dashboard__analytics-card,
+    .dashboard__shortcuts-card {
+      background: var(--color-surface) !important;
+      border: 1px solid var(--color-border) !important;
+      border-radius: 12px !important;
+      padding: 1.5rem !important;
+      box-shadow: var(--shadow-xs) !important;
+      display: flex !important;
+      flex-direction: column !important;
+    }
+
+    .dashboard__card-header {
+      display: flex !important;
+      align-items: flex-start !important;
+      justify-content: space-between !important;
+      margin-bottom: 1.25rem !important;
+    }
+
+    .dashboard__card-title-group h2 {
+      font-size: 1.05rem !important;
+      font-weight: 700 !important;
+      margin: 0 0 0.25rem !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 0.5rem !important;
+      color: var(--color-text) !important;
+    }
+
+    .dashboard__card-subtitle {
+      font-size: 0.82rem !important;
+      color: var(--color-text-muted) !important;
+      margin: 0 !important;
+    }
+
+    .velocity-meter {
+      background: var(--color-surface-subtle) !important;
+      border: 1px solid var(--color-border) !important;
+      border-radius: 10px !important;
+      padding: 1rem 1.15rem !important;
+      margin-bottom: 1.25rem !important;
+    }
+
+    .velocity-meter__top {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      margin-bottom: 0.5rem !important;
+    }
+
+    .velocity-meter__label {
+      font-size: 0.82rem !important;
+      font-weight: 600 !important;
+      color: var(--color-text) !important;
+    }
+
+    .velocity-meter__pct {
+      font-size: 1.1rem !important;
+      font-weight: 800 !important;
+      color: var(--color-primary) !important;
+      font-family: var(--font-mono) !important;
+    }
+
+    .velocity-track {
+      width: 100% !important;
+      height: 8px !important;
+      background: rgba(255, 255, 255, 0.08) !important;
+      border-radius: 9999px !important;
+      overflow: hidden !important;
+      position: relative !important;
+    }
+
+    [data-theme="light"] .velocity-track {
+      background: #e2e8f0 !important;
+    }
+
+    .velocity-fill {
+      height: 100% !important;
+      background: linear-gradient(90deg, #10b981 0%, #34d399 100%) !important;
+      border-radius: 9999px !important;
+      transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.5) !important;
+    }
+
+    .category-distribution-list {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 0.85rem !important;
+    }
+
+    .category-distribution-item {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 0.35rem !important;
+    }
+
+    .category-distribution-header {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      font-size: 0.82rem !important;
+    }
+
+    .category-distribution-name {
+      font-weight: 600 !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 0.45rem !important;
+      color: var(--color-text) !important;
+    }
+
+    .category-dot {
+      width: 8px !important;
+      height: 8px !important;
+      border-radius: 50% !important;
+      display: inline-block !important;
+    }
+
+    .category-dot--study {
+      background: #10b981 !important;
+      box-shadow: 0 0 6px rgba(16, 185, 129, 0.6) !important;
+    }
+
+    .category-dot--work {
+      background: #38bdf8 !important;
+      box-shadow: 0 0 6px rgba(56, 189, 248, 0.6) !important;
+    }
+
+    .category-dot--personal {
+      background: #2dd4bf !important;
+      box-shadow: 0 0 6px rgba(45, 212, 191, 0.6) !important;
+    }
+
+    .category-distribution-stat {
+      color: var(--color-text-muted) !important;
+      font-size: 0.78rem !important;
+      font-weight: 500 !important;
+    }
+
+    .mini-track {
+      width: 100% !important;
+      height: 6px !important;
+      background: rgba(255, 255, 255, 0.06) !important;
+      border-radius: 9999px !important;
+      overflow: hidden !important;
+    }
+
+    [data-theme="light"] .mini-track {
+      background: #e2e8f0 !important;
+    }
+
+    .mini-fill {
+      height: 100% !important;
+      border-radius: 9999px !important;
+      transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    .mini-fill--study {
+      background: #10b981 !important;
+    }
+
+    .mini-fill--work {
+      background: #38bdf8 !important;
+    }
+
+    .mini-fill--personal {
+      background: #2dd4bf !important;
+    }
+
+    .shortcuts-grid {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 0.75rem !important;
+      margin-bottom: 1.25rem !important;
+    }
+
+    .shortcut-action-btn {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      padding: 0.85rem !important;
+      background: var(--color-surface-subtle) !important;
+      border: 1px solid var(--color-border) !important;
+      border-radius: 10px !important;
+      text-decoration: none !important;
+      color: var(--color-text) !important;
+      transition: all 0.15s ease !important;
+      position: relative !important;
+      overflow: hidden !important;
+    }
+
+    .shortcut-action-btn:hover {
+      background: var(--color-surface-hover) !important;
+      border-color: var(--color-border-hover) !important;
+      transform: translateY(-1px) !important;
+    }
+
+    .shortcut-action-icon {
+      width: 28px !important;
+      height: 28px !important;
+      border-radius: 6px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      margin-bottom: 0.5rem !important;
+      background: rgba(16, 185, 129, 0.1) !important;
+      color: var(--color-primary) !important;
+    }
+
+    .shortcut-action-title {
+      font-size: 0.85rem !important;
+      font-weight: 600 !important;
+      margin-bottom: 0.15rem !important;
+    }
+
+    .shortcut-action-subtitle {
+      font-size: 0.75rem !important;
+      color: var(--color-text-muted) !important;
+    }
+
+    .pro-tip-box {
+      background: rgba(16, 185, 129, 0.06) !important;
+      border: 1px solid rgba(16, 185, 129, 0.2) !important;
+      border-radius: 10px !important;
+      padding: 0.85rem 1rem !important;
+      display: flex !important;
+      align-items: flex-start !important;
+      gap: 0.65rem !important;
+      margin-top: auto !important;
+    }
+
+    .pro-tip-icon {
+      color: var(--color-primary) !important;
+      flex-shrink: 0 !important;
+      margin-top: 2px !important;
+    }
+
+    .pro-tip-text {
+      margin: 0 !important;
+      font-size: 0.82rem !important;
+      line-height: 1.45 !important;
+      color: var(--color-text-secondary) !important;
+    }
+
+    .pro-tip-text strong {
+      color: var(--color-text) !important;
+    }
+  </style>
+  {% block head %}{% endblock %}
 </head>
+
 <body>
-  <header class="app-header">
-    <a class="app-header__brand" href="{{ url_for('pages.home_page') }}">StartBy</a>
+  {% block shell %}
+  <div class="app-shell">
     {% if current_user.is_authenticated %}
-    <nav class="app-header__nav">
-      <a href="{{ url_for('pages.home_page') }}">Dashboard</a>
-      <a href="{{ url_for('pages.tasks_page') }}">Tasks</a>
-      <a href="{{ url_for('pages.activity_page') }}">Activity</a>
-      <a href="{{ url_for('pages.settings_page') }}">Settings</a>
-      <button id="theme-toggle-btn" type="button" aria-label="Toggle dark mode">
-        {{ '☀️' if current_user.dark_mode else '🌙' }}
+    <!-- Mobile Top Navigation Bar -->
+    <div class="mobile-top-bar">
+      <button id="mobile-sidebar-toggle" class="sidebar-icon-btn" type="button" aria-label="Open menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
       </button>
-      <span class="app-header__user">{{ current_user.name }}</span>
-      <button id="logout-btn" type="button">Log out</button>
-    </nav>
+
+      <a href="{{ url_for('pages.home_page') }}" class="brand-monogram">
+        <div class="brand-monogram__logo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
+        </div>
+        <span class="brand-monogram__name">Kairo</span>
+      </a>
+
+      <button id="theme-toggle-btn-mobile" class="sidebar-icon-btn" type="button" aria-label="Toggle theme">
+        <svg class="theme-icon-svg theme-icon-svg--moon" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" {% if
+          current_user.dark_mode %}style="display:none;" {% endif %}>
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg class="theme-icon-svg theme-icon-svg--sun" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" {% if not
+          current_user.dark_mode %}style="display:none;" {% endif %}>
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
+
+    <!-- Desktop & Drawer Sidebar -->
+    <aside id="app-sidebar" class="app-sidebar">
+      <div class="app-sidebar__header">
+        <a href="{{ url_for('pages.home_page') }}" class="brand-monogram">
+          <div class="brand-monogram__logo">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+              <path d="M2 17l10 5 10-5"></path>
+              <path d="M2 12l10 5 10-5"></path>
+            </svg>
+          </div>
+          <span class="brand-monogram__name">Kairo</span>
+        </a>
+      </div>
+
+      <div class="sidebar-action-wrap">
+        <a href="{{ url_for('pages.tasks_page') }}" class="btn-sidebar-add">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>New Task</span>
+        </a>
+      </div>
+
+      <nav class="app-sidebar__nav">
+        <div class="nav-section-title">Navigation</div>
+
+        <a href="{{ url_for('pages.home_page') }}"
+          class="nav-item {% if request.path == '/' %}nav-item--active{% endif %}">
+          <span class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="9"></rect>
+              <rect x="14" y="3" width="7" height="5"></rect>
+              <rect x="14" y="12" width="7" height="9"></rect>
+              <rect x="3" y="16" width="7" height="5"></rect>
+            </svg>
+          </span>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="{{ url_for('pages.tasks_page') }}"
+          class="nav-item {% if request.path == '/tasks' %}nav-item--active{% endif %}">
+          <span class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+              <path d="m9 14 2 2 4-4"></path>
+            </svg>
+          </span>
+          <span>My Tasks</span>
+        </a>
+
+        <a href="{{ url_for('pages.activity_page') }}"
+          class="nav-item {% if request.path == '/activity' %}nav-item--active{% endif %}">
+          <span class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+            </svg>
+          </span>
+          <span>Activity Log</span>
+        </a>
+
+        <a href="{{ url_for('pages.settings_page') }}"
+          class="nav-item {% if request.path == '/settings' %}nav-item--active{% endif %}">
+          <span class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+              </path>
+            </svg>
+          </span>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="app-sidebar__footer">
+        <div class="user-profile-pill">
+          <div class="user-avatar">
+            <span class="user-avatar__initials">{{ current_user.name[:1].upper() }}</span>
+            <span class="user-avatar__indicator" title="Active"></span>
+          </div>
+          <div class="user-meta">
+            <div class="user-meta__name">{{ current_user.name }}</div>
+            <div class="user-meta__role">{{ current_user.timezone }}</div>
+          </div>
+        </div>
+
+        <button id="theme-toggle-btn" class="sidebar-icon-btn" type="button" aria-label="Toggle dark mode"
+          title="Toggle theme">
+          <svg class="theme-icon-svg theme-icon-svg--moon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" {% if
+            current_user.dark_mode %}style="display:none;" {% endif %}>
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <svg class="theme-icon-svg theme-icon-svg--sun" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" {% if not
+            current_user.dark_mode %}style="display:none;" {% endif %}>
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+
+        <button id="logout-btn" class="sidebar-icon-btn" type="button" aria-label="Log out" title="Log out">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+        </button>
+      </div>
+    </aside>
     {% endif %}
-  </header>
-  <main class="app-main">
-    {% block content %}{% endblock %}
-  </main>
+
+    <div class="app-main-content">
+      <main class="{% block main_class %}app-main{% endblock %}">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+  {% endblock %}
+
   <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
-  <script type="module" src="{{ url_for('static', filename='js/api.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='js/api.js') }}?v=4"></script>
   {% if current_user.is_authenticated %}
-  <script type="module" src="{{ url_for('static', filename='js/theme.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='js/theme.js') }}?v=4"></script>
   {% endif %}
   {% block scripts %}{% endblock %}
+
+  <script>
+    // Responsive sidebar toggle for mobile
+    const sidebarToggle = document.getElementById('mobile-sidebar-toggle');
+    const sidebar = document.getElementById('app-sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    if (sidebarToggle && sidebar && backdrop) {
+      function toggleSidebar() {
+        sidebar.classList.toggle('is-open');
+        backdrop.classList.toggle('is-open');
+      }
+      sidebarToggle.addEventListener('click', toggleSidebar);
+      backdrop.addEventListener('click', toggleSidebar);
+    }
+  </script>
 </body>
+
 </html>

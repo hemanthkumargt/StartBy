@@ -5,13 +5,23 @@ import { setDarkMode } from "./theme.js";
 const form = document.getElementById("settings-form");
 if (form) {
   const errorEl = document.getElementById("settings-error");
-  const headerToggle = document.getElementById("theme-toggle-btn");
   const submitBtn = form.querySelector("button[type=submit]");
+  const darkModeCheckbox = document.getElementById("dark-mode-checkbox");
+
+  if (darkModeCheckbox) {
+    darkModeCheckbox.addEventListener("change", async () => {
+      try {
+        await setDarkMode(darkModeCheckbox.checked);
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    });
+  }
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    errorEl.hidden = true;
-    submitBtn.disabled = true;
+    if (errorEl) errorEl.hidden = true;
+    if (submitBtn) submitBtn.disabled = true;
 
     const isDark = form.elements.dark_mode.checked;
     try {
@@ -20,13 +30,14 @@ if (form) {
         method: "PATCH",
         body: JSON.stringify({ timezone: form.elements.timezone.value }),
       });
-      if (headerToggle) headerToggle.textContent = isDark ? "☀️" : "🌙";
-      showToast("Settings saved", "success");
+      showToast("Settings saved successfully", "success");
     } catch (err) {
-      errorEl.textContent = err.message;
-      errorEl.hidden = false;
+      if (errorEl) {
+        errorEl.textContent = err.message;
+        errorEl.hidden = false;
+      }
     } finally {
-      submitBtn.disabled = false;
+      if (submitBtn) submitBtn.disabled = false;
     }
   });
 }

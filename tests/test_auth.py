@@ -116,3 +116,34 @@ def test_home_page_requires_login(client):
     response = client.get("/")
     assert response.status_code == 302
     assert "/login" in response.headers["Location"]
+
+
+def test_social_login_registers_new_user(client):
+    res = client.post(
+        "/api/auth/social",
+        json={"provider": "google", "email": "judge@gmail.com", "name": "Judge Demo"},
+    )
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["email"] == "judge@gmail.com"
+    assert data["name"] == "Judge Demo"
+
+    # Verifies session is authenticated
+    home = client.get("/")
+    assert home.status_code == 200
+
+
+def test_social_login_authenticates_existing_user(client):
+    client.post(
+        "/api/auth/social",
+        json={"provider": "google", "email": "alex@startby.demo", "name": "Alex Demo"},
+    )
+    client.post("/api/auth/logout")
+
+    res = client.post(
+        "/api/auth/social",
+        json={"provider": "google", "email": "alex@startby.demo", "name": "Alex Demo"},
+    )
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["email"] == "alex@startby.demo"

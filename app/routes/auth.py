@@ -39,6 +39,20 @@ def login():
     return jsonify({"id": user.id, "name": user.name, "email": user.email}), 200
 
 
+@bp.post("/social")
+def social_login():
+    body = _json_body()
+    user = auth_service.social_authenticate_or_register(
+        get_db(),
+        provider=body.get("provider", "google"),
+        email=body.get("email", ""),
+        name=body.get("name", ""),
+        timezone=current_app.config["DEFAULT_TIMEZONE"],
+    )
+    login_user(user)
+    return jsonify({"id": user.id, "name": user.name, "email": user.email}), 200
+
+
 @bp.post("/logout")
 @login_required
 def logout():
