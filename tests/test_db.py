@@ -10,7 +10,7 @@ def test_run_migrations_creates_all_tables():
         db_path = str(Path(tmp_dir) / "test.db")
 
         applied = run_migrations(db_path)
-        assert applied == ["001_init"]
+        assert applied == ["001_init", "002_estimates"]
 
         conn = sqlite3.connect(db_path)
         tables = {

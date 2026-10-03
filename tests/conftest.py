@@ -31,6 +31,14 @@ def client(app):
     return app.test_client()
 
 
+@pytest.fixture
+def estimates_client(app):
+    """A client with FEATURE_ESTIMATES on — reused across every Phase 2
+    estimate/start-by/risk-radar test so each doesn't re-flip the flag."""
+    app.config["FEATURE_ESTIMATES"] = True
+    return app.test_client()
+
+
 def register(client, name="Ada", email="ada@example.com", password="password123"):
     return client.post(
         "/api/auth/register",

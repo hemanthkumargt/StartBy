@@ -1,8 +1,9 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, current_app, jsonify, request
 from flask_login import current_user, login_required
 
 from app.db import get_db
 from app.errors import ApiError
+from app.feature_flags import read_feature_flags
 from app.services import activity_service, task_service
 
 bp = Blueprint("tasks", __name__, url_prefix="/api")
@@ -15,6 +16,10 @@ def _json_body() -> dict:
     return data
 
 
+def _flags() -> dict:
+    return read_feature_flags(current_app.config)
+
+
 @bp.get("/tasks")
 @login_required
 def list_tasks():
@@ -24,6 +29,7 @@ def list_tasks():
         status=request.args.get("status"),
         tag=request.args.get("tag"),
         q=request.args.get("q"),
+        flags=_flags(),
     )
     return jsonify(tasks), 200
 
@@ -39,6 +45,8 @@ def create_task():
         notes=body.get("notes"),
         tag=body.get("tag"),
         due_at=body.get("due_at"),
+        estimate_hours=body.get("estimate_hours"),
+        flags=_flags(),
     )
     return jsonify(task), 201
 
@@ -46,7 +54,7 @@ def create_task():
 @bp.get("/tasks/<int:task_id>")
 @login_required
 def get_task(task_id: int):
-    task = task_service.get_task(get_db(), user_id=current_user.id, task_id=task_id)
+    task = task_service.get_task(get_db(), user_id=current_user.id, task_id=task_id, flags=_flags())
     return jsonify(task), 200
 
 
@@ -54,21 +62,31 @@ def get_task(task_id: int):
 @login_required
 def update_task(task_id: int):
     body = _json_body()
-    task = task_service.update_task(get_db(), user_id=current_user.id, task_id=task_id, fields=body)
+    task = task_service.update_task(
+        get_db(),
+        user_id=current_user.id,
+        task_id=task_id,
+        fields=body,
+        flags=_flags(),
+    )
     return jsonify(task), 200
 
 
 @bp.post("/tasks/<int:task_id>/complete")
 @login_required
 def complete_task(task_id: int):
-    task = task_service.complete_task(get_db(), user_id=current_user.id, task_id=task_id)
+    task = task_service.complete_task(
+        get_db(), user_id=current_user.id, task_id=task_id, flags=_flags()
+    )
     return jsonify(task), 200
 
 
 @bp.post("/tasks/<int:task_id>/reopen")
 @login_required
 def reopen_task(task_id: int):
-    task = task_service.reopen_task(get_db(), user_id=current_user.id, task_id=task_id)
+    task = task_service.reopen_task(
+        get_db(), user_id=current_user.id, task_id=task_id, flags=_flags()
+    )
     return jsonify(task), 200
 
 
@@ -82,7 +100,8 @@ def delete_task(task_id: int):
 @bp.get("/dashboard")
 @login_required
 def dashboard():
-    return jsonify(task_service.get_dashboard(get_db(), user_id=current_user.id)), 200
+    dashboard_data = task_service.get_dashboard(get_db(), user_id=current_user.id, flags=_flags())
+    return jsonify(dashboard_data), 200
 
 
 @bp.get("/activity")

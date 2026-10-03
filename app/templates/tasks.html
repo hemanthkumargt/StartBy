@@ -49,6 +49,11 @@
     <label for="task-due-input">Due date</label>
     <input id="task-due-input" name="due_at" type="datetime-local">
 
+    {% if feature_flags.estimates %}
+    <label for="task-estimate-input">Estimate (hours)</label>
+    <input id="task-estimate-input" name="estimate_hours" type="number" step="0.25" min="0.25" max="100" placeholder="e.g. 2.5">
+    {% endif %}
+
     <p id="task-form-error" class="form-error" role="alert" hidden></p>
 
     <div class="modal-actions">

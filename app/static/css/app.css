@@ -335,6 +335,16 @@ button:disabled {
   color: var(--color-text-muted);
 }
 
+.task-card__start-by {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.task-card__start-by--now {
+  color: var(--color-badge-overdue);
+}
+
 .task-card__actions {
   display: flex;
   gap: 0.5rem;

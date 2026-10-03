@@ -20,14 +20,16 @@ def create(
     tag: str,
     due_at: str | None,
     created_at: str,
+    estimate_hours: float | None = None,
 ) -> sqlite3.Row:
     cur = conn.execute(
         """
-        INSERT INTO tasks (user_id, title, notes, tag, due_at, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO tasks
+            (user_id, title, notes, tag, due_at, created_at, updated_at, estimate_hours)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         RETURNING *
         """,
-        (user_id, title, notes, tag, due_at, created_at, created_at),
+        (user_id, title, notes, tag, due_at, created_at, created_at, estimate_hours),
     )
     row = cur.fetchone()
     conn.commit()
@@ -72,7 +74,7 @@ def list_active_for_user(
     return conn.execute(sql, params).fetchall()
 
 
-_UPDATABLE_COLUMNS = frozenset({"title", "notes", "tag", "due_at"})
+_UPDATABLE_COLUMNS = frozenset({"title", "notes", "tag", "due_at", "estimate_hours"})
 
 
 def update_fields(

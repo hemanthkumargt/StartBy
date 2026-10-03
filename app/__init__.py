@@ -5,6 +5,7 @@ from app import db
 from app.config import Config
 from app.errors import register_error_handlers
 from app.extensions import csrf, login_manager
+from app.feature_flags import read_feature_flags
 from app.repositories import user_repo
 
 
@@ -18,6 +19,13 @@ def create_app(config: Config | None = None) -> Flask:
     register_error_handlers(app)
 
     app.jinja_env.globals["csrf_token"] = generate_csrf
+
+    @app.context_processor
+    def inject_feature_flags():
+        # Same shape and same reader the service layer uses (app/routes read
+        # it as `flags` for task_service) — one place defines what a feature
+        # flag set looks like.
+        return {"feature_flags": read_feature_flags(app.config)}
 
     @login_manager.user_loader
     def load_user(user_id: str):

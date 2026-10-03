@@ -3,6 +3,24 @@ import { showToast } from "./toast.js";
 import { formatDateTime, fromLocalInputValue, toLocalInputValue } from "./datetime.js";
 import { escapeHtml } from "./dom.js";
 
+// start_by/start_by_passed only exist in the payload at all when
+// FEATURE_ESTIMATES is on (task_service omits both keys entirely when it's
+// off) — their presence is the only check needed here, not the flag itself.
+// start_by_passed is computed server-side (task_service.serialize_task, via
+// timeutil) the same way is_overdue already is, so Adaptive Replanning
+// (CLAUDE.md 2.5) needs no client-side time comparison or recompute step:
+// a task already past its recommended start time just reads that way on the
+// very next render.
+function renderStartBy(task) {
+  if (!("start_by" in task) || task.status !== "pending" || !task.start_by) {
+    return "";
+  }
+  if (task.start_by_passed) {
+    return `<span class="task-card__start-by task-card__start-by--now">Start now</span>`;
+  }
+  return `<span class="task-card__start-by">Start by ${formatDateTime(task.start_by)}</span>`;
+}
+
 // The one function every page uses to render a task — new badges or fields
 // slot in here only (PRD extension-point rule). `handlers` is optional:
 // pass none for a read-only card (e.g. the dashboard's "due next" list).
@@ -30,6 +48,7 @@ export function renderTaskCard(task, handlers = {}) {
           <span class="tag-chip tag-chip--${task.tag}">${task.tag}</span>
           <span class="badge ${badgeClass}">${badgeLabel}</span>
           ${task.due_at ? `<span class="task-card__due">${formatDateTime(task.due_at)}</span>` : ""}
+          ${renderStartBy(task)}
         </div>
       </div>
     </div>
@@ -107,6 +126,10 @@ if (taskList) {
     form.elements.notes.value = task.notes || "";
     form.elements.tag.value = task.tag;
     form.elements.due_at.value = toLocalInputValue(task.due_at);
+    // Only present when FEATURE_ESTIMATES is on (see tasks.html).
+    if (form.elements.estimate_hours) {
+      form.elements.estimate_hours.value = task.estimate_hours ?? "";
+    }
     formError.hidden = true;
     modal.showModal();
     form.elements.title.focus();
@@ -199,6 +222,11 @@ if (taskList) {
       tag: form.elements.tag.value,
       due_at: fromLocalInputValue(form.elements.due_at.value),
     };
+    // Only present when FEATURE_ESTIMATES is on (see tasks.html).
+    if (form.elements.estimate_hours) {
+      const raw = form.elements.estimate_hours.value;
+      payload.estimate_hours = raw === "" ? null : Number(raw);
+    }
 
     try {
       if (id) {

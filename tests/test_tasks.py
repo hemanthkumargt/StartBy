@@ -291,6 +291,128 @@ def test_list_orders_pending_by_due_date_then_done_last(client):
     assert {sooner["id"], later["id"], no_due["id"], done["id"]}  # all referenced
 
 
+# --- Phase 2: effort estimate + start-by time (FEATURE_ESTIMATES) ---
+
+
+def test_I15_flag_off_response_has_no_estimate_or_start_by_keys(client):
+    """With the flag off, the response shape must be byte-identical to
+    v1.0 — not just "estimate_hours is null" but the key absent entirely."""
+    register(client)
+    task = create_task(client, estimate_hours=2.0, due_at="2026-10-10T18:00:00").get_json()
+    assert "estimate_hours" not in task
+    assert "start_by" not in task
+    assert "start_by_passed" not in task
+
+
+def test_flag_off_silently_ignores_estimate_hours_in_patch(client):
+    register(client)
+    task = create_task(client).get_json()
+    response = client.patch(f"/api/tasks/{task['id']}", json={"estimate_hours": 3.0})
+    assert response.status_code == 200
+    assert "estimate_hours" not in response.get_json()
+
+
+def test_flag_on_create_returns_estimate_and_start_by(estimates_client):
+    register(estimates_client)
+    task = create_task(
+        estimates_client, estimate_hours=2.0, due_at="2026-10-10T18:00:00"
+    ).get_json()
+    assert task["estimate_hours"] == 2.0
+    assert task["start_by"] == "2026-10-10T14:33:00"
+
+
+def test_flag_on_start_by_is_null_without_a_due_date(estimates_client):
+    register(estimates_client)
+    task = create_task(estimates_client, estimate_hours=2.0, due_at=None).get_json()
+    assert task["start_by"] is None
+
+
+def test_flag_on_start_by_is_null_without_an_estimate(estimates_client):
+    register(estimates_client)
+    task = create_task(estimates_client, due_at="2026-10-10T18:00:00").get_json()
+    assert task["estimate_hours"] is None
+    assert task["start_by"] is None
+
+
+def test_flag_on_rejects_zero_estimate(estimates_client):
+    register(estimates_client)
+    response = create_task(estimates_client, estimate_hours=0)
+    assert response.status_code == 422
+    assert response.get_json()["error"]["code"] == "validation"
+
+
+def test_flag_on_rejects_negative_estimate(estimates_client):
+    register(estimates_client)
+    response = create_task(estimates_client, estimate_hours=-5)
+    assert response.status_code == 422
+
+
+def test_flag_on_rejects_estimate_over_100_hours(estimates_client):
+    register(estimates_client)
+    response = create_task(estimates_client, estimate_hours=500)
+    assert response.status_code == 422
+
+
+def test_flag_on_rejects_non_numeric_estimate(estimates_client):
+    register(estimates_client)
+    response = create_task(estimates_client, estimate_hours="two hours")
+    assert response.status_code == 422
+
+
+def test_flag_on_rejects_boolean_estimate(estimates_client):
+    """bool is a subclass of int in Python — True/False must not silently
+    pass through as 1.0/0.0 hours."""
+    register(estimates_client)
+    response = create_task(estimates_client, estimate_hours=True)
+    assert response.status_code == 422
+
+
+def test_flag_on_update_recomputes_start_by(estimates_client):
+    register(estimates_client)
+    task = create_task(
+        estimates_client, estimate_hours=2.0, due_at="2026-10-10T18:00:00"
+    ).get_json()
+    assert task["start_by"] == "2026-10-10T14:33:00"
+
+    updated = estimates_client.patch(
+        f"/api/tasks/{task['id']}", json={"due_at": "2026-10-12T18:00:00"}
+    ).get_json()
+    assert updated["start_by"] == "2026-10-12T14:33:00"
+
+
+def test_adaptive_replanning_start_by_passed_flips_true_once_missed(estimates_client):
+    """CLAUDE.md 2.5 (Adaptive Replanning): a pending task's start_by_passed
+    is computed fresh on every read from the current clock, exactly like
+    is_overdue already is for due_at — no stored flag to go stale, no
+    separate recompute step, missing the start time is just what the very
+    next read shows."""
+    with freeze_time("2026-10-10T12:00:00"):
+        register(estimates_client)
+        task = create_task(
+            estimates_client, estimate_hours=2.0, due_at="2026-10-10T18:00:00"
+        ).get_json()
+        assert task["start_by"] == "2026-10-10T14:33:00"
+        assert task["start_by_passed"] is False
+
+    with freeze_time("2026-10-10T15:00:00"):
+        refetched = estimates_client.get(f"/api/tasks/{task['id']}").get_json()
+        assert refetched["start_by_passed"] is True
+
+
+def test_start_by_passed_is_false_once_task_is_done(estimates_client):
+    """A completed task should never show 'Start now' even if its start_by
+    has already passed — only a still-pending task needs starting."""
+    with freeze_time("2026-10-10T12:00:00"):
+        register(estimates_client)
+        task = create_task(
+            estimates_client, estimate_hours=2.0, due_at="2026-10-10T18:00:00"
+        ).get_json()
+
+    with freeze_time("2026-10-10T15:00:00"):
+        done = estimates_client.post(f"/api/tasks/{task['id']}/complete").get_json()
+        assert done["start_by_passed"] is False
+
+
 def test_list_filters_by_status_tag_and_search(client):
     register(client)
     create_task(client, title="Write report", tag="work")
