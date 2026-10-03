@@ -1,25 +1,180 @@
 {% extends "base.html" %}
-{% block title %}Register — StartBy{% endblock %}
-{% block content %}
-<section class="auth-card">
-  <h1>Create your account</h1>
-  <form id="register-form" novalidate>
-    <label for="name">Name</label>
-    <input id="name" name="name" type="text" required maxlength="200" autocomplete="name">
+{% block title %}Create Account — Kairo{% endblock %}
 
-    <label for="email">Email</label>
-    <input id="email" name="email" type="email" required autocomplete="email">
-
-    <label for="password">Password</label>
-    <input id="password" name="password" type="password" required minlength="8" autocomplete="new-password">
-
-    <p id="form-error" class="form-error" role="alert" hidden></p>
-
-    <button type="submit">Register</button>
-  </form>
-  <p>Already have an account? <a href="{{ url_for('pages.login_page') }}">Log in</a></p>
-</section>
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}?v=13">
 {% endblock %}
+
+{% block shell %}
+<div class="auth-page">
+  <!-- Floating Top Bar (Theme Toggle) -->
+  <div class="auth-top-bar">
+    <button id="auth-theme-toggle" class="theme-switch-btn" type="button" aria-label="Toggle theme">
+      <span class="theme-icon">
+        <svg class="theme-svg theme-svg--moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg class="theme-svg theme-svg--sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+      </span>
+      <span class="theme-label">Theme</span>
+    </button>
+  </div>
+
+  <!-- Centered Precision Auth Card -->
+  <div class="auth-container">
+    <div class="auth-card">
+
+      <!-- Brand Header -->
+      <div class="auth-header">
+        <div class="auth-brand-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
+        </div>
+        <h1 class="auth-title">Create Account</h1>
+        <p class="auth-subtitle">Join Kairo and experience focused task management.</p>
+      </div>
+
+      <!-- Social Logins (Google & GitHub) -->
+      <div class="social-buttons-grid">
+        <button id="google-login-btn" type="button" class="social-auth-btn social-auth-btn--google">
+          <svg width="18" height="18" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.15z"/>
+            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.27v3.15C3.26 21.36 7.34 24 12 24z"/>
+            <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.27C.46 8.2 0 10.04 0 12s.46 3.8 1.27 5.42l4.01-3.15z"/>
+            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.64 1.27 6.58l4.01 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+          </svg>
+          Google
+        </button>
+
+        <button id="github-login-btn" type="button" class="social-auth-btn social-auth-btn--github">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+          </svg>
+          GitHub
+        </button>
+      </div>
+
+      <!-- Divider -->
+      <div class="auth-divider">
+        <span>or sign up with email</span>
+      </div>
+
+      <!-- Main Register Form -->
+      <form id="register-form" class="auth-form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="name">Your name</label>
+          <div class="input-container">
+            <input id="name" class="form-input" name="name" type="text" placeholder="Ada Lovelace" required autocomplete="name">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">Email address</label>
+          <div class="input-container">
+            <input id="email" class="form-input" name="email" type="email" placeholder="ada@domain.com" required autocomplete="email">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <div class="input-container">
+            <input id="password" class="form-input has-toggle" name="password" type="password" placeholder="••••••••" required autocomplete="new-password">
+            <button id="toggle-password-btn" class="password-toggle-btn" type="button" aria-label="Show password">
+              <svg class="eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <svg class="eye-closed" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+              </svg>
+            </button>
+          </div>
+          <div id="password-requirements" class="password-requirements">
+            <span class="req-check-icon">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </span>
+            <span>At least 8 characters</span>
+          </div>
+        </div>
+
+        <!-- Error Banner -->
+        <div id="form-error" class="auth-error-banner" role="alert" hidden>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span class="error-text"></span>
+        </div>
+
+        <!-- Submit Button -->
+        <button id="register-submit-btn" class="btn-auth-submit" type="submit">
+          <span class="btn-text">Create your account</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+      </form>
+
+      <!-- Switch To Login -->
+      <p class="auth-switch-text">
+        Already have an account?
+        <a href="{{ url_for('pages.login_page') }}">Sign in</a>
+      </p>
+
+      <p class="auth-terms-note">
+        Protected by session authentication and parameterized SQL isolation.
+      </p>
+    </div>
+  </div>
+
+  <!-- Social OAuth Interactive Modal (Google & GitHub) -->
+  <div id="oauth-modal-backdrop" class="oauth-modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="oauth-modal">
+      <button id="oauth-modal-close" class="oauth-close-btn" type="button" aria-label="Close dialog">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <div class="oauth-modal__header">
+        <div id="oauth-provider-logo" class="oauth-modal__logo"></div>
+        <h3 id="oauth-modal-title" class="oauth-modal__title">Sign in with Provider</h3>
+        <p class="oauth-modal__subtitle">Select an account to continue to Kairo</p>
+      </div>
+
+      <div id="oauth-account-list" class="oauth-account-list"></div>
+
+      <div class="oauth-custom-section">
+        <div class="oauth-custom-title">Or connect with custom account:</div>
+        <form id="oauth-custom-form" class="oauth-custom-input-row">
+          <input id="oauth-custom-email" class="oauth-custom-input" type="email" placeholder="you@domain.com" required>
+          <button class="oauth-custom-btn" type="submit">Continue</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
 {% block scripts %}
-<script type="module" src="{{ url_for('static', filename='js/auth.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/auth.js') }}?v=5"></script>
 {% endblock %}

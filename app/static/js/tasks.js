@@ -23,49 +23,57 @@ function renderStartBy(task) {
   return `<span class="task-card__start-by task-card__start-by--${task.risk}">${label}${detail}</span>`;
 }
 
-// The one function every page uses to render a task — new badges or fields
-// slot in here only (PRD extension-point rule). `handlers` is optional:
-// pass none for a read-only card (e.g. the dashboard's "due next" list).
+// Lucide-style SVG vector icons
+const ICONS = {
+  zap: `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`,
+  check: `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`,
+  clock: `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`,
+  tag: `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>`,
+  pencil: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path></svg>`,
+  trash: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>`,
+};
+
+// Unified task card renderer for both Tasks page and Dashboard priority radar
 export function renderTaskCard(task, handlers = {}) {
   const card = document.createElement(handlers.onToggle ? "li" : "div");
   card.className = "task-card";
 
-  const badgeClass =
-    task.status === "done" ? "badge--done" : task.is_overdue ? "badge--overdue" : "badge--pending";
-  const badgeLabel = task.status === "done" ? "Done" : task.is_overdue ? "Overdue" : "Pending";
+  const isDone = task.status === "done";
+  const badgeClass = isDone ? "badge--done" : task.is_overdue ? "badge--overdue" : "badge--pending";
+  const badgeIcon = isDone ? ICONS.check : ICONS.zap;
+  const badgeLabel = isDone ? "Done" : task.is_overdue ? "Overdue" : "Pending";
 
   card.innerHTML = `
     <div class="task-card__main">
-      ${
-        handlers.onToggle
-          ? `<input type="checkbox" class="task-card__checkbox"
-               ${task.status === "done" ? "checked" : ""}
-               aria-label="Mark '${escapeHtml(task.title)}' as ${task.status === "done" ? "pending" : "done"}">`
-          : ""
-      }
+      ${handlers.onToggle
+      ? `<input type="checkbox" class="task-card__checkbox"
+               ${isDone ? "checked" : ""}
+               aria-label="Mark '${escapeHtml(task.title)}' as ${isDone ? "pending" : "done"}">`
+      : ""
+    }
       <div class="task-card__body">
-        <p class="task-card__title">${escapeHtml(task.title)}</p>
+        <p class="task-card__title ${isDone ? "task-card__title--done" : ""}">${escapeHtml(task.title)}</p>
         ${task.notes ? `<p class="task-card__notes">${escapeHtml(task.notes)}</p>` : ""}
         <div class="task-card__meta">
-          <span class="tag-chip tag-chip--${task.tag}">${task.tag}</span>
-          <span class="badge ${badgeClass}">${badgeLabel}</span>
-          ${task.due_at ? `<span class="task-card__due">${formatDateTime(task.due_at)}</span>` : ""}
+          <span class="tag-chip tag-chip--${task.tag}">${ICONS.tag} <span>${escapeHtml(task.tag)}</span></span>
+          <span class="badge ${badgeClass}">${badgeIcon} <span>${badgeLabel}</span></span>
+          ${task.due_at ? `<span class="task-card__due">${ICONS.clock} <span>${formatDateTime(task.due_at)}</span></span>` : ""}
           ${renderStartBy(task)}
         </div>
       </div>
     </div>
-    ${
-      handlers.onEdit || handlers.onDelete
-        ? `<div class="task-card__actions">
-             ${handlers.onEdit ? `<button type="button" class="task-card__edit">Edit</button>` : ""}
-             ${handlers.onDelete ? `<button type="button" class="task-card__delete">Delete</button>` : ""}
+    ${handlers.onEdit || handlers.onDelete
+      ? `<div class="task-card__actions">
+             ${handlers.onEdit ? `<button type="button" class="task-card__edit">${ICONS.pencil} <span>Edit</span></button>` : ""}
+             ${handlers.onDelete ? `<button type="button" class="task-card__delete">${ICONS.trash} <span>Delete</span></button>` : ""}
            </div>`
-        : ""
+      : ""
     }
   `;
 
   if (handlers.onToggle) {
-    card.querySelector(".task-card__checkbox").addEventListener("change", (e) => {
+    const checkbox = card.querySelector(".task-card__checkbox");
+    checkbox.addEventListener("change", (e) => {
       e.target.disabled = true;
       handlers.onToggle(task).finally(() => {
         e.target.disabled = false;
@@ -204,7 +212,7 @@ if (taskList) {
   }
 
   function openEditModal(task) {
-    modalTitle.textContent = "Edit task";
+    modalTitle.textContent = "Edit Task";
     form.elements.id.value = task.id;
     form.elements.title.value = task.title;
     form.elements.notes.value = task.notes || "";
@@ -214,16 +222,16 @@ if (taskList) {
     if (form.elements.estimate_hours) {
       form.elements.estimate_hours.value = task.estimate_hours ?? "";
     }
-    formError.hidden = true;
+    if (formError) formError.hidden = true;
     modal.showModal();
     form.elements.title.focus();
   }
 
   function openCreateModal() {
-    modalTitle.textContent = "New task";
+    modalTitle.textContent = "New Task";
     form.reset();
     form.elements.id.value = "";
-    formError.hidden = true;
+    if (formError) formError.hidden = true;
     modal.showModal();
     form.elements.title.focus();
   }
@@ -239,12 +247,6 @@ if (taskList) {
     }
   }
 
-  // Tab/tag clicks and the debounced search can each fire a loadTasks()
-  // while an earlier one is still in flight; without a sequence guard, a
-  // slower earlier response can land after a faster later one and
-  // overwrite the list with results that no longer match the active
-  // filters. Each call stamps its own number and only applies its result
-  // if no newer call has started since.
   let loadSeq = 0;
 
   async function loadTasks() {
@@ -295,12 +297,13 @@ if (taskList) {
     }, 300);
   });
 
-  newTaskBtn.addEventListener("click", openCreateModal);
-  document.getElementById("task-cancel-btn").addEventListener("click", () => modal.close());
+  if (newTaskBtn) newTaskBtn.addEventListener("click", openCreateModal);
+  const cancelBtn = document.getElementById("task-cancel-btn");
+  if (cancelBtn) cancelBtn.addEventListener("click", () => modal.close());
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    formError.hidden = true;
+    if (formError) formError.hidden = true;
     saveBtn.disabled = true;
 
     const id = form.elements.id.value;
@@ -325,14 +328,12 @@ if (taskList) {
       modal.close();
       showToast("Task saved", "success");
       await loadTasks();
-      // loadTasks() rebuilds the whole list, destroying whatever focus
-      // <dialog> just restored (the Edit button that opened it) — without
-      // this, focus silently drops to <body> and a keyboard/screen-reader
-      // user loses their place entirely.
-      newTaskBtn.focus();
+      if (newTaskBtn) newTaskBtn.focus();
     } catch (err) {
-      formError.textContent = err.message;
-      formError.hidden = false;
+      if (formError) {
+        formError.textContent = err.message;
+        formError.hidden = false;
+      }
     } finally {
       saveBtn.disabled = false;
     }

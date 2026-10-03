@@ -12,6 +12,8 @@ from app.repositories import user_repo
 def create_app(config: Config | None = None) -> Flask:
     app = Flask(__name__)
     app.config.from_object(config or Config())
+    app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0
+    app.config["TEMPLATES_AUTO_RELOAD"] = True
 
     csrf.init_app(app)
     login_manager.init_app(app)

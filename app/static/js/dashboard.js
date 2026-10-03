@@ -17,6 +17,20 @@ const countEls = {
 // stale counts or a stale "do this now" card.
 let loadSeq = 0;
 
+function updateGreeting() {
+  const prefixEl = document.getElementById("dashboard-greeting-prefix");
+  if (!prefixEl) return;
+
+  const hour = new Date().getHours();
+  let timeOfDay = "Good morning";
+  if (hour >= 12 && hour < 17) {
+    timeOfDay = "Good afternoon";
+  } else if (hour >= 17) {
+    timeOfDay = "Good evening";
+  }
+  prefixEl.textContent = timeOfDay;
+}
+
 async function loadDashboard() {
   const dueNextList = document.getElementById("due-next-list");
   const dueNextEmpty = document.getElementById("due-next-empty");
@@ -32,13 +46,13 @@ async function loadDashboard() {
   try {
     const data = await apiFetch("/api/dashboard");
     if (seq !== loadSeq) return;
-    countEls.total.textContent = data.total;
-    countEls.pending.textContent = data.pending;
-    countEls.completed.textContent = data.completed;
-    countEls.overdue.textContent = data.overdue;
+    if (countEls.total) countEls.total.textContent = data.total;
+    if (countEls.pending) countEls.pending.textContent = data.pending;
+    if (countEls.completed) countEls.completed.textContent = data.completed;
+    if (countEls.overdue) countEls.overdue.textContent = data.overdue;
 
     dueNextList.innerHTML = "";
-    dueNextEmpty.hidden = data.due_next.length > 0;
+    if (dueNextEmpty) dueNextEmpty.hidden = data.due_next.length > 0;
     for (const task of data.due_next) {
       dueNextList.appendChild(renderTaskCard(task));
     }
@@ -65,8 +79,8 @@ if (quickAddForm) {
 
   quickAddForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    errorEl.hidden = true;
-    submitBtn.disabled = true;
+    if (errorEl) errorEl.hidden = true;
+    if (submitBtn) submitBtn.disabled = true;
 
     const payload = {
       title: quickAddForm.elements.title.value,
@@ -77,13 +91,15 @@ if (quickAddForm) {
     try {
       await apiFetch("/api/tasks", { method: "POST", body: JSON.stringify(payload) });
       quickAddForm.reset();
-      showToast("Task added", "success");
+      showToast("Task added to workspace", "success");
       await loadDashboard();
     } catch (err) {
-      errorEl.textContent = err.message;
-      errorEl.hidden = false;
+      if (errorEl) {
+        errorEl.textContent = err.message;
+        errorEl.hidden = false;
+      }
     } finally {
-      submitBtn.disabled = false;
+      if (submitBtn) submitBtn.disabled = false;
     }
   });
 
@@ -97,5 +113,7 @@ if (quickAddForm) {
     if (document.visibilityState === "visible") loadDashboard();
   });
 
+
+  updateGreeting();
   loadDashboard();
 }
