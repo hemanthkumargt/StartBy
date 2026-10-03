@@ -102,15 +102,13 @@ def serialize_task(row: sqlite3.Row, *, flags: dict | None = None) -> dict:
             )
         task["estimate_hours"] = row["estimate_hours"]
         task["start_by"] = start_by
-        # Adaptive Replanning (CLAUDE.md 2.5): start_by is always computed
-        # fresh from current due_at/estimate/multiplier (never stored), so a
-        # missed start time shows up as "passed" on the very next read, the
-        # same way is_overdue already does for due_at — no separate recompute
-        # step, and freezegun-testable since it goes through timeutil here
-        # instead of comparing dates in JS.
-        task["start_by_passed"] = (
-            row["status"] == "pending" and start_by is not None and timeutil.is_before_now(start_by)
-        )
+        # I12 risk radar. Adaptive Replanning (CLAUDE.md 2.5): risk is always
+        # computed fresh from the current status/start_by (never stored), so
+        # a missed start time shows up as "red" on the very next read, the
+        # same way is_overdue already does for due_at — no separate
+        # recompute step, and freezegun-testable since it goes through
+        # timeutil here instead of comparing dates in JS.
+        task["risk"] = estimate_service.compute_risk(row["status"], start_by)
     return task
 
 
@@ -286,8 +284,19 @@ def delete_task(conn: sqlite3.Connection, *, user_id: int, task_id: int) -> None
 
 
 def get_dashboard(conn: sqlite3.Connection, *, user_id: int, flags: dict | None = None) -> dict:
+    flags = flags or {}
     counts = task_repo.counts_for_user(conn, user_id, now_iso=timeutil.utcnow_iso())
     due_next = [
         serialize_task(row, flags=flags) for row in task_repo.due_next_for_user(conn, user_id)
     ]
-    return {**counts, "due_next": due_next}
+    dashboard = {**counts, "due_next": due_next}
+    if flags.get("estimates", False):
+        # "Do this now" needs every pending task's risk, not just the ones
+        # with a due_at (due_next's own query), since risk comes from
+        # start_by rather than due_at directly.
+        pending = [
+            serialize_task(row, flags=flags)
+            for row in task_repo.list_active_for_user(conn, user_id, status="pending")
+        ]
+        dashboard["do_this_now"] = estimate_service.pick_do_this_now(pending)
+    return dashboard

@@ -31,3 +31,6 @@ MULTIPLIER_MAX = 3.0
 # names a "buffer" without a value; 15% is a reasonable default margin for
 # the unplanned delays a flat effort estimate doesn't account for.
 START_BY_BUFFER = 0.15
+
+# I12: risk radar (green/amber/red) + "Do this now" card.
+RISK_AMBER_WINDOW_HOURS = 24

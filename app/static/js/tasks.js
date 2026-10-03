@@ -3,22 +3,24 @@ import { showToast } from "./toast.js";
 import { formatDateTime, fromLocalInputValue, toLocalInputValue } from "./datetime.js";
 import { escapeHtml } from "./dom.js";
 
-// start_by/start_by_passed only exist in the payload at all when
-// FEATURE_ESTIMATES is on (task_service omits both keys entirely when it's
-// off) — their presence is the only check needed here, not the flag itself.
-// start_by_passed is computed server-side (task_service.serialize_task, via
-// timeutil) the same way is_overdue already is, so Adaptive Replanning
-// (CLAUDE.md 2.5) needs no client-side time comparison or recompute step:
-// a task already past its recommended start time just reads that way on the
-// very next render.
+// risk/start_by only exist in the payload at all when FEATURE_ESTIMATES is
+// on (task_service omits both keys entirely when it's off) — their presence
+// is the only check needed here, not the flag itself. risk is computed
+// server-side (task_service.serialize_task -> estimate_service.compute_risk,
+// via timeutil) the same way is_overdue already is, so Adaptive Replanning
+// (CLAUDE.md 2.5) needs no client-side time comparison or recompute step: a
+// task already past its recommended start time just reads that way (red) on
+// the very next render. Text always differs by risk level too, not just
+// colour (accessibility: colour is never the only signal).
+const RISK_LABEL = { red: "Start now", amber: "Start soon", green: "On track" };
+
 function renderStartBy(task) {
-  if (!("start_by" in task) || task.status !== "pending" || !task.start_by) {
+  if (!("risk" in task) || task.risk === "none" || !task.start_by) {
     return "";
   }
-  if (task.start_by_passed) {
-    return `<span class="task-card__start-by task-card__start-by--now">Start now</span>`;
-  }
-  return `<span class="task-card__start-by">Start by ${formatDateTime(task.start_by)}</span>`;
+  const label = RISK_LABEL[task.risk];
+  const detail = task.risk === "red" ? "" : ` — start by ${formatDateTime(task.start_by)}`;
+  return `<span class="task-card__start-by task-card__start-by--${task.risk}">${label}${detail}</span>`;
 }
 
 // The one function every page uses to render a task — new badges or fields
@@ -82,6 +84,20 @@ export function renderTaskCard(task, handlers = {}) {
   return card;
 }
 
+// Shared with any page that renders a completable task card (tasks.js's own
+// list and dashboard.js's "Do this now" card) — one implementation rather
+// than each page copying its own complete/reopen POST + error handling.
+export async function toggleComplete(task, onDone) {
+  const path =
+    task.status === "done" ? `/api/tasks/${task.id}/reopen` : `/api/tasks/${task.id}/complete`;
+  try {
+    await apiFetch(path, { method: "POST" });
+    await onDone();
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+}
+
 const taskList = document.getElementById("task-list");
 if (taskList) {
   const emptyState = document.getElementById("task-empty-state");
@@ -106,17 +122,6 @@ if (taskList) {
     if (filters.q) params.set("q", filters.q);
     const qs = params.toString();
     return qs ? `/api/tasks?${qs}` : "/api/tasks";
-  }
-
-  async function toggleComplete(task) {
-    const path =
-      task.status === "done" ? `/api/tasks/${task.id}/reopen` : `/api/tasks/${task.id}/complete`;
-    try {
-      await apiFetch(path, { method: "POST" });
-      await loadTasks();
-    } catch (err) {
-      showToast(err.message, "error");
-    }
   }
 
   function openEditModal(task) {
@@ -172,7 +177,11 @@ if (taskList) {
       emptyState.hidden = tasks.length > 0;
       for (const task of tasks) {
         taskList.appendChild(
-          renderTaskCard(task, { onToggle: toggleComplete, onEdit: openEditModal, onDelete: deleteTask })
+          renderTaskCard(task, {
+            onToggle: (t) => toggleComplete(t, loadTasks),
+            onEdit: openEditModal,
+            onDelete: deleteTask,
+          })
         );
       }
     } catch (err) {

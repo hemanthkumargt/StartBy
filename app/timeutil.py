@@ -62,5 +62,13 @@ def is_before_now(iso_value: str) -> bool:
     return iso_value < utcnow_iso()
 
 
+def is_now_at_or_after(iso_value: str) -> bool:
+    """Non-strict counterpart to is_before_now. I4's overdue boundary
+    (due_at < now) and I12's risk boundary (now >= start_by) are specified
+    with different strictness, so both comparisons are named and kept here
+    rather than one caller flipping the other's operands."""
+    return utcnow_iso() >= iso_value
+
+
 def add_hours_iso(iso_value: str, hours: float) -> str:
     return to_iso(parse_iso(iso_value) + timedelta(hours=hours))

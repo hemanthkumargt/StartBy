@@ -23,6 +23,13 @@
     </div>
   </div>
 
+  {% if feature_flags.estimates %}
+  <div id="do-this-now" class="do-this-now" hidden>
+    <h2>Do this now</h2>
+    <ul id="do-this-now-card" class="due-next-list"></ul>
+  </div>
+  {% endif %}
+
   <div class="dashboard__columns">
     <div class="dashboard__quick-add">
       <h2>Quick add</h2>

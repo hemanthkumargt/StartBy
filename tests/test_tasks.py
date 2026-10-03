@@ -301,7 +301,14 @@ def test_I15_flag_off_response_has_no_estimate_or_start_by_keys(client):
     task = create_task(client, estimate_hours=2.0, due_at="2026-10-10T18:00:00").get_json()
     assert "estimate_hours" not in task
     assert "start_by" not in task
-    assert "start_by_passed" not in task
+    assert "risk" not in task
+
+
+def test_I15_flag_off_dashboard_has_no_do_this_now_key(client):
+    register(client)
+    create_task(client, estimate_hours=2.0, due_at="2026-10-10T18:00:00")
+    dashboard = client.get("/api/dashboard").get_json()
+    assert "do_this_now" not in dashboard
 
 
 def test_flag_off_silently_ignores_estimate_hours_in_patch(client):
@@ -380,26 +387,65 @@ def test_flag_on_update_recomputes_start_by(estimates_client):
     assert updated["start_by"] == "2026-10-12T14:33:00"
 
 
-def test_adaptive_replanning_start_by_passed_flips_true_once_missed(estimates_client):
-    """CLAUDE.md 2.5 (Adaptive Replanning): a pending task's start_by_passed
-    is computed fresh on every read from the current clock, exactly like
-    is_overdue already is for due_at — no stored flag to go stale, no
-    separate recompute step, missing the start time is just what the very
-    next read shows."""
+def test_flag_on_task_risk_field_tracks_start_by(estimates_client):
+    """CLAUDE.md 2.5 (Adaptive Replanning): risk is computed fresh on every
+    read from the current clock, exactly like is_overdue already is for
+    due_at — no stored flag to go stale, no separate recompute step, a
+    missed start time is just what the very next read shows."""
+    with freeze_time("2026-10-09T15:00:00"):
+        register(estimates_client)
+        task = create_task(
+            estimates_client, estimate_hours=2.0, due_at="2026-10-10T18:00:00"
+        ).get_json()
+        # start_by is 2026-10-10T14:33:00, 23h33m away here -> amber.
+        assert task["risk"] == "amber"
+
+    with freeze_time("2026-10-10T15:00:00"):
+        refetched = estimates_client.get(f"/api/tasks/{task['id']}").get_json()
+        assert refetched["risk"] == "red"
+
+
+def test_flag_on_risk_is_none_for_a_task_without_an_estimate(estimates_client):
+    register(estimates_client)
+    task = create_task(estimates_client, due_at="2026-10-10T18:00:00").get_json()
+    assert task["risk"] == "none"
+
+
+def test_dashboard_do_this_now_picks_the_most_urgent_pending_task(estimates_client):
+    with freeze_time("2026-10-10T12:00:00"):
+        register(estimates_client)
+        # Comfortably far away: green, never the "do this now" pick.
+        create_task(estimates_client, estimate_hours=2.0, due_at="2026-12-25T18:00:00")
+        urgent = create_task(
+            estimates_client, title="Urgent one", estimate_hours=2.0, due_at="2026-10-10T18:00:00"
+        ).get_json()
+
+        dashboard = estimates_client.get("/api/dashboard").get_json()
+        assert dashboard["do_this_now"]["id"] == urgent["id"]
+        # start_by is 2h33m away at this frozen time -> amber, not red yet.
+        assert dashboard["do_this_now"]["risk"] == "amber"
+
+
+def test_dashboard_do_this_now_is_null_when_nothing_is_urgent(estimates_client):
+    register(estimates_client)
+    create_task(estimates_client, estimate_hours=2.0, due_at="2026-12-25T18:00:00")
+    dashboard = estimates_client.get("/api/dashboard").get_json()
+    assert dashboard["do_this_now"] is None
+
+
+def test_dashboard_do_this_now_ignores_completed_tasks(estimates_client):
     with freeze_time("2026-10-10T12:00:00"):
         register(estimates_client)
         task = create_task(
             estimates_client, estimate_hours=2.0, due_at="2026-10-10T18:00:00"
         ).get_json()
-        assert task["start_by"] == "2026-10-10T14:33:00"
-        assert task["start_by_passed"] is False
+        estimates_client.post(f"/api/tasks/{task['id']}/complete")
 
-    with freeze_time("2026-10-10T15:00:00"):
-        refetched = estimates_client.get(f"/api/tasks/{task['id']}").get_json()
-        assert refetched["start_by_passed"] is True
+        dashboard = estimates_client.get("/api/dashboard").get_json()
+        assert dashboard["do_this_now"] is None
 
 
-def test_start_by_passed_is_false_once_task_is_done(estimates_client):
+def test_risk_is_none_once_task_is_done(estimates_client):
     """A completed task should never show 'Start now' even if its start_by
     has already passed — only a still-pending task needs starting."""
     with freeze_time("2026-10-10T12:00:00"):
@@ -410,7 +456,7 @@ def test_start_by_passed_is_false_once_task_is_done(estimates_client):
 
     with freeze_time("2026-10-10T15:00:00"):
         done = estimates_client.post(f"/api/tasks/{task['id']}/complete").get_json()
-        assert done["start_by_passed"] is False
+        assert done["risk"] == "none"
 
 
 def test_list_filters_by_status_tag_and_search(client):

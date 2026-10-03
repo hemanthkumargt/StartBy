@@ -215,6 +215,20 @@ button:disabled {
   gap: 0.5rem;
 }
 
+/* I12 "Do this now" card: the one most urgent task, called out above the
+   normal dashboard columns rather than buried in a list. */
+.do-this-now {
+  background: var(--color-surface);
+  border: 2px solid var(--color-primary);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.do-this-now h2 {
+  margin-top: 0;
+}
+
 /* --- Tasks page --- */
 
 .tasks-page__toolbar {
@@ -341,8 +355,18 @@ button:disabled {
   color: var(--color-text-muted);
 }
 
-.task-card__start-by--now {
+/* I12 risk radar: colour is never the only signal (CLAUDE.md quality bar)
+   — renderStartBy's label text already differs per level too. */
+.task-card__start-by--red {
   color: var(--color-badge-overdue);
+}
+
+.task-card__start-by--amber {
+  color: var(--color-badge-pending);
+}
+
+.task-card__start-by--green {
+  color: var(--color-badge-done);
 }
 
 .task-card__actions {

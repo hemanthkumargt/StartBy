@@ -17,12 +17,13 @@ def test_dashboard_due_next_is_limited_to_five_soonest(client):
 
 
 def test_dashboard_on_empty_account_is_all_zero(client):
+    # Subset check, not exact-equality: exact-equality would silently depend
+    # on this fixture's FEATURE_ESTIMATES default (do_this_now only appears
+    # when it's on) rather than actually asserting anything about that flag.
     register(client)
     dashboard = client.get("/api/dashboard").get_json()
-    assert dashboard == {
-        "total": 0,
-        "completed": 0,
-        "pending": 0,
-        "overdue": 0,
-        "due_next": [],
-    }
+    assert dashboard["total"] == 0
+    assert dashboard["completed"] == 0
+    assert dashboard["pending"] == 0
+    assert dashboard["overdue"] == 0
+    assert dashboard["due_next"] == []
