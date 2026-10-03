@@ -1,26 +1,34 @@
 <!doctype html>
-<html lang="en" data-theme="{{ 'dark' if (current_user.is_authenticated and current_user.dark_mode) else 'dark' }}">
+<html lang="en" data-theme="{{ 'dark' if (current_user.is_authenticated and current_user.dark_mode) else ('light' if (current_user.is_authenticated and not current_user.dark_mode) else (request.cookies.get('kairo-theme') or 'dark')) }}">
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2310b981'/%3E%3Cpath d='M16 6L6 11l10 5 10-5-10-5zM6 21l10 5 10-5M6 16l10 5 10-5' stroke='%23ffffff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M16 6L6 11l10 5 10-5-10-5zM6 21l10 5 10-5M6 16l10 5 10-5' stroke='%23ffffff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
+  <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('kairo-theme') || localStorage.getItem('startby-theme');
+        if (saved === 'light' || saved === 'dark') {
+          document.documentElement.setAttribute('data-theme', saved);
+          document.documentElement.dataset.theme = saved;
+        } else {
+          {% if current_user.is_authenticated and current_user.dark_mode is not none %}
+            var userPref = {{ 'dark' if current_user.dark_mode else 'light' | tojson }};
+            document.documentElement.setAttribute('data-theme', userPref);
+            document.documentElement.dataset.theme = userPref;
+            localStorage.setItem('kairo-theme', userPref);
+          {% else %}
+            document.documentElement.setAttribute('data-theme', 'dark');
+            document.documentElement.dataset.theme = 'dark';
+          {% endif %}
+        }
+      } catch (e) {}
+    })();
+  </script>
   {% if current_user.is_authenticated %}
   <meta name="user-timezone" content="{{ current_user.timezone }}">
-  {% else %}
-  <script>
-    try {
-      const savedTheme = localStorage.getItem('kairo_theme') || localStorage.getItem('kairo-theme') || localStorage.getItem('startby-theme');
-      if (savedTheme) {
-        document.documentElement.setAttribute('data-theme', savedTheme);
-      } else {
-        document.documentElement.setAttribute('data-theme', 'dark');
-      }
-    } catch (e) {
-      document.documentElement.setAttribute('data-theme', 'dark');
-    }
-  </script>
   {% endif %}
   <title>{% block title %}Kairo — Intelligent Task Workspace{% endblock %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,16 +36,17 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}?v=20">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}?v=20">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}?v=21">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}?v=21">
   <style>
-    /* Emerald & Obsidian High-End Fintech Design System */
-    body {
+    /* Technical Blueprint Grid Design System */
+    body, .app-shell, .auth-page {
       background-color: var(--color-bg) !important;
-      background-image: none !important;
-    }
-    .app-shell {
-      background: var(--color-bg) !important;
+      background-image:
+        linear-gradient(var(--grid-line-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line-color) 1px, transparent 1px) !important;
+      background-size: var(--grid-size) var(--grid-size) !important;
+      background-attachment: fixed !important;
     }
 
     /* Brand Monogram & Website Icon */
@@ -48,9 +57,9 @@
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
       border: 1px solid rgba(255, 255, 255, 0.2) !important;
-      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35) !important;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4) !important;
       color: #ffffff !important;
       flex-shrink: 0 !important;
     }
@@ -62,7 +71,7 @@
       color: var(--color-text) !important;
     }
 
-    /* Sleek Emerald Sidebar Navigation */
+    /* Sleek Sidebar Navigation */
     .app-sidebar__nav {
       gap: 0.25rem !important;
     }
@@ -95,9 +104,9 @@
     }
 
     .nav-item--active {
-      background: rgba(16, 185, 129, 0.1) !important;
+      background: rgba(99, 102, 241, 0.1) !important;
       color: var(--color-primary) !important;
-      border: 1px solid rgba(16, 185, 129, 0.25) !important;
+      border: 1px solid rgba(99, 102, 241, 0.25) !important;
       font-weight: 600 !important;
       box-shadow: none !important;
     }
@@ -120,23 +129,23 @@
     }
 
     [data-theme="dark"] .nav-item--active {
-      background: rgba(16, 185, 129, 0.14) !important;
-      border-color: rgba(16, 185, 129, 0.3) !important;
-      color: #34d399 !important;
-      box-shadow: 0 0 16px rgba(16, 185, 129, 0.18) !important;
+      background: rgba(99, 102, 241, 0.16) !important;
+      border-color: rgba(99, 102, 241, 0.35) !important;
+      color: #818cf8 !important;
+      box-shadow: 0 0 16px rgba(99, 102, 241, 0.22) !important;
     }
 
     [data-theme="dark"] .nav-item--active .icon svg,
     [data-theme="dark"] .nav-item--active svg {
-      stroke: #34d399 !important;
+      stroke: #818cf8 !important;
     }
 
-    /* Emerald New Task Button */
+    /* Electric Indigo New Task Button */
     .btn-sidebar-add {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
       color: #ffffff !important;
       border: 1px solid rgba(255, 255, 255, 0.15) !important;
-      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.35) !important;
+      box-shadow: 0 2px 10px rgba(99, 102, 241, 0.35) !important;
       border-radius: 8px !important;
       font-weight: 600 !important;
       transition: all 0.15s ease !important;
@@ -144,7 +153,7 @@
     }
 
     .btn-sidebar-add:hover {
-      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.5) !important;
+      box-shadow: 0 4px 16px rgba(99, 102, 241, 0.5) !important;
       transform: translateY(-1px) !important;
     }
 
@@ -152,7 +161,7 @@
       transform: translateY(0) scale(0.98) !important;
     }
 
-    /* Sleek Cards (Hairline Borders & Dark Slate Surfaces) */
+    /* Sleek Precision Cards */
     .card, .counter-card, .dashboard__quick-add, .dashboard__due-next, .settings-card, .activity-stream-card, .dashboard__analytics-card, .dashboard__shortcuts-card {
       background: var(--color-surface) !important;
       border: 1px solid var(--color-border) !important;
@@ -176,9 +185,9 @@
     [data-theme="dark"] .activity-stream-card,
     [data-theme="dark"] .dashboard__analytics-card,
     [data-theme="dark"] .dashboard__shortcuts-card {
-      background: #0c131d !important;
-      border: 1px solid rgba(255, 255, 255, 0.08) !important;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45) !important;
+      background: #121624 !important;
+      border: 1px solid rgba(255, 255, 255, 0.12) !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45) !important;
     }
 
     [data-theme="dark"] .card:hover, 
@@ -188,8 +197,8 @@
     [data-theme="dark"] .settings-card:hover,
     [data-theme="dark"] .dashboard__analytics-card:hover,
     [data-theme="dark"] .dashboard__shortcuts-card:hover {
-      border-color: rgba(16, 185, 129, 0.3) !important;
-      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.55), 0 0 14px rgba(16, 185, 129, 0.08) !important;
+      border-color: rgba(99, 102, 241, 0.35) !important;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.55), 0 0 16px rgba(99, 102, 241, 0.12) !important;
     }
 
     /* Counter Cards Top Accent Borders */
@@ -197,13 +206,13 @@
       border-top: 2px solid #10b981 !important;
     }
     .counter-card--overdue {
-      border-top: 2px solid #f43f5e !important;
+      border-top: 2px solid #ef4444 !important;
     }
     .counter-card--pending {
       border-top: 2px solid #f59e0b !important;
     }
     .counter-card--total {
-      border-top: 2px solid #0284c7 !important;
+      border-top: 2px solid #6366f1 !important;
     }
 
     /* Buttons */
@@ -225,13 +234,13 @@
     }
 
     .btn--primary {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
       color: #ffffff !important;
-      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.35) !important;
+      box-shadow: 0 2px 10px rgba(99, 102, 241, 0.35) !important;
     }
 
     .btn--primary:hover {
-      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.5) !important;
+      box-shadow: 0 4px 16px rgba(99, 102, 241, 0.5) !important;
     }
 
     .btn--secondary {
@@ -252,25 +261,25 @@
       gap: 7px;
       padding: 5px 12px;
       border-radius: 9999px;
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.25);
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.25);
       font-size: 12px;
       font-weight: 600;
-      color: #059669;
+      color: #6366f1;
     }
 
     [data-theme="dark"] .focus-status-badge {
-      color: #34d399;
-      background: rgba(16, 185, 129, 0.12);
-      border-color: rgba(16, 185, 129, 0.3);
+      color: #818cf8;
+      background: rgba(99, 102, 241, 0.15);
+      border-color: rgba(99, 102, 241, 0.35);
     }
 
     .focus-pulse-dot {
       width: 7px;
       height: 7px;
       border-radius: 50%;
-      background: #10b981;
-      box-shadow: 0 0 8px #10b981;
+      background: #6366f1;
+      box-shadow: 0 0 8px #6366f1;
       display: inline-block;
     }
 
@@ -280,7 +289,7 @@
       width: 34px !important;
       height: 34px !important;
       border-radius: 50% !important;
-      background: linear-gradient(135deg, #10b981 0%, #047857 100%) !important;
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
       color: #ffffff !important;
       display: flex !important;
       align-items: center !important;
@@ -288,8 +297,8 @@
       font-size: 0.85rem !important;
       font-weight: 700 !important;
       flex-shrink: 0 !important;
-      border: 1.5px solid rgba(52, 211, 153, 0.4) !important;
-      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3) !important;
+      border: 1.5px solid rgba(129, 140, 248, 0.4) !important;
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35) !important;
     }
 
     .user-avatar__indicator {
@@ -555,8 +564,8 @@
     }
 
     .category-dot--study {
-      background: #10b981 !important;
-      box-shadow: 0 0 6px rgba(16, 185, 129, 0.6) !important;
+      background: #a855f7 !important;
+      box-shadow: 0 0 6px rgba(168, 85, 247, 0.6) !important;
     }
 
     .category-dot--work {
@@ -565,8 +574,8 @@
     }
 
     .category-dot--personal {
-      background: #2dd4bf !important;
-      box-shadow: 0 0 6px rgba(45, 212, 191, 0.6) !important;
+      background: #10b981 !important;
+      box-shadow: 0 0 6px rgba(16, 185, 129, 0.6) !important;
     }
 
     .category-distribution-stat {
@@ -594,7 +603,7 @@
     }
 
     .mini-fill--study {
-      background: #10b981 !important;
+      background: #a855f7 !important;
     }
 
     .mini-fill--work {
@@ -602,7 +611,7 @@
     }
 
     .mini-fill--personal {
-      background: #2dd4bf !important;
+      background: #10b981 !important;
     }
 
     .shortcuts-grid {
@@ -641,7 +650,7 @@
       align-items: center !important;
       justify-content: center !important;
       margin-bottom: 0.5rem !important;
-      background: rgba(16, 185, 129, 0.1) !important;
+      background: rgba(99, 102, 241, 0.12) !important;
       color: var(--color-primary) !important;
     }
 
@@ -657,8 +666,8 @@
     }
 
     .pro-tip-box {
-      background: rgba(16, 185, 129, 0.06) !important;
-      border: 1px solid rgba(16, 185, 129, 0.2) !important;
+      background: rgba(99, 102, 241, 0.08) !important;
+      border: 1px solid rgba(99, 102, 241, 0.22) !important;
       border-radius: 10px !important;
       padding: 0.85rem 1rem !important;
       display: flex !important;
@@ -866,6 +875,29 @@
     {% endif %}
 
     <div class="app-main-content">
+      {% if current_user.is_authenticated %}
+      <header class="app-top-header">
+        <button class="theme-switch-btn" type="button" aria-label="Toggle theme">
+          <span class="theme-icon">
+            <svg class="theme-svg theme-svg--moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <svg class="theme-svg theme-svg--sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </span>
+          <span class="theme-label">Light</span>
+        </button>
+      </header>
+      {% endif %}
       <main class="{% block main_class %}app-main{% endblock %}">
         {% block content %}{% endblock %}
       </main>
@@ -875,9 +907,7 @@
 
   <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
   <script type="module" src="{{ url_for('static', filename='js/api.js') }}?v=4"></script>
-  {% if current_user.is_authenticated %}
-  <script type="module" src="{{ url_for('static', filename='js/theme.js') }}?v=4"></script>
-  {% endif %}
+  <script type="module" src="{{ url_for('static', filename='js/theme.js') }}?v=30"></script>
   {% block scripts %}{% endblock %}
 
   <script>
