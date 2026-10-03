@@ -15,7 +15,10 @@ You are the lead engineer on StartBy, a task manager web app for a Cognizant-run
 2. Work ONE sprint at a time, in the order in the PRD's Implementation plan (S0 → S8).
 3. At the start of each sprint: restate its scope and exit gate in 3–5 lines, list the files you will create or change, then build.
 4. At the end of each sprint, stop and report (format in section 10). Do not start the next sprint until I say "go".
-5. **Phase 2 is out of scope. Do not build it.** Team decision (2026-10-02): ship only what the hackathon brief actually asked for (Phase 1 — PRD.md's main body). Skip Sprints S5 and S6 entirely; after `v1.0` is tagged, go straight to S7 (hardening) and S8 (present), scoped to Phase 1 only — drop any Phase-2-specific items from their checklists (Gemini/capture edge cases, the v1.1 tag). If Phase 2 is ever wanted later, it's a new, explicit decision, not a default resumption.
+5. **Phase 2 is back in scope.** Team decision (2026-10-03) reverses the 2026-10-02 "drop Phase 2" decision: build all six Phase 2 features from the PRD preview, plus a new seventh feature, **Adaptive Replanning**, not in the original PRD — automatically recompute a task's `start_by` recommendation when the user misses it (now past `start_by`, task still pending) or changes the due date/estimate, rather than only recomputing on an explicit input change. This is substantially invariant I11 (recompute on due_at/estimate/multiplier change) plus a time-based trigger (recompute on every read when `now` has crossed `start_by` with no action taken) — treat it as part of the S5 estimate/start-by work, not a separate feature flag, since it's the same calculation re-run at a different trigger.
+   - Build order (one feature at a time; each gets its own deep code review via the `code-review` skill and a manual browser test pass before moving to the next): (1) effort estimate + start_by formula + Adaptive Replanning's missed-start-time recompute, (2) risk radar + "Do this now" card, (3) start-now reminders, (4) per-tag estimate-correction multiplier (feeds back into 1's formula), (5) smart capture (Gemini + regex/dateparser fallback), (6) overload warning + report card.
+   - Every Phase 2 feature still sits behind its feature flag (`FEATURE_ESTIMATES`, `FEATURE_SMART_CAPTURE`, `FEATURE_INSIGHTS`); with every flag off, behaviour must still equal `v1.0` exactly (I15).
+   - **Known risk, flagged to the user twice already and accepted**: code freeze is 2026-10-05 12:00 IST and the app is not yet deployed to a VM (that's still step 2/6 of the original brief, untouched). Building all of Phase 2 before deploying means deployment — the one mandatory, non-negotiable deliverable — gets less runway. Proceeding per explicit instruction; the plan is now to deploy once all 7 features are built and tested, not before.
 6. Never weaken, skip or delete a test to make CI pass. Fix the code, or ask.
 7. Ask before adding any dependency not listed in section 5.
 8. Small commits, Conventional Commits style: `feat(tasks): add soft delete`, `test(reminders): idempotency`, `fix(ui): modal overflow on 360px`.
@@ -31,8 +34,6 @@ You are the lead engineer on StartBy, a task manager web app for a Cognizant-run
 * No paid APIs. Gemini via a free Google AI Studio key only.
 
 ### Gemini free tier
-
-*Not applicable — Phase 2 is out of scope (section 2.5). Kept here only in case that decision is revisited later.*
 
 * Free tier is limited to Flash / Flash-Lite models and rate-limited; limits change and are shown per project in AI Studio. Read the model name from `GEMINI_MODEL` in `.env`; never hard-code it.
 * Handle HTTP 429 and timeouts: 10 s timeout, one retry with backoff, then fall back to the regex + `dateparser` extractor. The app must never crash or hang because of Gemini.
@@ -81,9 +82,7 @@ You may search GitHub for other well-maintained Flask CRUD / task-manager exampl
 
 ## 5. Allowed dependencies
 
-Runtime: `flask`, `flask-login`, `flask-wtf` (CSRF), `python-dotenv`, `gunicorn`, `dateparser`. Dev: `pytest`, `pytest-cov`, `freezegun`, `ruff`, `locust`. Frontend: no frameworks, no CDN scripts. Vanilla JS modules + CSS only.
-
-`google-genai` and `pypdf` were reserved for Phase 2 (S6) smart capture; not needed — Phase 2 is out of scope (section 2.5).
+Runtime: `flask`, `flask-login`, `flask-wtf` (CSRF), `python-dotenv`, `gunicorn`, `dateparser`, `google-genai` (S6 smart capture), `pypdf` (S6, PDF text extraction fallback input). Dev: `pytest`, `pytest-cov`, `freezegun`, `ruff`, `locust`. Frontend: no frameworks, no CDN scripts. Vanilla JS modules + CSS only.
 
 ## 6. Architecture rules
 
@@ -99,7 +98,7 @@ Runtime: `flask`, `flask-login`, `flask-wtf` (CSRF), `python-dotenv`, `gunicorn`
 
 * `ruff check` and `ruff format` clean.
 * Type hints on all service and repository functions.
-* Every Phase 1 PRD logic invariant (I1–I9) has a named test, e.g. `test_I7_reminder_sent_once`. I10–I15 are Phase 2 and out of scope.
+* Every PRD logic invariant (I1–I15) has a named test, e.g. `test_I7_reminder_sent_once`. Adaptive Replanning (section 2.5) needs its own test(s) alongside I11/I12 since it adds a time-based recompute trigger those don't cover.
 * Coverage target: 85%+ on `services/` and `repositories/`.
 * Escape all user content in templates (Jinja autoescape on; never use `|safe` on user data).
 * Accessibility basics: labels on inputs, focus trap in modal, colour never the only signal.
@@ -114,7 +113,7 @@ Runtime: `flask`, `flask-login`, `flask-wtf` (CSRF), `python-dotenv`, `gunicorn`
 ## 9. Sample data
 
 * `scripts/seed.py` creates a demo user (credentials from `.env`) and ~30 realistic student tasks across tags, with a mix of overdue, due today, due this week, done. `--reset` wipes and reseeds the demo account before presentations. Done.
-* The S6 `--history` flag (200 synthetic completed tasks for the estimate-multiplier feature) is Phase 2 and out of scope.
+* From S6: `--history` flag adds ~200 synthetic completed tasks with realistic actual/estimate ratios per tag (e.g. study ~1.6×, work ~1.3×, personal ~1.1×), clearly marked `source='seed'`, for the estimate-multiplier feature to have something to learn from in the demo.
 
 ## 10. End-of-sprint report (always this format)
 
