@@ -30,8 +30,26 @@ You are the lead engineer on StartBy, a task manager web app for a Cognizant-run
 * Compute Engine e2-micro only, region us-central1 (Always Free applies only in us-west1, us-central1, us-east1). 30 GB standard disk. Any other size/region costs money.
 * e2-micro has 1 GB RAM: Gunicorn `--workers 2`, no Docker, no Redis, no extra daemons beyond Nginx and the Ops Agent.
 * Cloud Scheduler: 3 free jobs per billing account in total. We use exactly ONE.
-* Do not create static IPs, load balancers, Cloud SQL, or Cloud Functions.
+* Do not create static IPs, load balancers, or Cloud SQL.
 * No paid APIs. Gemini via a free Google AI Studio key only.
+
+### GCP service breadth (added 2026-10-03, team decision pending)
+
+The judging mentor (Vinith) flagged that the number of distinct GCP services/tools used and justified is a scored criterion on its own, separate from the use case itself. The single-VM design keeps cost and operational risk at zero, which is still non-negotiable — but it also means the services list was thin. Decide the items below at the team's 5:30 meeting, since several interact with the ₹0 and e2-micro constraints above.
+
+**Already in the plan (count these first — 4 services, no new decision needed):** Compute Engine, Cloud Scheduler, Cloud Monitoring + Cloud Logging (via the Ops Agent), and the Gemini API (Phase 2 smart capture, already scoped below).
+
+**Proposed additions — low risk, recommend adopting:**
+* **Secret Manager** — store `SECRET_KEY`, `SMTP_PASSWORD`, `CRON_SECRET` here instead of in the VM's `.env`. Free tier: 6 secret versions/month, far more than our ~3-4 secrets need. Small setup cost (the app reads secrets at boot via the client library instead of `python-dotenv`), and it directly answers the judging criterion for "security awareness" too, not just service count.
+* **Cloud Storage** — a nightly cron step (or a second, tiny Cloud Scheduler job) copies the SQLite file to a bucket. Free tier: 5 GB-months, trivially enough for this DB's size. Removes the single VM disk as the one copy of all data, which is a real resiliency improvement worth having regardless of the judging angle.
+
+**Proposed additions — worth documenting as "considered," not necessarily deploying before the freeze:**
+* **Cloud Build + Artifact Registry** — could replace or sit alongside the existing GitHub Actions CI to run tests/deploy on push. Free tier (120 build-minutes/day) comfortably covers this repo. Real setup work this close to the Oct 5 freeze; if time is short, write the ADR for it (judges score "alternatives considered") and keep GitHub Actions as the actual CI, rather than risk a half-migrated pipeline the week of the demo.
+* **Cloud Natural Language API** — entity/date detection in pasted task text. Functionally overlaps with what Gemini already does for Feature 5 (smart capture) plus the regex/`dateparser` fallback; adding a third extraction path is redundant surface area for the same job. Worth a line in the roadmap as a considered alternative, not a second live integration.
+
+**Flagged conflict — needs a team decision, not a unilateral change:**
+* **Cloud Run Functions** (to run the Gemini/PDF step as a separate function) directly contradicts the "no Cloud Functions" rule a few lines above, which exists specifically to keep the architecture at one VM with zero extra moving parts the e2-micro's 1 GB RAM has to carry. Don't add this without the team explicitly deciding to relax that constraint — it's a real architecture change (a second deployed surface, a second place that can fail, a second thing to monitor), not a documentation update.
+* **Document AI** — PDF task/date extraction. The team's own research couldn't confirm a free tier; don't add a service to the architecture with an unconfirmed ₹0 story. `pypdf` (already an allowed dependency, below) covers the same PDF-text-extraction need for Feature 5 without this risk.
 
 ### Gemini free tier
 
