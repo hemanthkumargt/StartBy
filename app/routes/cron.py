@@ -5,6 +5,7 @@ from flask import Blueprint, current_app, jsonify, request
 from app import timeutil
 from app.db import get_db
 from app.errors import ApiError
+from app.feature_flags import read_feature_flags
 from app.services import reminder_service
 from app.services.notifier import get_notifier
 
@@ -21,5 +22,10 @@ def send_reminders():
         raise ApiError("unauthorized", "Invalid cron secret", 401)
 
     notifier = get_notifier(current_app.config)
-    counts = reminder_service.run_reminders(get_db(), notifier, now_iso=timeutil.utcnow_iso())
+    counts = reminder_service.run_reminders(
+        get_db(),
+        notifier,
+        now_iso=timeutil.utcnow_iso(),
+        flags=read_feature_flags(current_app.config),
+    )
     return jsonify(counts), 200

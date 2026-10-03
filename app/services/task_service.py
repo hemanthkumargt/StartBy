@@ -229,9 +229,11 @@ def update_task(
             new_value=None if new_value is None else str(new_value),
         )
 
-    if "due_at" in updates:
-        # I8: a new deadline can remind again, so the old due_soon/overdue
-        # reminder records for this task no longer apply.
+    if "due_at" in updates or "estimate_hours" in updates:
+        # I8/I11: a new deadline OR a new estimate can move start_by
+        # (I10: start_by = due_at - estimate * multiplier * buffer), so the
+        # old due_soon/overdue/start_now reminder records for this task no
+        # longer apply to whatever start_by now is.
         reminder_repo.clear_for_task(conn, task_id)
 
     task = serialize_task(updated_row, flags=flags)

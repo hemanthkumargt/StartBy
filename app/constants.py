@@ -8,7 +8,7 @@ module is what the migration runner and services validate against meanwhile.
 TAGS = ("work", "study", "personal")
 STATUSES = ("pending", "done")
 ACTIVITY_ACTIONS = ("created", "updated", "completed", "reopened", "deleted")
-REMINDER_KINDS = ("due_soon", "overdue")
+REMINDER_KINDS = ("due_soon", "overdue", "start_now")
 
 TITLE_MAX_LENGTH = 200
 

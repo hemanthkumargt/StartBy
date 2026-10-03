@@ -122,6 +122,86 @@ def test_deleted_task_is_never_reminded(client, monkeypatch):
     assert result == {"due_soon_sent": 0, "overdue_sent": 0}
 
 
+@freeze_time("2026-10-10T15:00:00")
+def test_I7_start_now_reminder_sent_exactly_once_across_repeated_cron_runs(
+    estimates_client, monkeypatch
+):
+    monkeypatch.setattr(SmtpNotifier, "send", lambda self, **kw: True)
+    register(estimates_client)
+    # 2h estimate, default 1.5x multiplier, 15% buffer -> start_by is
+    # 2026-10-10T14:33:00 for this due_at; already passed at the frozen time.
+    create_task(estimates_client, due_at="2026-10-10T18:00:00", estimate_hours=2.0)
+
+    first = estimates_client.post("/api/cron/reminders", headers=CRON_HEADERS).get_json()
+    second = estimates_client.post("/api/cron/reminders", headers=CRON_HEADERS).get_json()
+
+    assert first["start_now_sent"] == 1
+    assert second["start_now_sent"] == 0
+
+
+@freeze_time("2026-10-10T12:00:00")
+def test_start_now_reminder_is_not_sent_before_start_by(estimates_client, monkeypatch):
+    monkeypatch.setattr(SmtpNotifier, "send", lambda self, **kw: True)
+    register(estimates_client)
+    # Due in 60 days: start_by is comfortably in the future (green), not red.
+    create_task(estimates_client, due_at="2026-12-25T18:00:00", estimate_hours=2.0)
+
+    result = estimates_client.post("/api/cron/reminders", headers=CRON_HEADERS).get_json()
+    assert result["start_now_sent"] == 0
+
+
+def test_I15_flag_off_cron_response_has_no_start_now_sent_key(client, monkeypatch):
+    monkeypatch.setattr(SmtpNotifier, "send", lambda self, **kw: True)
+    register(client)
+    create_task(client, due_at="2026-10-10T18:00:00")
+
+    result = client.post("/api/cron/reminders", headers=CRON_HEADERS).get_json()
+    assert "start_now_sent" not in result
+
+
+@freeze_time("2026-10-10T15:00:00")
+def test_I8_moving_due_date_allows_a_new_start_now_reminder(estimates_client, monkeypatch):
+    monkeypatch.setattr(SmtpNotifier, "send", lambda self, **kw: True)
+    register(estimates_client)
+    task = create_task(
+        estimates_client, due_at="2026-10-10T18:00:00", estimate_hours=2.0
+    ).get_json()
+
+    first = estimates_client.post("/api/cron/reminders", headers=CRON_HEADERS).get_json()
+    assert first["start_now_sent"] == 1
+
+    # Push the deadline out, then back into "already past start_by" again —
+    # should be able to remind about the new start_by too.
+    estimates_client.patch(f"/api/tasks/{task['id']}", json={"due_at": "2026-12-25T18:00:00"})
+    estimates_client.patch(f"/api/tasks/{task['id']}", json={"due_at": "2026-10-10T18:00:00"})
+
+    second = estimates_client.post("/api/cron/reminders", headers=CRON_HEADERS).get_json()
+    assert second["start_now_sent"] == 1
+
+
+@freeze_time("2026-10-10T15:00:00")
+def test_I8_changing_estimate_alone_allows_a_new_start_now_reminder(estimates_client, monkeypatch):
+    """I10: start_by depends on estimate_hours as much as due_at, so an
+    estimate-only edit (due_at untouched) that moves start_by must also be
+    able to clear an old start_now reminder, same as a due_at edit does."""
+    monkeypatch.setattr(SmtpNotifier, "send", lambda self, **kw: True)
+    register(estimates_client)
+    task = create_task(
+        estimates_client, due_at="2026-10-10T18:00:00", estimate_hours=2.0
+    ).get_json()
+
+    first = estimates_client.post("/api/cron/reminders", headers=CRON_HEADERS).get_json()
+    assert first["start_now_sent"] == 1
+
+    # Shrink the estimate so start_by moves back into the future (not red),
+    # then restore it — due_at is never touched, only estimate_hours.
+    estimates_client.patch(f"/api/tasks/{task['id']}", json={"estimate_hours": 0.25})
+    estimates_client.patch(f"/api/tasks/{task['id']}", json={"estimate_hours": 2.0})
+
+    second = estimates_client.post("/api/cron/reminders", headers=CRON_HEADERS).get_json()
+    assert second["start_now_sent"] == 1
+
+
 @freeze_time("2026-10-03T12:00:00")
 def test_run_reminders_respects_max_per_run_budget(app, monkeypatch):
     monkeypatch.setattr(SmtpNotifier, "send", lambda self, **kw: True)

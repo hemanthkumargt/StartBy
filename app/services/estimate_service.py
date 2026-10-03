@@ -20,6 +20,7 @@ import math
 from app import timeutil
 from app.constants import (
     DEFAULT_MULTIPLIER,
+    MAX_ESTIMATE_HOURS,
     MULTIPLIER_MAX,
     MULTIPLIER_MIN,
     RISK_AMBER_WINDOW_HOURS,
@@ -30,6 +31,12 @@ _LN_DEFAULT_MULTIPLIER = math.log(DEFAULT_MULTIPLIER)
 # Risk levels worth surfacing on the "Do this now" card, most urgent first.
 # green and none are never urgent enough to be "the one thing to do now".
 _DO_THIS_NOW_RISK_RANK = {"red": 0, "amber": 1}
+# The longest lead time compute_start_by can ever produce (max estimate x
+# max multiplier x buffer) — a task due further out than this can't be red
+# yet however its own estimate/multiplier work out. Lets a caller scanning
+# for "could this be red" (e.g. the start-now reminder cron) bound its
+# search in SQL instead of fetching and discarding every far-future task.
+MAX_LEAD_TIME_HOURS = MAX_ESTIMATE_HOURS * MULTIPLIER_MAX * (1 + START_BY_BUFFER)
 
 
 def multiplier_from_history(n: int, mean_log_ratio: float) -> float:
