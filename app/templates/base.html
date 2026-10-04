@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#5b21b6">
+  <meta name="theme-color" content="#6552c9">
   <meta name="color-scheme" content="dark light">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/apple-touch-icon.png') }}">
@@ -13,7 +13,7 @@
   <meta name="apple-mobile-web-app-title" content="StartBy">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%238b5cf6'/%3E%3Cpath d='M16 6L6 11l10 5 10-5-10-5zM6 21l10 5 10-5M6 16l10 5 10-5' stroke='%23ffffff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%236552c9'/%3E%3Cpath d='M10 7v18M15 8l10 8-10 8z' stroke='%23ffffff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
   <script>
     (function() {
       try {
@@ -31,7 +31,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}?v=20">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}?v=20">
@@ -53,10 +53,10 @@
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
-      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%) !important;
+      background: var(--color-primary) !important;
       border: 1px solid rgba(255, 255, 255, 0.2) !important;
-      box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35) !important;
-      color: #ffffff !important;
+      box-shadow: none !important;
+      color: var(--color-primary-text) !important;
       flex-shrink: 0 !important;
     }
 
@@ -100,16 +100,16 @@
     }
 
     .nav-item--active {
-      background: rgba(124, 58, 237, 0.1) !important;
-      color: var(--color-primary) !important;
-      border: 1px solid rgba(124, 58, 237, 0.25) !important;
+      background: rgba(var(--accent-rgb), 0.1) !important;
+      color: var(--color-primary-fg) !important;
+      border: 1px solid rgba(var(--accent-rgb), 0.25) !important;
       font-weight: 600 !important;
       box-shadow: none !important;
     }
 
     .nav-item--active .icon svg,
     .nav-item--active svg {
-      stroke: var(--color-primary) !important;
+      stroke: var(--color-primary-fg) !important;
     }
 
     [data-theme="dark"] .nav-item {
@@ -125,23 +125,23 @@
     }
 
     [data-theme="dark"] .nav-item--active {
-      background: rgba(124, 58, 237, 0.14) !important;
-      border-color: rgba(124, 58, 237, 0.3) !important;
-      color: #c4b5fd !important;
-      box-shadow: 0 0 16px rgba(124, 58, 237, 0.18) !important;
+      background: rgba(var(--accent-rgb), 0.14) !important;
+      border-color: rgba(var(--accent-rgb), 0.3) !important;
+      color: var(--color-primary-fg) !important;
+      box-shadow: none !important;
     }
 
     [data-theme="dark"] .nav-item--active .icon svg,
     [data-theme="dark"] .nav-item--active svg {
-      stroke: #c4b5fd !important;
+      stroke: var(--color-primary-fg) !important;
     }
 
     /* Emerald New Task Button */
     .btn-sidebar-add {
-      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%) !important;
-      color: #ffffff !important;
+      background: var(--color-primary) !important;
+      color: var(--color-primary-text) !important;
       border: 1px solid rgba(255, 255, 255, 0.15) !important;
-      box-shadow: 0 2px 10px rgba(124, 58, 237, 0.35) !important;
+      box-shadow: none !important;
       border-radius: 8px !important;
       font-weight: 600 !important;
       transition: all 0.15s ease !important;
@@ -149,7 +149,7 @@
     }
 
     .btn-sidebar-add:hover {
-      box-shadow: 0 4px 16px rgba(124, 58, 237, 0.5) !important;
+      box-shadow: none !important;
       transform: translateY(-1px) !important;
     }
 
@@ -181,7 +181,7 @@
     [data-theme="dark"] .activity-stream-card,
     [data-theme="dark"] .dashboard__analytics-card,
     [data-theme="dark"] .dashboard__shortcuts-card {
-      background: #0c131d !important;
+      background: var(--color-surface) !important;
       border: 1px solid rgba(255, 255, 255, 0.08) !important;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45) !important;
     }
@@ -193,22 +193,22 @@
     [data-theme="dark"] .settings-card:hover,
     [data-theme="dark"] .dashboard__analytics-card:hover,
     [data-theme="dark"] .dashboard__shortcuts-card:hover {
-      border-color: rgba(124, 58, 237, 0.3) !important;
-      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.55), 0 0 14px rgba(124, 58, 237, 0.08) !important;
+      border-color: rgba(var(--accent-rgb), 0.3) !important;
+      box-shadow: none !important;
     }
 
     /* Counter Cards Top Accent Borders */
     .counter-card--completed {
-      border-top: 2px solid #10b981 !important;
+      border-top: 2px solid var(--color-success) !important;
     }
     .counter-card--overdue {
-      border-top: 2px solid #f43f5e !important;
+      border-top: 2px solid var(--color-danger) !important;
     }
     .counter-card--pending {
-      border-top: 2px solid #f59e0b !important;
+      border-top: 2px solid var(--color-warning) !important;
     }
     .counter-card--total {
-      border-top: 2px solid #0284c7 !important;
+      border-top: 2px solid var(--color-info) !important;
     }
 
     /* Buttons */
@@ -230,13 +230,13 @@
     }
 
     .btn--primary {
-      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%) !important;
-      color: #ffffff !important;
-      box-shadow: 0 2px 10px rgba(124, 58, 237, 0.35) !important;
+      background: var(--color-primary) !important;
+      color: var(--color-primary-text) !important;
+      box-shadow: none !important;
     }
 
     .btn--primary:hover {
-      box-shadow: 0 4px 16px rgba(124, 58, 237, 0.5) !important;
+      box-shadow: none !important;
     }
 
     .btn--secondary {
@@ -257,25 +257,25 @@
       gap: 7px;
       padding: 5px 12px;
       border-radius: 9999px;
-      background: rgba(124, 58, 237, 0.1);
-      border: 1px solid rgba(124, 58, 237, 0.25);
+      background: rgba(var(--accent-rgb), 0.1);
+      border: 1px solid rgba(var(--accent-rgb), 0.25);
       font-size: 12px;
       font-weight: 600;
-      color: #6d28d9;
+      color: var(--color-primary-fg);
     }
 
     [data-theme="dark"] .focus-status-badge {
-      color: #c4b5fd;
-      background: rgba(124, 58, 237, 0.12);
-      border-color: rgba(124, 58, 237, 0.3);
+      color: var(--color-primary-fg);
+      background: rgba(var(--accent-rgb), 0.12);
+      border-color: rgba(var(--accent-rgb), 0.3);
     }
 
     .focus-pulse-dot {
       width: 7px;
       height: 7px;
       border-radius: 50%;
-      background: #8b5cf6;
-      box-shadow: 0 0 8px #8b5cf6;
+      background: var(--color-primary);
+      box-shadow: none;
       display: inline-block;
     }
 
@@ -285,8 +285,8 @@
       width: 34px !important;
       height: 34px !important;
       border-radius: 50% !important;
-      background: linear-gradient(135deg, #8b5cf6 0%, #5b21b6 100%) !important;
-      color: #ffffff !important;
+      background: var(--color-primary) !important;
+      color: var(--color-primary-text) !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -294,7 +294,7 @@
       font-weight: 700 !important;
       flex-shrink: 0 !important;
       border: 1.5px solid rgba(52, 211, 153, 0.4) !important;
-      box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3) !important;
+      box-shadow: none !important;
     }
 
     .user-avatar__indicator {
@@ -304,7 +304,7 @@
       width: 9px !important;
       height: 9px !important;
       border-radius: 50% !important;
-      background: #c4b5fd !important;
+      background: var(--color-primary) !important;
       border: 2px solid var(--color-surface) !important;
       box-shadow: 0 0 6px rgba(52, 211, 153, 0.8) !important;
     }
@@ -317,25 +317,25 @@
       letter-spacing: 0.05em;
       padding: 4px 9px;
       border-radius: 6px;
-      background: rgba(124, 58, 237, 0.12);
-      color: #6d28d9;
-      border: 1px solid rgba(124, 58, 237, 0.25);
+      background: rgba(var(--accent-rgb), 0.12);
+      color: var(--color-primary-fg);
+      border: 1px solid rgba(var(--accent-rgb), 0.25);
     }
 
     [data-theme="dark"] .momentum-tag {
-      color: #c4b5fd;
-      border-color: rgba(124, 58, 237, 0.35);
+      color: var(--color-primary-fg);
+      border-color: rgba(var(--accent-rgb), 0.35);
     }
 
     .momentum-tag--warning {
       background: rgba(244, 63, 94, 0.12) !important;
-      color: #f43f5e !important;
+      color: var(--color-danger) !important;
       border-color: rgba(244, 63, 94, 0.25) !important;
     }
 
     .momentum-tag--high {
       background: rgba(52, 211, 153, 0.18) !important;
-      color: #c4b5fd !important;
+      color: var(--color-primary-fg) !important;
       border-color: rgba(52, 211, 153, 0.35) !important;
       box-shadow: 0 0 12px rgba(52, 211, 153, 0.2) !important;
     }
@@ -385,27 +385,27 @@
     .badge--overdue {
       background: rgba(244, 63, 94, 0.08) !important;
       border: 1px solid rgba(244, 63, 94, 0.25) !important;
-      color: #e11d48 !important;
+      color: var(--color-danger) !important;
     }
     .badge--pending {
-      background: rgba(245, 158, 11, 0.08) !important;
-      border: 1px solid rgba(245, 158, 11, 0.25) !important;
-      color: #d97706 !important;
+      background: rgba(var(--warning-rgb), 0.08) !important;
+      border: 1px solid rgba(var(--warning-rgb), 0.25) !important;
+      color: var(--color-warning) !important;
     }
     .badge--done {
-      background: rgba(16, 185, 129, 0.08) !important;
-      border: 1px solid rgba(16, 185, 129, 0.25) !important;
-      color: #059669 !important;
+      background: rgba(var(--success-rgb), 0.08) !important;
+      border: 1px solid rgba(var(--success-rgb), 0.25) !important;
+      color: var(--color-success-text) !important;
     }
     [data-theme="dark"] .badge--overdue {
       background: rgba(248, 113, 113, 0.12) !important;
       border-color: rgba(248, 113, 113, 0.3) !important;
-      color: #fca5a5 !important;
+      color: var(--color-danger-text) !important;
     }
     [data-theme="dark"] .badge--pending {
-      background: rgba(251, 191, 36, 0.12) !important;
-      border-color: rgba(251, 191, 36, 0.3) !important;
-      color: #fde68a !important;
+      background: rgba(var(--warning-rgb), 0.12) !important;
+      border-color: rgba(var(--warning-rgb), 0.3) !important;
+      color: var(--color-warning-text) !important;
     }
     [data-theme="dark"] .badge--done {
       background: rgba(52, 211, 153, 0.12) !important;
@@ -500,7 +500,7 @@
     .velocity-meter__pct {
       font-size: 1.1rem !important;
       font-weight: 800 !important;
-      color: var(--color-primary) !important;
+      color: var(--color-primary-fg) !important;
       font-family: var(--font-mono) !important;
     }
 
@@ -519,10 +519,10 @@
 
     .velocity-fill {
       height: 100% !important;
-      background: linear-gradient(90deg, #8b5cf6 0%, #c4b5fd 100%) !important;
+      background: var(--color-primary) !important;
       border-radius: 9999px !important;
       transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
-      box-shadow: 0 0 10px rgba(124, 58, 237, 0.5) !important;
+      box-shadow: none !important;
     }
 
     .category-distribution-list {
@@ -560,8 +560,8 @@
     }
 
     .category-dot--study {
-      background: #10b981 !important;
-      box-shadow: 0 0 6px rgba(16, 185, 129, 0.6) !important;
+      background: var(--color-success) !important;
+      box-shadow: none !important;
     }
 
     .category-dot--work {
@@ -599,7 +599,7 @@
     }
 
     .mini-fill--study {
-      background: #10b981 !important;
+      background: var(--color-success) !important;
     }
 
     .mini-fill--work {
@@ -646,8 +646,8 @@
       align-items: center !important;
       justify-content: center !important;
       margin-bottom: 0.5rem !important;
-      background: rgba(124, 58, 237, 0.1) !important;
-      color: var(--color-primary) !important;
+      background: rgba(var(--accent-rgb), 0.1) !important;
+      color: var(--color-primary-fg) !important;
     }
 
     .shortcut-action-title {
@@ -662,8 +662,8 @@
     }
 
     .pro-tip-box {
-      background: rgba(124, 58, 237, 0.06) !important;
-      border: 1px solid rgba(124, 58, 237, 0.2) !important;
+      background: rgba(var(--accent-rgb), 0.06) !important;
+      border: 1px solid rgba(var(--accent-rgb), 0.2) !important;
       border-radius: 10px !important;
       padding: 0.85rem 1rem !important;
       display: flex !important;
@@ -673,7 +673,7 @@
     }
 
     .pro-tip-icon {
-      color: var(--color-primary) !important;
+      color: var(--color-primary-fg) !important;
       flex-shrink: 0 !important;
       margin-top: 2px !important;
     }
@@ -690,6 +690,7 @@
     }
   </style>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/brand.css') }}?v=2">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/skin.css') }}?v=1">
   {% block head %}{% endblock %}
 </head>
 
@@ -712,9 +713,7 @@
       <a href="{{ url_for('pages.home_page') }}" class="brand-monogram">
         <div class="brand-monogram__logo">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-            <path d="M2 17l10 5 10-5"></path>
-            <path d="M2 12l10 5 10-5"></path>
+            <path d="M6 4v16"/><path d="M11 5.5l9 6.5-9 6.5z"/>
           </svg>
         </div>
         <span class="brand-monogram__name">StartBy</span>
@@ -750,9 +749,7 @@
         <a href="{{ url_for('pages.home_page') }}" class="brand-monogram">
           <div class="brand-monogram__logo">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-              <path d="M2 17l10 5 10-5"></path>
-              <path d="M2 12l10 5 10-5"></path>
+              <path d="M6 4v16"/><path d="M11 5.5l9 6.5-9 6.5z"/>
             </svg>
           </div>
           <span class="brand-monogram__text">
@@ -822,15 +819,6 @@
           <span>Settings</span>
         </a>
       </nav>
-
-      <div id="sidebar-today" class="sidebar-today" aria-label="Today at a glance">
-        <div class="sidebar-today__title">Today at a glance</div>
-        <div class="sidebar-today__grid">
-          <div class="sidebar-today__stat"><span class="sidebar-today__num" data-count="pending">–</span><span class="sidebar-today__lbl">Pending</span></div>
-          <div class="sidebar-today__stat sidebar-today__stat--overdue"><span class="sidebar-today__num" data-count="overdue">–</span><span class="sidebar-today__lbl">Overdue</span></div>
-          <div class="sidebar-today__stat sidebar-today__stat--done"><span class="sidebar-today__num" data-count="completed">–</span><span class="sidebar-today__lbl">Done</span></div>
-        </div>
-      </div>
 
       <div class="app-sidebar__footer">
         <div class="user-profile-pill">
@@ -922,7 +910,7 @@
   </nav>
   {% endif %}
 
-  {% if current_user.is_authenticated and feature_flags.voice and request.path != '/voice' %}
+  {% if current_user.is_authenticated and feature_flags.voice and request.path not in ('/voice', '/') %}
   <a href="{{ url_for('pages.voice_notes_page') }}" class="fab-mic" aria-label="Record a voice note" title="Record a voice note">
     <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0M12 18v4"></path></svg>
   </a>

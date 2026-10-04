@@ -80,6 +80,14 @@ def web_manifest():
     return Response(json.dumps(manifest, indent=2), mimetype="application/manifest+json")
 
 
+@bp.get("/welcome")
+def landing_page():
+    """Public marketing page. Signed-in users go straight to their dashboard."""
+    if current_user.is_authenticated:
+        return redirect(url_for("pages.home_page"))
+    return render_template("landing.html")
+
+
 @bp.get("/login")
 def login_page():
     if current_user.is_authenticated:
@@ -95,8 +103,11 @@ def register_page():
 
 
 @bp.get("/")
-@login_required
 def home_page():
+    # Signed-out visitors see the public landing page instead of being bounced
+    # to /login, so the bare URL is a usable front door.
+    if not current_user.is_authenticated:
+        return redirect(url_for("pages.landing_page"))
     return render_template(
         "home.html",
         assistant_name=current_user.assistant_name(current_app.config["ASSISTANT_NAME"]),

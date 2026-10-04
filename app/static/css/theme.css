@@ -1,176 +1,165 @@
 /* ============================================================
-   StartBy Design System Tokens — Inspired by HeliiX (heliix.live)
-   Technical Blueprint & Neo-Brutalist Minimalism
+   StartBy design tokens. Warm paper + ink, one lavender accent, flat
+   surfaces with hairline borders. No gradients, glows or glass.
    ============================================================ */
 
 :root {
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: 'Instrument Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-heading: 'Fraunces', Georgia, 'Times New Roman', serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
 
-  /* Surfaces & Backgrounds - Heliix Light Mode */
-  --color-bg: #f4f6f8;
+  /* Surfaces */
+  --color-bg: #f8f6fd;
   --color-surface: #ffffff;
-  --color-surface-subtle: #f8fafc;
-  --color-surface-hover: #f1f5f9;
-  --color-surface-active: #e2e8f0;
+  --color-surface-subtle: #f4f1fb;
+  --color-surface-hover: #ede9f8;
+  --color-surface-active: #e2ddf3;
   --color-surface-elevated: #ffffff;
-  --color-surface-glass: rgba(255, 255, 255, 0.92);
+  --color-surface-glass: #ffffff;
 
-  /* Heliix Signature Technical Grid */
-  --grid-line-color: rgba(0, 0, 0, 0.06);
+  --grid-line-color: transparent;
   --grid-size: 24px;
 
-  /* Borders & Outlines - Heliix Crisp Contrast */
-  --color-border: #1e293b;
-  --color-border-subtle: #cbd5e1;
-  --color-border-hover: #0f172a;
-  --color-border-focus: #7c3aed;
+  /* Borders */
+  --color-border: #1a1730;
+  --color-border-subtle: #ddd8ee;
+  --color-border-hover: #1a1730;
+  --color-border-focus: #6552c9;
 
-  /* Typography */
-  --color-text: #0f172a;
-  --color-text-secondary: #334155;
-  --color-text-muted: #64748b;
-  --color-text-faint: #94a3b8;
+  /* Text */
+  --color-text: #1a1730;
+  --color-text-secondary: #423e5b;
+  --color-text-muted: #6a6682;
+  --color-text-faint: #9a95b2;
 
-  /* Heliix Primary Accents (Electric Indigo & Cyan Gradient) */
-  --color-primary: #7c3aed;
-  --color-primary-hover: #5b21b6;
+  /* Accent: lavender */
+  --accent-rgb: 101, 82, 201;
+  --success-rgb: 63, 125, 78;
+  --color-primary: #6552c9;
+  --color-primary-fg: #6552c9;
+  --color-primary-hover: #4f3fb0;
   --color-primary-text: #ffffff;
-  --color-primary-subtle: rgba(124, 58, 237, 0.09);
-  --color-primary-glow: rgba(124, 58, 237, 0.25);
-  --color-cyan: #0891b2;
-  --color-purple: #9333ea;
-  --gradient-primary: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-  --gradient-heliix: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-  --gradient-hero: linear-gradient(145deg, #0f172a 0%, #1e1b4b 100%);
+  --color-primary-subtle: rgba(101, 82, 201, 0.09);
+  --color-primary-glow: transparent;
+  --color-cyan: #2f5d8a;
+  --color-purple: #8b6fd6;
+  --gradient-primary: var(--color-primary);
+  --gradient-heliix: var(--color-primary);
+  --gradient-hero: var(--color-text);
 
-  /* Status Colors */
-  --color-success: #10b981;
-  --color-success-subtle: #ecfdf5;
-  --color-success-text: #047857;
+  /* Status */
+  --color-success: #3f7d4e;
+  --color-success-subtle: #e6efe3;
+  --color-success-text: #2e6140;
 
-  --color-warning: #f59e0b;
-  --color-warning-subtle: #fffbeb;
-  --color-warning-text: #b45309;
+  --color-warning: #a14fb8;
+  --warning-rgb: 161, 79, 184;
+  --color-warning-subtle: #f1e4f5;
+  --color-warning-text: #7a2f93;
 
-  --color-danger: #ef4444;
-  --color-danger-subtle: #fef2f2;
-  --color-danger-text: #b91c1c;
+  --color-danger: #c2570c;
+  --danger-rgb: 194, 87, 12;
+  --color-danger-subtle: #fbebdd;
+  --color-danger-text: #9a4308;
 
-  --color-info: #0284c7;
-  --color-info-subtle: #f0f9ff;
-  --color-info-text: #0369a1;
+  --color-info: #2f5d8a;
+  --color-info-subtle: #e0e8f0;
+  --color-info-text: #24476a;
 
-  /* Heliix Pastel Badges */
-  --color-tag-work: #0284c7;
-  --color-tag-work-bg: #e0f2fe;
-  --color-tag-study: #7c3aed;
-  --color-tag-study-bg: #ede9fe;
-  --color-tag-personal: #059669;
-  --color-tag-personal-bg: #d1fae5;
+  /* Tags */
+  --color-tag-work: #2f5d8a;
+  --color-tag-work-bg: #e0e8f0;
+  --color-tag-study: #6552c9;
+  --color-tag-study-bg: #e8e4f8;
+  --color-tag-personal: #2a7f86;
+  --color-tag-personal-bg: #d9eef0;
 
-  --color-badge-pending: #d97706;
-  --color-badge-done: #059669;
-  --color-badge-overdue: #dc2626;
+  --color-badge-pending: #a14fb8;
+  --color-badge-done: #3f7d4e;
+  --color-badge-overdue: #c2570c;
 
-  /* Heliix Tactile Offset Shadows */
-  --shadow-sketch: 2px 2px 0px var(--color-border);
-  --shadow-sketch-lg: 3px 3px 0px var(--color-border);
-  --shadow-xs: 1px 1px 0px var(--color-border);
-  --shadow-sm: 2px 2px 0px var(--color-border);
-  --shadow-md: 3px 3px 0px var(--color-border);
-  --shadow-lg: 4px 4px 0px var(--color-border);
-  --shadow-xl: 6px 6px 0px var(--color-border);
-  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.2);
+  /* Flat depth: hairlines, with real shadow only for floating layers */
+  --shadow-sketch: none;
+  --shadow-sketch-lg: none;
+  --shadow-xs: none;
+  --shadow-sm: 0 1px 0 rgba(28, 24, 16, 0.06);
+  --shadow-md: 0 1px 0 rgba(28, 24, 16, 0.08);
+  --shadow-lg: 0 10px 28px -14px rgba(28, 24, 16, 0.35);
+  --shadow-xl: 0 18px 44px -18px rgba(28, 24, 16, 0.4);
+  --shadow-glow: none;
 
-  /* Border Radii */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 20px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
   --radius-full: 9999px;
 
-  /* Transitions */
-  --transition-fast: 120ms cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-normal: 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: 120ms ease;
+  --transition-normal: 180ms ease;
 }
 
 [data-theme="dark"] {
-  /* Surfaces & Backgrounds - Heliix Dark Mode */
-  --color-bg: #0b0e17;
-  --color-surface: #121622;
-  --color-surface-subtle: #181d2c;
-  --color-surface-hover: #1e2436;
-  --color-surface-active: #283046;
-  --color-surface-elevated: #161c2b;
-  --color-surface-glass: rgba(18, 22, 34, 0.92);
+  --color-bg: #0f0e17;
+  --color-surface: #17151f;
+  --color-surface-subtle: #1c1a27;
+  --color-surface-hover: #27243a;
+  --color-surface-active: #342f48;
+  --color-surface-elevated: #1d1b2a;
+  --color-surface-glass: #17151f;
 
-  /* Heliix Dark Grid */
-  --grid-line-color: rgba(255, 255, 255, 0.04);
+  --grid-line-color: transparent;
 
-  /* Borders */
-  --color-border: rgba(255, 255, 255, 0.14);
-  --color-border-subtle: rgba(255, 255, 255, 0.08);
-  --color-border-hover: rgba(255, 255, 255, 0.24);
-  --color-border-focus: #c4b5fd;
+  --color-border: rgba(238, 235, 248, 0.2);
+  --color-border-subtle: rgba(238, 235, 248, 0.11);
+  --color-border-hover: rgba(238, 235, 248, 0.35);
+  --color-border-focus: #b8a9f2;
 
-  /* Typography */
-  --color-text: #ffffff;
-  --color-text-secondary: #cbd5e1;
-  --color-text-muted: #94a3b8;
-  --color-text-faint: #64748b;
+  --color-text: #eeebf8;
+  --color-text-secondary: #cac5df;
+  --color-text-muted: #9d98b4;
+  --color-text-faint: #757090;
 
-  /* Primary Brand (Electric Indigo & Cyan Gradient) */
-  --color-primary: #a78bfa;
-  --color-primary-hover: #c4b5fd;
-  --color-primary-text: #ffffff;
-  --color-primary-subtle: rgba(167, 139, 250, 0.16);
-  --color-primary-glow: rgba(167, 139, 250, 0.35);
-  --color-cyan: #22d3ee;
-  --color-purple: #c084fc;
-  --gradient-primary: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-  --gradient-heliix: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-  --gradient-hero: linear-gradient(145deg, #0b0e17 0%, #161b2e 100%);
+  --accent-rgb: 184, 169, 242;
+  --success-rgb: 127, 192, 143;
+  --color-primary: #b8a9f2;
+  --color-primary-fg: #b8a9f2;
+  --color-primary-hover: #cfc4f7;
+  --color-primary-text: #14121f;
+  --color-primary-subtle: rgba(184, 169, 242, 0.13);
+  --color-cyan: #8db4dc;
+  --color-purple: #d4c8f8;
+  --gradient-hero: var(--color-surface-subtle);
 
-  /* Status Colors */
-  --color-success: #34d399;
-  --color-success-subtle: rgba(52, 211, 153, 0.15);
-  --color-success-text: #6ee7b7;
+  --color-success: #7fc08f;
+  --color-success-subtle: rgba(127, 192, 143, 0.14);
+  --color-success-text: #a3d7b0;
+  --color-warning: #d9a0ec;
+  --warning-rgb: 217, 160, 236;
+  --color-warning-subtle: rgba(217, 160, 236, 0.14);
+  --color-warning-text: #e8c0f4;
+  --color-danger: #f0985a;
+  --danger-rgb: 240, 152, 90;
+  --color-danger-subtle: rgba(240, 152, 90, 0.14);
+  --color-danger-text: #f6b68a;
+  --color-info: #8db4dc;
+  --color-info-subtle: rgba(141, 180, 220, 0.14);
+  --color-info-text: #b4cde8;
 
-  --color-warning: #fbbf24;
-  --color-warning-subtle: rgba(251, 191, 36, 0.15);
-  --color-warning-text: #fde68a;
+  --color-tag-work: #8db4dc;
+  --color-tag-work-bg: rgba(141, 180, 220, 0.14);
+  --color-tag-study: #b8a9f2;
+  --color-tag-study-bg: rgba(184, 169, 242, 0.14);
+  --color-tag-personal: #7cc7cc;
+  --color-tag-personal-bg: rgba(124, 199, 204, 0.14);
 
-  --color-danger: #f87171;
-  --color-danger-subtle: rgba(248, 113, 113, 0.15);
-  --color-danger-text: #fca5a5;
+  --color-badge-pending: #d9a0ec;
+  --color-badge-done: #7fc08f;
+  --color-badge-overdue: #f0985a;
 
-  --color-info: #38bdf8;
-  --color-info-subtle: rgba(56, 189, 248, 0.15);
-  --color-info-text: #7dd3fc;
-
-  /* Category Tags */
-  --color-tag-work: #38bdf8;
-  --color-tag-work-bg: rgba(56, 189, 248, 0.12);
-  --color-tag-study: #c084fc;
-  --color-tag-study-bg: rgba(192, 132, 252, 0.12);
-  --color-tag-personal: #34d399;
-  --color-tag-personal-bg: rgba(52, 211, 153, 0.12);
-
-  /* Badges */
-  --color-badge-pending: #fbbf24;
-  --color-badge-done: #34d399;
-  --color-badge-overdue: #f87171;
-
-  /* Shadows - Dark Tactile Offset Depth */
-  --shadow-sketch: 2px 2px 0px rgba(0, 0, 0, 0.7);
-  --shadow-sketch-lg: 3px 3px 0px rgba(0, 0, 0, 0.8);
-  --shadow-xs: 1px 1px 0px rgba(0, 0, 0, 0.4);
-  --shadow-sm: 2px 2px 0px rgba(0, 0, 0, 0.5);
-  --shadow-md: 3px 3px 0px rgba(0, 0, 0, 0.6);
-  --shadow-lg: 4px 4px 0px rgba(0, 0, 0, 0.7);
-  --shadow-xl: 6px 6px 0px rgba(0, 0, 0, 0.8);
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: 0 10px 28px -14px rgba(0, 0, 0, 0.7);
+  --shadow-xl: 0 18px 44px -18px rgba(0, 0, 0, 0.8);
 }
 
 /* ============================================================

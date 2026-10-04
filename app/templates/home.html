@@ -17,6 +17,20 @@
   </div>
 </div>
 
+{% if feature_flags.insights %}
+<div id="overload-banner" class="overload-banner" hidden role="status">
+  <span id="overload-banner-text"></span>
+  <a href="{{ url_for('pages.insights_page') }}">View insights</a>
+</div>
+{% endif %}
+
+{% if feature_flags.estimates %}
+<section id="do-this-now" class="do-this-now" hidden>
+  <h2 class="do-this-now__title">Do this now</h2>
+  <ul id="do-this-now-card" class="due-next-list"></ul>
+</section>
+{% endif %}
+
 <!-- Compact Metric Cards -->
 <div class="counter-grid">
   <div class="counter-card counter-card--total">
@@ -71,7 +85,6 @@
   </div>
 </div>
 
-<!-- Primary Dashboard Columns (Quick Capture & Priority Radar) -->
 {% if feature_flags.voice %}
 <section id="assistant-card" class="assistant-card" aria-labelledby="assistant-title">
   <div class="assistant-card__head">
@@ -100,20 +113,7 @@
 </section>
 {% endif %}
 
-{% if feature_flags.insights %}
-<div id="overload-banner" class="overload-banner" hidden role="status">
-  <span id="overload-banner-text"></span>
-  <a href="{{ url_for('pages.insights_page') }}">View insights</a>
-</div>
-{% endif %}
-
-{% if feature_flags.estimates %}
-<section id="do-this-now" class="do-this-now" hidden>
-  <h2 class="do-this-now__title">Do this now</h2>
-  <ul id="do-this-now-card" class="due-next-list"></ul>
-</section>
-{% endif %}
-
+<!-- Primary Dashboard Columns (Quick Capture & Priority Radar) -->
 <div class="dashboard__columns">
   <!-- Quick Capture -->
   <div class="dashboard__quick-add">

@@ -1,0 +1,132 @@
+/* ============================================================
+   StartBy skin: loaded last. Editorial type, flat surfaces, no lifts.
+   Keeps the earlier layers intact; delete the <link> to compare.
+   ============================================================ */
+body { font-family: var(--font-sans); font-feature-settings: "ss01", "cv11"; }
+
+/* Serif for titles, sans for everything you act on */
+h1, h2, h3, .page-header__title, .auth-title, .card-title, .panel__title,
+.do-now__title, .insight-card__title {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  font-variation-settings: "opsz" 48;
+}
+.page-header__title { font-size: clamp(1.7rem, 2.6vw, 2.2rem); }
+.brand-monogram__name { font-family: var(--font-heading) !important; font-weight: 700 !important; letter-spacing: -0.01em !important; }
+
+/* Numbers read as data */
+.counter-card__value, .sidebar-today__num { font-family: var(--font-heading); font-weight: 600; letter-spacing: -0.02em; }
+
+/* Stat cards: one hairline, no rainbow tops */
+.counter-card, .counter-card--total, .counter-card--pending,
+.counter-card--completed, .counter-card--overdue {
+  border: 1px solid var(--color-border-subtle) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: none !important;
+}
+.counter-card__icon { border-radius: var(--radius-sm) !important; }
+
+/* Surfaces: hairlines instead of heavy ink outlines */
+.card, .panel, .task-card, .modal, dialog, .auth-card, .assistant-card,
+.counter-card, .sidebar-today, .do-now, .overload-banner {
+  border-color: var(--color-border-subtle);
+}
+[data-theme="light"] .card, [data-theme="light"] .panel, [data-theme="light"] .task-card { border-color: var(--color-border-subtle); }
+
+/* Flat interaction: colour change, no float */
+.btn, .btn:hover, .btn:active, .nav-item:hover, .theme-switch-btn:hover,
+.counter-card:hover, .task-card:hover, .card:hover {
+  transform: none !important;
+}
+.btn, .btn-primary, .btn-secondary, .btn-ghost, input, select, textarea {
+  border-radius: var(--radius-md);
+}
+.btn-primary { box-shadow: none !important; }
+.btn-primary:hover { background: var(--color-primary-hover) !important; }
+.brand-monogram__logo { border-radius: var(--radius-md) !important; border: 0 !important; box-shadow: none !important; background: var(--color-primary) !important; }
+.theme-switch-btn { box-shadow: none; }
+.theme-switch-btn:hover { box-shadow: none; }
+
+/* Quiet focus ring in the accent colour */
+:focus-visible { outline: 2px solid var(--color-border-focus); outline-offset: 2px; }
+
+/* Pills & badges: small square-ish chips, not bubbles */
+.badge, .tag, .tag-pill, .status-badge, .focus-status-badge { border-radius: var(--radius-sm); }
+
+/* Floating action button: flat disc */
+.fab-mic { box-shadow: var(--shadow-lg); }
+
+.btn-primary, .btn--primary { border-color: var(--color-primary) !important; }
+.btn-primary:hover, .btn--primary:hover { border-color: var(--color-primary-hover) !important; }
+
+/* Filled accent controls: text colour follows the theme (white on deep lavender, ink on light lavender) */
+.btn-primary, .btn--primary, .btn-primary *, .btn--primary *,
+.sidebar-action-wrap .btn, .sidebar-action-wrap .btn *, .fab-mic, .fab-mic svg {
+  color: var(--color-primary-text) !important;
+}
+
+/* Same rule for every other filled-accent control that hard-coded white text */
+.btn-sidebar-add, .btn-sidebar-add *, .btn-auth-submit, .btn-auth-submit *,
+.oauth-custom-btn, .vnotes__mic, .vnotes__mic *, .brand-monogram__logo,
+.user-avatar, .act-icon--created, .nav-item--active .nav-icon {
+  color: var(--color-primary-text) !important;
+}
+[data-theme="dark"] .nav-item--active { color: var(--color-primary-fg) !important; background: var(--color-primary-subtle) !important; }
+
+/* Beat the older theme-specific white-text rules on filled buttons */
+html[data-theme] .btn--primary, html[data-theme] .btn-primary,
+html[data-theme] .btn--primary *, html[data-theme] .btn-primary * {
+  color: var(--color-primary-text) !important;
+}
+
+/* ============================================================
+   Declutter pass: fewer boxes, one clear focus per screen
+   ============================================================ */
+
+/* The theme toggle already lives in the sidebar footer (and the mobile bar);
+   the floating copy and the date badge only added noise. */
+.app-top-header, .focus-status-badge { display: none !important; }
+
+/* Page header: title and one line of context, then air */
+.page-header { margin-bottom: 1.4rem; padding-bottom: 1rem; }
+.page-header__desc { margin-top: 0.25rem; }
+
+/* Dashboard order is alert -> do this now -> numbers -> tools. Give it room. */
+.overload-banner {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.4rem 1rem;
+  padding: 0.6rem 0.9rem; margin-bottom: 1rem; font-size: 0.9rem;
+}
+.do-this-now { margin-bottom: 1.25rem; }
+
+/* Stat cards: one quiet row, numbers lead */
+.counter-grid { gap: 0.75rem; margin-bottom: 1.25rem; }
+.counter-card { padding: 0.8rem 1rem !important; }
+.counter-card__top { margin-bottom: 0.15rem; }
+.counter-card__icon { display: none; }
+.counter-card__value { font-size: 1.6rem !important; }
+
+/* Assistant: a slim bar instead of a card */
+.assistant-card { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; padding: 0.7rem 0.9rem !important; margin-bottom: 1.25rem; }
+.assistant-card__head { flex: 0 0 auto; gap: 0.75rem; flex-wrap: nowrap; }
+.assistant-card__sub, .assistant-card__hint { display: none; }
+.assistant-card__title { margin: 0; font-size: 1rem; }
+.assistant-card .assistant-ask { flex: 1 1 22rem; margin-top: 0; flex-wrap: nowrap; }
+.assistant-card .assistant-ask input { flex: 1 1 auto; min-width: 0; }
+.assistant-card .voice-status, .assistant-card__output { flex: 1 0 100%; margin: 0; }
+.assistant-card .voice-status:empty { display: none; }
+
+/* Task cards: the row reads title -> chips; actions appear on intent */
+.task-card { padding: 0.9rem 1rem; }
+.task-list, .task-card + .task-card { gap: 0.6rem; }
+.task-card__actions { opacity: 0; transition: opacity var(--transition-fast); }
+.task-card:hover .task-card__actions, .task-card:focus-within .task-card__actions { opacity: 1; }
+@media (hover: none) { .task-card__actions { opacity: 1; } }
+.task-card__actions span { display: none; }
+.task-card__why { margin-top: 0.4rem; }
+.task-card__why summary { font-size: 0.8rem; }
+.task-card__why .task-card__replan { margin-top: 0.4rem; padding-left: 0.6rem; border-left: 2px solid var(--color-danger); font-size: 0.82rem; color: var(--color-text-secondary); }
+.task-card__replan { border-left: 0; }
+
+/* Dashboard columns: radar leads, quick add is the narrow helper */
+.dashboard__columns { gap: 1.25rem; }
