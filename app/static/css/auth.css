@@ -23,7 +23,7 @@
 }
 
 [data-theme="dark"] .auth-page {
-  background-color: #0b0e17;
+  background-color: var(--color-bg);
 }
 
 /* Floating top bar for theme toggle and brand home */
@@ -44,7 +44,7 @@
   background: var(--color-surface);
   color: var(--color-text);
   border: 1.5px solid var(--color-border);
-  box-shadow: 2px 2px 0px var(--color-border);
+  box-shadow: none;
   padding: 0.45rem 0.85rem;
   border-radius: 8px;
   font-size: 0.82rem;
@@ -57,7 +57,7 @@
   background: var(--color-surface-hover);
   color: var(--color-text);
   transform: translate(-1px, -1px);
-  box-shadow: 3px 3px 0px var(--color-border);
+  box-shadow: none;
 }
 
 .theme-switch-btn:active {
@@ -86,14 +86,14 @@
   border: 1.5px solid var(--color-border);
   border-radius: 12px;
   padding: 2.25rem 2rem;
-  box-shadow: 4px 4px 0px var(--color-border);
+  box-shadow: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 [data-theme="dark"] .auth-card {
-  background: #121622;
+  background: var(--color-surface);
   border-color: rgba(255, 255, 255, 0.14);
-  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.8);
+  box-shadow: none;
 }
 
 /* Brand Header */
@@ -110,7 +110,7 @@
   height: 52px;
   background: var(--color-surface);
   border: 1.5px solid var(--color-border);
-  box-shadow: 2px 2px 0px var(--color-border);
+  box-shadow: none;
   border-radius: 12px;
   color: #ffffff;
   margin-bottom: 1.25rem;
@@ -166,7 +166,7 @@
   padding: 0.15rem 0.45rem;
   border-radius: 6px;
   background: var(--color-primary-subtle);
-  color: var(--color-primary);
+  color: var(--color-primary-fg);
 }
 
 .demo-pill__text {
@@ -181,7 +181,7 @@
   gap: 0.3rem;
   font-size: 0.78rem;
   font-weight: 600;
-  color: var(--color-primary);
+  color: var(--color-primary-fg);
 }
 
 /* Social Buttons Grid */
@@ -200,7 +200,7 @@
   height: 42px;
   background: var(--color-surface);
   border: 1.5px solid var(--color-border);
-  box-shadow: 2px 2px 0px var(--color-border);
+  box-shadow: none;
   border-radius: 8px;
   font-size: 0.88rem;
   font-weight: 700;
@@ -213,7 +213,7 @@
   background: var(--color-surface-hover);
   border-color: var(--color-border-hover);
   transform: translate(-1px, -1px);
-  box-shadow: 3px 3px 0px var(--color-border);
+  box-shadow: none;
 }
 
 .social-auth-btn:active {
@@ -288,7 +288,7 @@
 }
 
 [data-theme="dark"] .form-input {
-  background: #090e1a;
+  background: var(--color-surface-subtle);
   border-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -387,7 +387,7 @@
 }
 
 .forgot-password-link {
-  color: var(--color-primary);
+  color: var(--color-primary-fg);
   text-decoration: none;
   font-weight: 500;
   transition: opacity 0.15s ease;
@@ -445,7 +445,7 @@
   background: var(--color-primary);
   color: #ffffff !important;
   border: 1.5px solid var(--color-border);
-  box-shadow: 2.5px 2.5px 0px var(--color-border);
+  box-shadow: none;
   border-radius: 8px;
   font-size: 0.95rem;
   font-weight: 700;
@@ -460,7 +460,7 @@
 
 .btn-auth-submit:hover {
   transform: translate(-1px, -1px);
-  box-shadow: 3.5px 3.5px 0px var(--color-border);
+  box-shadow: none;
 }
 
 .btn-auth-submit:active {
@@ -525,7 +525,7 @@
 }
 
 .auth-switch-text a {
-  color: var(--color-primary);
+  color: var(--color-primary-fg);
   font-weight: 600;
   text-decoration: none;
   margin-left: 0.25rem;
@@ -549,7 +549,6 @@
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -665,7 +664,7 @@
   height: 32px;
   border-radius: 50%;
   background: var(--color-primary-subtle);
-  color: var(--color-primary);
+  color: var(--color-primary-fg);
   display: flex;
   align-items: center;
   justify-content: center;

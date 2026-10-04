@@ -65,12 +65,13 @@ const ICONS = {
 const openExplanations = new Set();
 
 function renderExplanation(task) {
-  if (task.status !== "pending" || !task.start_by_explanation) {
+  if (task.status !== "pending" || (!task.start_by_explanation && !task.replan)) {
     return "";
   }
   return `<details class="task-card__why" ${openExplanations.has(task.id) ? "open" : ""}>
     <summary>Why this start time?</summary>
-    <p>${escapeHtml(task.start_by_explanation)}</p>
+    ${task.start_by_explanation ? `<p>${escapeHtml(task.start_by_explanation)}</p>` : ""}
+    ${renderReplan(task)}
   </details>`;
 }
 
@@ -102,7 +103,6 @@ export function renderTaskCard(task, handlers = {}) {
           ${task.due_at ? `<span class="task-card__due">${ICONS.clock} <span>${formatDateTime(task.due_at)}</span></span>` : ""}
           ${renderStartBy(task)}
         </div>
-        ${renderReplan(task)}
         ${renderExplanation(task)}
       </div>
     </div>
