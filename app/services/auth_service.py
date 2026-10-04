@@ -2,6 +2,7 @@
 
 import re
 import sqlite3
+from zoneinfo import available_timezones
 
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -13,12 +14,26 @@ from app.validation import require_str
 
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 MIN_PASSWORD_LENGTH = 8
+# Unbounded fields let one anonymous request put megabytes in the database (and
+# push it past the nightly backup's size limit).
+MAX_NAME_LENGTH = 100
+MAX_EMAIL_LENGTH = 254
+MAX_PASSWORD_LENGTH = 128
 
 # Hashed once at import time and used whenever the email doesn't match any
 # account, so authenticate() always pays the same hashing cost — without
 # this, an unknown email returns faster than a wrong password and response
 # timing alone reveals which accounts exist.
 _DUMMY_PASSWORD_HASH = generate_password_hash("not-a-real-password-used-only-for-timing-safety")
+
+
+def pick_timezone(requested: object, default: str) -> str:
+    """The browser's own timezone if it sent a valid one, else the default.
+    Without this every new account is on Asia/Kolkata whatever their clock says,
+    and the times they type and the times they are shown drift apart."""
+    if isinstance(requested, str) and requested in available_timezones():
+        return requested
+    return default
 
 
 def register(
@@ -30,8 +45,14 @@ def register(
 
     if not name:
         raise ApiError("validation", "Name is required", 422)
-    if not EMAIL_RE.match(email):
+    if len(name) > MAX_NAME_LENGTH:
+        raise ApiError("validation", f"Name must be at most {MAX_NAME_LENGTH} characters", 422)
+    if len(email) > MAX_EMAIL_LENGTH or not EMAIL_RE.match(email):
         raise ApiError("validation", "A valid email is required", 422)
+    if len(password) > MAX_PASSWORD_LENGTH:
+        raise ApiError(
+            "validation", f"Password must be at most {MAX_PASSWORD_LENGTH} characters", 422
+        )
     if not password or len(password) < MIN_PASSWORD_LENGTH:
         raise ApiError(
             "validation", f"Password must be at least {MIN_PASSWORD_LENGTH} characters", 422
@@ -40,14 +61,19 @@ def register(
         raise ApiError("email_taken", "An account with that email already exists", 422)
 
     password_hash = generate_password_hash(password)
-    row = user_repo.create(
-        conn,
-        name=name,
-        email=email,
-        password_hash=password_hash,
-        timezone=timezone,
-        created_at=timeutil.utcnow_iso(),
-    )
+    try:
+        row = user_repo.create(
+            conn,
+            name=name,
+            email=email,
+            password_hash=password_hash,
+            timezone=timezone,
+            created_at=timeutil.utcnow_iso(),
+        )
+    except sqlite3.IntegrityError as exc:
+        # Two tabs / a double click registering the same email at once: the
+        # check above passed for both, the UNIQUE index stops the second.
+        raise ApiError("email_taken", "An account with that email already exists", 422) from exc
     return User(row)
 
 

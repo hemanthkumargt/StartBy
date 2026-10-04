@@ -1,6 +1,7 @@
 [Unit]
 Description=StartBy Flask app (Gunicorn)
-After=network.target
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=simple
@@ -8,7 +9,17 @@ User=www-data
 Group=www-data
 WorkingDirectory=/opt/startby
 EnvironmentFile=/opt/startby/.env
-ExecStart=/opt/startby/.venv/bin/gunicorn --workers 2 --bind 127.0.0.1:8000 wsgi:app
+# gthread: a worker serves several requests at once, so a slow Gemini or SMTP call
+# does not block the whole worker. 2 workers x 4 threads fits the 1 GB e2-micro.
+# --max-requests recycles workers (jitter staggers them) to cap slow memory growth;
+# --worker-tmp-dir on tmpfs keeps gunicorn's heartbeat file off the disk.
+ExecStart=/opt/startby/.venv/bin/gunicorn --worker-class gthread --threads 4 --workers 2 \
+  --timeout 60 --graceful-timeout 20 --max-requests 1000 --max-requests-jitter 100 \
+  --worker-tmp-dir /dev/shm --bind 127.0.0.1:8000 wsgi:app
+# Longer than --graceful-timeout so workers can finish and drain queued Google jobs.
+TimeoutStopSec=30
+StandardOutput=append:/var/log/startby/app.log
+StandardError=append:/var/log/startby/app.log
 Restart=always
 RestartSec=3
 

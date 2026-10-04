@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Smart Capture — StartBy{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header__left">
+    <h1 class="page-header__title">Smart Capture</h1>
+    <p class="page-header__desc">Paste a syllabus, email or chat — or upload a PDF — and review the tasks drafted from it. Nothing is saved until you confirm.</p>
+  </div>
+</div>
+
+<section class="card capture-input">
+  <form id="capture-form" novalidate>
+    <div class="form-group">
+      <div class="capture-label-row">
+        <label for="capture-text">Text to scan</label>
+        {% if feature_flags.voice %}
+        <button type="button" id="voice-mic-btn" class="btn btn--secondary btn--sm voice-mic" aria-pressed="false">
+          <span aria-hidden="true">&#127908;</span> <span id="voice-mic-label">Speak</span>
+        </button>
+        {% endif %}
+      </div>
+      {% if feature_flags.voice %}
+      <p id="voice-status" class="voice-status" role="status" aria-live="polite">Tap Speak and say, for example: &ldquo;Submit the lab record by Friday 5 pm, two hours.&rdquo; You review everything before it is saved.</p>
+      {% endif %}
+      <textarea id="capture-text" rows="8" maxlength="20000"
+        placeholder="e.g. Assignment 3 due Friday 5pm&#10;Lab record submission next Tuesday&#10;Book dentist appointment"></textarea>
+    </div>
+    <div class="form-group">
+      <label for="capture-file">…or a PDF (up to 5 MB, text-based)</label>
+      <input id="capture-file" type="file" accept="application/pdf,.pdf">
+    </div>
+    <p class="capture-privacy">Avoid pasting sensitive personal data — the AI service may process what you submit.</p>
+    <div id="capture-error" class="form-error" role="alert" hidden></div>
+    <div class="modal-actions">
+      <button type="submit" id="capture-extract-btn" class="btn btn--primary">Extract tasks</button>
+    </div>
+  </form>
+</section>
+
+<p class="field-hint capture-tz-hint">Dates are in your timezone: {{ current_user.timezone }}.</p>
+
+<section id="capture-results" class="card capture-results" hidden aria-live="polite">
+  <div id="capture-banner" class="capture-banner"></div>
+  <ul id="capture-drafts" class="capture-drafts"></ul>
+  <p id="capture-empty" class="empty-state__desc" hidden>No tasks found in that text. Try adding clearer action items.</p>
+  <div class="modal-actions">
+    <button type="button" id="capture-discard-btn" class="btn btn--secondary">Discard</button>
+    <button type="button" id="capture-save-btn" class="btn btn--primary">Save selected</button>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='js/capture.js') }}?v=2"></script>
+{% if feature_flags.voice %}<script type="module" src="{{ url_for('static', filename='js/voice-capture.js') }}?v=1"></script>{% endif %}
+{% endblock %}

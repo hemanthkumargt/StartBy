@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Insights — StartBy{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header__left">
+    <h1 class="page-header__title">Insights</h1>
+    <p class="page-header__desc">Workload pressure right now, and how well your time estimates match reality.</p>
+  </div>
+</div>
+
+<div class="insights-grid">
+<section id="overload-card" class="card insights-card" aria-live="polite">
+  <h2 class="insights-card__title">Workload</h2>
+  <p id="overload-message" class="insights-message">Loading…</p>
+  <ul id="overload-tasks" class="insights-list"></ul>
+</section>
+
+<section id="report-card" class="card insights-card">
+  <h2 class="insights-card__title">Estimation report card</h2>
+  <p id="report-summary" class="insights-message">Loading…</p>
+  <p id="report-trend" class="insights-trend" hidden></p>
+
+  <div id="report-by-tag-wrap" hidden>
+    <h3 class="insights-subtitle">By tag</h3>
+    <table class="insights-table">
+      <thead><tr><th>Tag</th><th>Tasks</th><th>Actual vs estimate</th><th>Planning multiplier</th></tr></thead>
+      <tbody id="report-by-tag"></tbody>
+    </table>
+  </div>
+
+  <div id="report-series-wrap" hidden>
+    <h3 class="insights-subtitle">Recent tasks (actual ÷ estimate)</h3>
+    <ul id="report-series" class="insights-bars"></ul>
+  </div>
+</section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='js/insights.js') }}?v=1"></script>
+{% endblock %}

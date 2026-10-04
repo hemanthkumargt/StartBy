@@ -1,7 +1,7 @@
 import { apiFetch } from "./api.js";
 import { showToast } from "./toast.js";
 import { renderTaskCard, toggleComplete } from "./tasks.js";
-import { fromLocalInputValue } from "./datetime.js";
+import { DateInputError, fromLocalInputValue } from "./datetime.js";
 
 const countEls = {
   total: document.getElementById("count-total"),
@@ -21,7 +21,21 @@ function updateGreeting() {
   const prefixEl = document.getElementById("dashboard-greeting-prefix");
   if (!prefixEl) return;
 
-  const hour = new Date().getHours();
+  const meta = document.querySelector('meta[name="user-timezone"]');
+  let hour = new Date().getHours();
+  try {
+    if (meta && meta.content) {
+      hour = Number(
+        new Intl.DateTimeFormat("en-GB", {
+          hour: "2-digit",
+          hourCycle: "h23",
+          timeZone: meta.content,
+        }).format(new Date())
+      );
+    }
+  } catch {
+    // unknown zone in this browser: keep the browser's own hour
+  }
   let timeOfDay = "Good morning";
   if (hour >= 12 && hour < 17) {
     timeOfDay = "Good afternoon";
@@ -31,7 +45,86 @@ function updateGreeting() {
   prefixEl.textContent = timeOfDay;
 }
 
+// The overload banner only exists in the DOM when FEATURE_INSIGHTS is on
+// (see home.html); a failure here must never break the rest of the
+// dashboard, so it has its own error handling and stays silent.
+async function loadOverloadBanner() {
+  const banner = document.getElementById("overload-banner");
+  if (!banner) return;
+  try {
+    const { overload } = await apiFetch("/api/insights");
+    banner.hidden = overload.level === "none";
+    banner.dataset.level = overload.level;
+    document.getElementById("overload-banner-text").textContent = overload.message;
+  } catch {
+    banner.hidden = true;
+  }
+}
+
+const TAGS = ["study", "work", "personal"];
+
+// Completion widget + shortcut counts, computed from the user's real tasks —
+// these used to be static placeholders ("0%", "Steady Progress") that never
+// changed, which read as real data. On failure they stay as dashes.
+let progressSeq = 0;
+async function loadProgress() {
+  const pctText = document.getElementById("velocity-pct-text");
+  if (!pctText) return;
+  const seq = ++progressSeq;
+  try {
+    const tasks = await apiFetch("/api/tasks");
+    if (seq !== progressSeq) return; // a newer load is in flight; this one is stale
+    const pct = (done, total) => (total === 0 ? 0 : Math.round((done / total) * 100));
+    const done = tasks.filter((t) => t.status === "done").length;
+    const overall = pct(done, tasks.length);
+    pctText.textContent = tasks.length === 0 ? "—" : `${overall}%`;
+    document.getElementById("velocity-fill-bar").style.width = `${overall}%`;
+
+    for (const tag of TAGS) {
+      const inTag = tasks.filter((t) => t.tag === tag);
+      const doneInTag = inTag.filter((t) => t.status === "done").length;
+      document.getElementById(`stat-${tag}-ratio`).textContent = `${doneInTag} of ${inTag.length} done`;
+      document.getElementById(`mini-bar-${tag}`).style.width = `${pct(doneInTag, inTag.length)}%`;
+    }
+
+    const badge = document.getElementById("momentum-badge");
+    const overdue = tasks.filter((t) => t.status === "pending" && t.is_overdue).length;
+    badge.classList.remove("momentum-tag--warning", "momentum-tag--high");
+    if (tasks.length === 0) {
+      badge.textContent = "No tasks yet";
+    } else if (overdue > 0) {
+      badge.textContent = `${overdue} overdue`;
+      badge.classList.add("momentum-tag--warning");
+    } else if (overall >= 70) {
+      badge.textContent = "Strong progress";
+      badge.classList.add("momentum-tag--high");
+    } else {
+      badge.textContent = `${overall}% done`;
+    }
+
+    const pending = tasks.length - done;
+    const shortcut = document.getElementById("shortcut-pending-count");
+    if (shortcut) shortcut.textContent = `${pending} active ${pending === 1 ? "task" : "tasks"}`;
+  } catch {
+    // The main dashboard load already reports API failures; keep the dashes.
+  }
+}
+
+function showTodayDate() {
+  const el = document.getElementById("dashboard-live-date");
+  if (!el) return;
+  const meta = document.querySelector('meta[name="user-timezone"]');
+  el.textContent = new Date().toLocaleDateString(undefined, {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    timeZone: meta && meta.content ? meta.content : undefined,
+  });
+}
+
 async function loadDashboard() {
+  loadOverloadBanner();
+  loadProgress();
   const dueNextList = document.getElementById("due-next-list");
   const dueNextEmpty = document.getElementById("due-next-empty");
   if (!dueNextList) return;
@@ -85,8 +178,18 @@ if (quickAddForm) {
     const payload = {
       title: quickAddForm.elements.title.value,
       tag: quickAddForm.elements.tag.value,
-      due_at: fromLocalInputValue(quickAddForm.elements.due_at.value),
     };
+    try {
+      payload.due_at = fromLocalInputValue(quickAddForm.elements.due_at.value);
+    } catch (err) {
+      if (!(err instanceof DateInputError)) throw err;
+      if (errorEl) {
+        errorEl.textContent = err.message;
+        errorEl.hidden = false;
+      }
+      if (submitBtn) submitBtn.disabled = false;
+      return;
+    }
 
     try {
       await apiFetch("/api/tasks", { method: "POST", body: JSON.stringify(payload) });
@@ -115,5 +218,6 @@ if (quickAddForm) {
 
 
   updateGreeting();
+  showTodayDate();
   loadDashboard();
 }

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Tasks — Kairo{% endblock %}
+{% block title %}Tasks — StartBy{% endblock %}
 
 {% block content %}
 <section class="tasks-page">
@@ -108,6 +108,7 @@
     <div class="form-group">
       <label for="task-due-input">Target Deadline (optional)</label>
       <input id="task-due-input" name="due_at" type="datetime-local">
+      <small class="field-hint">Times are in your timezone: {{ current_user.timezone }} (change in Settings)</small>
     </div>
 
     {% if feature_flags.estimates %}

@@ -7,6 +7,19 @@ from app import create_app
 from app.config import Config
 
 
+@pytest.fixture(autouse=True)
+def _signed_cookies_ignore_frozen_time(monkeypatch):
+    """Session cookies are timestamped by itsdangerous. Several tests freeze
+    the clock at a fixed past instant; a cookie minted outside the freeze
+    (fixtures) then looks like it comes from the future once the real clock
+    passes that instant, and is rejected. Timestamp cookies from the real
+    clock, which freezegun exposes as real_time."""
+    from freezegun import api
+    from itsdangerous import timed
+
+    monkeypatch.setattr(timed.TimestampSigner, "get_timestamp", lambda self: int(api.real_time()))
+
+
 @pytest.fixture
 def app():
     with tempfile.TemporaryDirectory() as tmp_dir:

@@ -132,3 +132,63 @@ def test_no_history_fallback_matches_multiplier_from_history_at_n_zero():
     a value outside [MULTIPLIER_MIN, MULTIPLIER_MAX], this test fails
     instead of the two silently diverging."""
     assert DEFAULT_MULTIPLIER == estimate_service.multiplier_from_history(0, 0.0)
+
+
+def test_explain_start_by_cold_start_says_so_and_matches_the_i10_worked_example():
+    # Same numbers as test_I10_start_by_worked_example: 2h x 1.5 x 1.15 = 3h27m.
+    text = estimate_service.explain_start_by(2.0, 1.5, tag="study", learned=False)
+    assert text == (
+        "You estimated 2h. You have no completed study tasks yet, so we assume 1.50x "
+        "until we learn your pace and plan for 3h, plus a 15% buffer, which is 3h 27m. "
+        "Start that long before the due time."
+    )
+
+
+def test_explain_start_by_learned_multiplier_credits_the_users_own_history():
+    text = estimate_service.explain_start_by(2.0, 1.718134, tag="study", learned=True)
+    assert "Your completed study tasks suggest planning for about 1.72x your estimates" in text
+    assert "which is 3h 57m" in text
+
+
+def test_explain_start_by_formats_sub_hour_amounts_in_minutes():
+    text = estimate_service.explain_start_by(0.25, 1.0, tag="work", learned=True)
+    assert text.startswith("You estimated 15m.")
+    assert "which is 17m" in text
+
+
+# ---- Adaptive Replanning -------------------------------------------------
+
+
+def test_replan_after_missed_start_says_start_now_and_how_late_it_will_finish():
+    from freezegun import freeze_time
+
+    from app.services import estimate_service
+
+    # 3.5h of planned work, due 10:00 -> start_by was 06:30; it is now 08:00.
+    with freeze_time("2026-10-04T08:00:00"):
+        replan = estimate_service.compute_replan("2026-10-04T10:00:00", "2026-10-04T06:30:00")
+    assert replan == {
+        "start_at": "2026-10-04T08:00:00",
+        "projected_finish": "2026-10-04T11:30:00",
+        "late_by_hours": 1.04,
+    }
+
+
+def test_replan_right_at_start_by_is_not_late():
+    from freezegun import freeze_time
+
+    from app.services import estimate_service
+
+    with freeze_time("2026-10-04T06:30:00"):
+        replan = estimate_service.compute_replan("2026-10-04T10:00:00", "2026-10-04T06:30:00")
+    assert replan["late_by_hours"] == 0
+    assert "still finish before" in estimate_service.describe_replan(replan, 3.5)
+
+
+def test_describe_replan_mentions_extension_when_late():
+    from app.services import estimate_service
+
+    text = estimate_service.describe_replan(
+        {"start_at": "x", "projected_finish": "y", "late_by_hours": 1.5}, 3.5
+    )
+    assert "3h 30m" in text and "1h 30m after the due time" in text and "extension" in text

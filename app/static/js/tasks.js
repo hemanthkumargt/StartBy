@@ -1,6 +1,6 @@
 import { apiFetch } from "./api.js";
 import { showToast } from "./toast.js";
-import { formatDateTime, fromLocalInputValue, toLocalInputValue } from "./datetime.js";
+import { DateInputError, formatDateTime, fromLocalInputValue, toLocalInputValue } from "./datetime.js";
 import { escapeHtml } from "./dom.js";
 
 // risk/start_by only exist in the payload at all when FEATURE_ESTIMATES is
@@ -23,6 +23,28 @@ function renderStartBy(task) {
   return `<span class="task-card__start-by task-card__start-by--${task.risk}">${label}${detail}</span>`;
 }
 
+// 62.26 -> "2 days 14 hours": people don't read hours to two decimals.
+export function describeHours(hours) {
+  if (hours < 1) return "less than an hour";
+  const whole = Math.round(hours);
+  if (whole < 48) return whole === 1 ? "1 hour" : `${whole} hours`;
+  const days = Math.floor(whole / 24);
+  const rest = whole - days * 24;
+  const dayText = days === 1 ? "1 day" : `${days} days`;
+  return rest === 0 ? dayText : `${dayText} ${rest === 1 ? "1 hour" : `${rest} hours`}`;
+}
+
+// Adaptive Replanning: once the planned start is missed the server sends the
+// recomputed plan; say it in words rather than leaving a bare red badge.
+function renderReplan(task) {
+  if (!task.replan) return "";
+  const finish = formatDateTime(task.replan.projected_finish);
+  const late = task.replan.late_by_hours > 0
+    ? ` That is about ${describeHours(task.replan.late_by_hours)} after the due time — consider moving the deadline.`
+    : " That is still before the due time.";
+  return `<p class="task-card__replan">Plan updated: start now and you would finish around ${escapeHtml(finish)}.${late}</p>`;
+}
+
 // Lucide-style SVG vector icons
 const ICONS = {
   zap: `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`,
@@ -33,10 +55,30 @@ const ICONS = {
   trash: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>`,
 };
 
+// Server-written plain-language answer to "why this start time?" (the same
+// text the start-now reminder email carries). A native <details>, so it is
+// keyboard- and screen-reader-accessible with no JS, and the text goes
+// through escapeHtml like everything else rendered from an API payload.
+// Lists re-render wholesale (after every action, and again when a tab
+// regains visibility), which would slam shut an explanation the user is in
+// the middle of reading — so which ones are open is remembered by task id.
+const openExplanations = new Set();
+
+function renderExplanation(task) {
+  if (task.status !== "pending" || !task.start_by_explanation) {
+    return "";
+  }
+  return `<details class="task-card__why" ${openExplanations.has(task.id) ? "open" : ""}>
+    <summary>Why this start time?</summary>
+    <p>${escapeHtml(task.start_by_explanation)}</p>
+  </details>`;
+}
+
 // Unified task card renderer for both Tasks page and Dashboard priority radar
 export function renderTaskCard(task, handlers = {}) {
   const card = document.createElement(handlers.onToggle ? "li" : "div");
   card.className = "task-card";
+  card.dataset.taskId = String(task.id);
 
   const isDone = task.status === "done";
   const badgeClass = isDone ? "badge--done" : task.is_overdue ? "badge--overdue" : "badge--pending";
@@ -60,16 +102,23 @@ export function renderTaskCard(task, handlers = {}) {
           ${task.due_at ? `<span class="task-card__due">${ICONS.clock} <span>${formatDateTime(task.due_at)}</span></span>` : ""}
           ${renderStartBy(task)}
         </div>
+        ${renderReplan(task)}
+        ${renderExplanation(task)}
       </div>
     </div>
     ${handlers.onEdit || handlers.onDelete
       ? `<div class="task-card__actions">
-             ${handlers.onEdit ? `<button type="button" class="task-card__edit">${ICONS.pencil} <span>Edit</span></button>` : ""}
-             ${handlers.onDelete ? `<button type="button" class="task-card__delete">${ICONS.trash} <span>Delete</span></button>` : ""}
+             ${handlers.onEdit ? `<button type="button" class="task-card__edit" aria-label="Edit ${escapeHtml(task.title)}">${ICONS.pencil} <span>Edit</span></button>` : ""}
+             ${handlers.onDelete ? `<button type="button" class="task-card__delete" aria-label="Delete ${escapeHtml(task.title)}">${ICONS.trash} <span>Delete</span></button>` : ""}
            </div>`
       : ""
     }
   `;
+
+  card.querySelector(".task-card__why")?.addEventListener("toggle", (e) => {
+    if (e.target.open) openExplanations.add(task.id);
+    else openExplanations.delete(task.id);
+  });
 
   if (handlers.onToggle) {
     const checkbox = card.querySelector(".task-card__checkbox");
@@ -116,6 +165,13 @@ export function renderTaskCard(task, handlers = {}) {
 // eventually answered, each other's close listener can resolve the wrong
 // task's Promise with the wrong input. A fresh element per call has no
 // shared state for either bug to live in.
+const QUICK_ACTUAL_CHOICES = [
+  ["Faster", 0.75],
+  ["On estimate", 1],
+  ["Longer", 1.5],
+  ["Twice as long", 2],
+];
+
 function promptForActualHours(task) {
   return new Promise((resolve) => {
     const dialog = document.createElement("dialog");
@@ -123,11 +179,13 @@ function promptForActualHours(task) {
     dialog.innerHTML = `
       <form method="dialog">
         <h2 class="actual-hours-prompt__title"></h2>
+        <div class="actual-hours-quick" role="group" aria-label="One-tap answers"></div>
         <label for="actual-hours-input">Actual hours (optional)</label>
         <input id="actual-hours-input" type="number" step="0.25" min="0.25" max="100" placeholder="e.g. 2.5">
         <div class="modal-actions">
-          <button type="submit" value="skip">Skip</button>
-          <button type="submit" value="save">Save</button>
+          <button type="submit" value="cancel" class="btn btn--ghost" formnovalidate>Cancel</button>
+          <button type="submit" value="skip" class="btn btn--secondary">Skip</button>
+          <button type="submit" value="save" class="btn btn--primary">Save</button>
         </div>
       </form>
     `;
@@ -135,6 +193,21 @@ function promptForActualHours(task) {
       `How many hours did "${task.title}" actually take?`;
     const input = dialog.querySelector("#actual-hours-input");
     const saveBtn = dialog.querySelector('button[value="save"]');
+
+    // One-tap answers relative to the estimate: a tap fills the number and saves.
+    const quick = dialog.querySelector(".actual-hours-quick");
+    for (const [label, factor] of QUICK_ACTUAL_CHOICES) {
+      const hours = Math.min(100, Math.max(0.25, Math.round(task.estimate_hours * factor * 4) / 4));
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "btn btn--secondary actual-hours-quick__chip";
+      chip.textContent = `${label} · ${hours}h`;
+      chip.addEventListener("click", () => {
+        input.value = String(hours);
+        saveBtn.click();
+      });
+      quick.appendChild(chip);
+    }
 
     // A single-input form implicitly submits via its first submit button
     // in DOM order on Enter — "Skip" here, since it's visually first —
@@ -151,11 +224,16 @@ function promptForActualHours(task) {
       "close",
       () => {
         const hours = Number(input.value);
-        resolve(
-          dialog.returnValue === "save" && input.value.trim() !== "" && !Number.isNaN(hours)
-            ? hours
-            : undefined
-        );
+        // Esc and the backdrop leave returnValue empty: that is "never mind", the
+        // same as the Cancel button. Only Skip and Save go on to complete the task.
+        const action = dialog.returnValue || "cancel";
+        resolve({
+          action,
+          hours:
+            action === "save" && input.value.trim() !== "" && !Number.isNaN(hours)
+              ? hours
+              : undefined,
+        });
         dialog.remove();
       },
       { once: true }
@@ -172,7 +250,12 @@ export async function toggleComplete(task, onDone) {
   const path = isCompleting ? `/api/tasks/${task.id}/complete` : `/api/tasks/${task.id}/reopen`;
   let actualHours;
   if (isCompleting && "estimate_hours" in task && task.estimate_hours != null) {
-    actualHours = await promptForActualHours(task);
+    const answer = await promptForActualHours(task);
+    if (answer.action === "cancel") {
+      await onDone(); // re-render so the ticked box goes back to unticked
+      return;
+    }
+    actualHours = answer.hours;
   }
   try {
     await apiFetch(path, {
@@ -202,6 +285,20 @@ if (taskList) {
   const filters = { status: null, tag: null, q: "" };
   let searchDebounce = null;
 
+  // Dashboard shortcuts link here as /tasks?status=pending or ?tag=study.
+  // Only known values are honoured, and the matching tab is shown as selected
+  // so the page never says "All" while listing a filtered set.
+  const initial = new URLSearchParams(window.location.search);
+  function applyInitialFilter(buttons, attr, value) {
+    const match = [...buttons].find((b) => b.dataset[attr] && b.dataset[attr] === value);
+    if (!match) return null;
+    buttons.forEach((b) => b.setAttribute("aria-selected", b === match ? "true" : "false"));
+    return value;
+  }
+  filters.status = applyInitialFilter(tabButtons, "statusFilter", initial.get("status"));
+  filters.tag = applyInitialFilter(tagButtons, "tagFilter", initial.get("tag"));
+  const openNewOnLoad = initial.get("new") === "1"; // the installed app's "New task" shortcut
+
   function buildQuery() {
     const params = new URLSearchParams();
     if (filters.status) params.set("status", filters.status);
@@ -218,6 +315,10 @@ if (taskList) {
     form.elements.notes.value = task.notes || "";
     form.elements.tag.value = task.tag;
     form.elements.due_at.value = toLocalInputValue(task.due_at);
+    // Remembered so a save that did not touch the deadline does not re-send it:
+    // re-sending rewrites the stored instant (seconds, DST-repeated hour), logs a
+    // "due date changed" activity row and clears already-sent reminders.
+    form.dataset.originalDue = form.elements.due_at.value;
     // Only present when FEATURE_ESTIMATES is on (see tasks.html).
     if (form.elements.estimate_hours) {
       form.elements.estimate_hours.value = task.estimate_hours ?? "";
@@ -231,6 +332,7 @@ if (taskList) {
     modalTitle.textContent = "New Task";
     form.reset();
     form.elements.id.value = "";
+    form.dataset.originalDue = "";
     if (formError) formError.hidden = true;
     modal.showModal();
     form.elements.title.focus();
@@ -254,6 +356,17 @@ if (taskList) {
     try {
       const tasks = await apiFetch(buildQuery());
       if (seq !== loadSeq) return;
+      // The list is rebuilt wholesale; without this a keyboard user who just ticked,
+      // edited or deleted something lands on <body> and must tab through the whole
+      // page again. Remember the control (by task id + which control) and restore it.
+      const active = document.activeElement;
+      const focusedCard = active && taskList.contains(active) ? active.closest("[data-task-id]") : null;
+      const focusedTaskId = focusedCard ? focusedCard.dataset.taskId : null;
+      const focusedClass = focusedCard
+        ? ["task-card__checkbox", "task-card__edit", "task-card__delete"].find((c) =>
+            active.classList.contains(c)
+          )
+        : null;
       taskList.innerHTML = "";
       emptyState.hidden = tasks.length > 0;
       for (const task of tasks) {
@@ -264,6 +377,13 @@ if (taskList) {
             onDelete: deleteTask,
           })
         );
+      }
+      if (focusedTaskId) {
+        const again = taskList.querySelector(`[data-task-id="${focusedTaskId}"]`);
+        const target =
+          (again && focusedClass && again.querySelector(`.${focusedClass}`)) ||
+          (again && again.querySelector("button, input"));
+        if (target) target.focus();
       }
     } catch (err) {
       if (seq !== loadSeq) return;
@@ -311,8 +431,20 @@ if (taskList) {
       title: form.elements.title.value,
       notes: form.elements.notes.value,
       tag: form.elements.tag.value,
-      due_at: fromLocalInputValue(form.elements.due_at.value),
     };
+    try {
+      const unchanged = id && form.elements.due_at.value === form.dataset.originalDue;
+      if (!unchanged) payload.due_at = fromLocalInputValue(form.elements.due_at.value);
+    } catch (err) {
+      if (!(err instanceof DateInputError)) throw err;
+      if (formError) {
+        formError.textContent = err.message;
+        formError.hidden = false;
+      }
+      saveBtn.disabled = false;
+      form.elements.due_at.focus();
+      return;
+    }
     // Only present when FEATURE_ESTIMATES is on (see tasks.html).
     if (form.elements.estimate_hours) {
       const raw = form.elements.estimate_hours.value;
@@ -349,4 +481,5 @@ if (taskList) {
   });
 
   loadTasks();
+  if (openNewOnLoad) openCreateModal();
 }

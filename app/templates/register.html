@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Create Account — Kairo{% endblock %}
+{% block title %}Create Account — StartBy{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}?v=13">
@@ -44,9 +44,10 @@
           </svg>
         </div>
         <h1 class="auth-title">Create Account</h1>
-        <p class="auth-subtitle">Join Kairo and experience focused task management.</p>
+        <p class="auth-subtitle">Join StartBy and experience focused task management.</p>
       </div>
 
+      {% if demo_social_login %}
       <!-- Social Logins (Google & GitHub) -->
       <div class="social-buttons-grid">
         <button id="google-login-btn" type="button" class="social-auth-btn social-auth-btn--google">
@@ -71,6 +72,7 @@
       <div class="auth-divider">
         <span>or sign up with email</span>
       </div>
+{% endif %}
 
       <!-- Main Register Form -->
       <form id="register-form" class="auth-form" novalidate>
@@ -145,6 +147,7 @@
     </div>
   </div>
 
+  {% if demo_social_login %}
   <!-- Social OAuth Interactive Modal (Google & GitHub) -->
   <div id="oauth-modal-backdrop" class="oauth-modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="oauth-modal">
@@ -158,7 +161,7 @@
       <div class="oauth-modal__header">
         <div id="oauth-provider-logo" class="oauth-modal__logo"></div>
         <h3 id="oauth-modal-title" class="oauth-modal__title">Sign in with Provider</h3>
-        <p class="oauth-modal__subtitle">Select an account to continue to Kairo</p>
+        <p class="oauth-modal__subtitle">Select an account to continue to StartBy</p>
       </div>
 
       <div id="oauth-account-list" class="oauth-account-list"></div>
@@ -171,6 +174,7 @@
         </form>
       </div>
     </div>
+{% endif %}
   </div>
 </div>
 {% endblock %}

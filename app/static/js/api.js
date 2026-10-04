@@ -12,6 +12,9 @@ export async function apiFetch(path, options = {}) {
     "X-CSRFToken": csrfToken(),
     ...(options.headers || {}),
   };
+  // A FormData body (file upload) needs the browser to set its own
+  // multipart Content-Type with the boundary — forcing JSON would break it.
+  if (options.body instanceof FormData) delete headers["Content-Type"];
   const response = await fetch(path, { ...options, headers, credentials: "same-origin" });
 
   if (response.status === 204) return null;

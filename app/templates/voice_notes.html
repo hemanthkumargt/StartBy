@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Voice Notes — StartBy{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header__left">
+    <h1 class="page-header__title">Voice Notes</h1>
+    <p class="page-header__desc">Say it out loud and {{ assistant_name }} keeps it. Turn any note into tasks when you are ready — nothing becomes a task until you confirm.</p>
+  </div>
+</div>
+
+<div class="vnotes" id="vnotes">
+  <section class="vnotes__list-panel" aria-label="Your voice notes">
+    <div class="vnotes__recorder card">
+      <button type="button" id="vnote-mic-btn" class="vnotes__mic" aria-pressed="false">
+        <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg>
+        <span class="sr-only" id="vnote-mic-label">Record</span>
+      </button>
+      <div class="vnotes__recorder-text">
+        <strong id="vnote-headline">Tap to record a note</strong>
+        <p id="vnote-status" class="voice-status" role="status" aria-live="polite">Talk about your day, a worry, a to-do — anything.</p>
+        <p id="vnote-live" class="vnotes__live" aria-live="off"></p>
+      </div>
+    </div>
+
+    <div class="vnotes__list-head">
+      <h2 class="vnotes__h2">Recent notes</h2>
+      <span id="vnote-count" class="vnotes__count"></span>
+    </div>
+    <ul id="vnote-list" class="vnotes__list" aria-label="Notes"></ul>
+    <p id="vnote-empty" class="vnotes__empty" hidden>No notes yet. Tap the mic and say something.</p>
+  </section>
+
+  <section class="vnotes__detail-panel card" id="vnote-detail" aria-live="polite" hidden>
+    <button type="button" class="btn btn--ghost btn--sm vnotes__back" id="vnote-back">&larr; All notes</button>
+    <h2 class="vnotes__detail-title" id="vnote-detail-title"></h2>
+    <p class="vnotes__detail-time" id="vnote-detail-time"></p>
+    <div class="vnotes__transcript" id="vnote-detail-text"></div>
+    <div class="vnotes__actions">
+      <button type="button" class="btn btn--primary" id="vnote-to-tasks">Turn into tasks</button>
+      <button type="button" class="btn btn--secondary" id="vnote-copy">Copy text</button>
+      <button type="button" class="btn btn--ghost vnotes__delete" id="vnote-delete">Delete</button>
+    </div>
+  </section>
+  <section class="vnotes__detail-panel vnotes__detail-placeholder card" id="vnote-placeholder">
+    <p>Select a note to read it, or record a new one.</p>
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='js/voice-notes.js') }}?v=1"></script>
+{% endblock %}

@@ -8,6 +8,7 @@ from pathlib import Path
 
 from flask import Flask, current_app, g
 
+BUSY_TIMEOUT_SECONDS = 15
 MIGRATIONS_DIR = Path(__file__).resolve().parent.parent / "migrations"
 
 
@@ -15,7 +16,10 @@ def get_db() -> sqlite3.Connection:
     if "db" not in g:
         db_path = Path(current_app.config["DATABASE_PATH"])
         db_path.parent.mkdir(parents=True, exist_ok=True)
-        conn = sqlite3.connect(str(db_path))
+        # Two gunicorn workers, the Calendar sync thread and the nightly backup
+        # all write this one file; wait up to 15s for the write lock rather than
+        # failing a user's request after SQLite's default 5s.
+        conn = sqlite3.connect(str(db_path), timeout=BUSY_TIMEOUT_SECONDS)
         conn.row_factory = sqlite3.Row
         conn.execute("PRAGMA foreign_keys = ON")
         g.db = conn

@@ -34,3 +34,48 @@ START_BY_BUFFER = 0.15
 
 # I12: risk radar (green/amber/red) + "Do this now" card.
 RISK_AMBER_WINDOW_HOURS = 24
+
+# --- Phase 2: smart capture (FEATURE_SMART_CAPTURE) ---
+
+CAPTURE_TEXT_MAX_CHARS = 20_000
+CAPTURE_PDF_MAX_BYTES = 5 * 1024 * 1024
+CAPTURE_PDF_MAX_PAGES = 20
+# A syllabus can legitimately hold dozens of deadlines, but an unbounded
+# list is a DoS on the confirm path (one INSERT + activity row each).
+CAPTURE_MAX_DRAFTS = 25
+# Gemini calls cost quota/money: per-user preview budget per window.
+CAPTURE_RATE_LIMIT_CALLS = 10
+CAPTURE_RATE_LIMIT_WINDOW_SECONDS = 60
+
+# --- Phase 2: overload warning + report card (FEATURE_INSIGHTS) ---
+
+# red tasks are already late to start; amber start within 24h. Thresholds
+# are deliberately small — a student rarely has the bandwidth for more.
+OVERLOAD_CRITICAL_RED = 4
+OVERLOAD_WARNING_RED = 2
+OVERLOAD_WARNING_RED_PLUS_AMBER = 4
+# Report card: need at least this many completed (estimate, actual) pairs
+# before showing a trend, otherwise one lucky task reads as a pattern.
+REPORT_MIN_SAMPLES_FOR_TREND = 4
+REPORT_SERIES_LIMIT = 12
+# An actual/estimate ratio this close to 1.0 counts as "on target".
+REPORT_ON_TARGET_BAND = 0.1
+# A change in |ln(ratio)| smaller than this is "steady", not a trend.
+REPORT_TREND_MIN_CHANGE = 0.05
+
+# Sane window for any stored deadline. A year-0001 or year-9999 due date (a typo,
+# or a model's output) overflows datetime arithmetic and then breaks every list
+# and the reminder job for everyone.
+DUE_YEAR_MIN = 2000
+DUE_YEAR_MAX = 2100
+# One mistyped "actual hours" (2 -> 20) must not rewrite a user's pace forever:
+# each completed task's actual/estimate ratio is clamped to this band before it
+# is averaged.
+RATIO_CLAMP_MIN = 1 / 3
+RATIO_CLAMP_MAX = 3.0
+# Tasks overdue longer than this are abandoned, not "overload" or "do this now".
+STALE_OVERDUE_DAYS = 7
+# The report card says "not enough data" below this many logged tasks.
+REPORT_MIN_SAMPLES_FOR_SUMMARY = 3
+# Replan "late by" below this is rounding noise, not "late".
+REPLAN_LATE_NOISE_HOURS = 5 / 60

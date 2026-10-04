@@ -14,9 +14,9 @@ def create(
 ) -> sqlite3.Row:
     cur = conn.execute(
         """
-        INSERT INTO users (name, email, password_hash, timezone, created_at)
-        VALUES (?, ?, ?, ?, ?)
-        RETURNING id, name, email, password_hash, timezone, dark_mode, created_at
+        INSERT INTO users (name, email, password_hash, timezone, dark_mode, created_at)
+        VALUES (?, ?, ?, ?, 1, ?)
+        RETURNING *
         """,
         (name, email, password_hash, timezone, created_at),
     )
@@ -52,3 +52,14 @@ def delete_by_email(conn: sqlite3.Connection, email: str) -> None:
     (ON DELETE CASCADE in 001_init.sql) — used by scripts/seed.py --reset."""
     conn.execute("DELETE FROM users WHERE email = ?", (email,))
     conn.commit()
+
+
+def update_assistant_name(
+    conn: sqlite3.Connection, user_id: int, assistant_name: str | None
+) -> sqlite3.Row | None:
+    cur = conn.execute(
+        "UPDATE users SET assistant_name = ? WHERE id = ? RETURNING *", (assistant_name, user_id)
+    )
+    row = cur.fetchone()
+    conn.commit()
+    return row

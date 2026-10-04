@@ -118,7 +118,8 @@ def test_home_page_requires_login(client):
     assert "/login" in response.headers["Location"]
 
 
-def test_social_login_registers_new_user(client):
+def test_social_login_registers_new_user(app, client):
+    app.config["ALLOW_DEMO_SOCIAL_LOGIN"] = True
     res = client.post(
         "/api/auth/social",
         json={"provider": "google", "email": "judge@gmail.com", "name": "Judge Demo"},
@@ -133,7 +134,8 @@ def test_social_login_registers_new_user(client):
     assert home.status_code == 200
 
 
-def test_social_login_authenticates_existing_user(client):
+def test_social_login_authenticates_existing_user(app, client):
+    app.config["ALLOW_DEMO_SOCIAL_LOGIN"] = True
     client.post(
         "/api/auth/social",
         json={"provider": "google", "email": "alex@startby.demo", "name": "Alex Demo"},
@@ -147,3 +149,27 @@ def test_social_login_authenticates_existing_user(client):
     assert res.status_code == 200
     data = res.get_json()
     assert data["email"] == "alex@startby.demo"
+
+
+def test_social_login_is_disabled_by_default_so_no_one_can_sign_in_as_anyone(client):
+    """/api/auth/social trusts whatever email it is sent. With the demo switch
+    off (the default) it must not exist, or it is passwordless login for every
+    account."""
+    register_res = client.post(
+        "/api/auth/register",
+        json={"name": "Victim", "email": "victim@corp.com", "password": "password123"},
+    )
+    assert register_res.status_code == 201
+    client.post("/api/auth/logout")
+
+    res = client.post("/api/auth/social", json={"provider": "google", "email": "victim@corp.com"})
+    assert res.status_code == 404
+    assert client.get("/api/tasks").status_code == 401  # still anonymous
+
+
+def test_social_buttons_only_render_when_demo_login_is_enabled(app, client):
+    assert b"google-login-btn" not in client.get("/login").data
+    assert b"google-login-btn" not in client.get("/register").data
+    app.config["ALLOW_DEMO_SOCIAL_LOGIN"] = True
+    assert b"google-login-btn" in client.get("/login").data
+    assert b"oauth-modal-backdrop" in client.get("/register").data

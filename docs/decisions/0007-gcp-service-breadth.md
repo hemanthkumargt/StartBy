@@ -1,6 +1,6 @@
 # 7. Which additional GCP services to adopt for service breadth
 
-**Status:** Partially accepted — one item still open for a team decision
+**Status:** Superseded by [ADR 0008](0008-eleven-service-gcp-stack.md) (the team adopted a larger 11-service stack on 2026-10-03)
 
 ## Context
 

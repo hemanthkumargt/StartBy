@@ -1,17 +1,25 @@
 <!doctype html>
-<html lang="en" data-theme="{{ 'dark' if (current_user.is_authenticated and current_user.dark_mode) else 'dark' }}">
+<html lang="en" data-theme="{{ 'light' if (current_user.is_authenticated and not current_user.dark_mode) else 'dark' }}">
 
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#5b21b6">
+  <meta name="color-scheme" content="dark light">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/apple-touch-icon.png') }}">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="StartBy">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2310b981'/%3E%3Cpath d='M16 6L6 11l10 5 10-5-10-5zM6 21l10 5 10-5M6 16l10 5 10-5' stroke='%23ffffff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232f63e0'/%3E%3Cpath d='M16 6L6 11l10 5 10-5-10-5zM6 21l10 5 10-5M6 16l10 5 10-5' stroke='%23ffffff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
   {% if current_user.is_authenticated %}
   <meta name="user-timezone" content="{{ current_user.timezone }}">
   {% else %}
   <script>
     try {
-      const savedTheme = localStorage.getItem('kairo_theme') || localStorage.getItem('kairo-theme') || localStorage.getItem('startby-theme');
+      const savedTheme = localStorage.getItem('startby-theme');
       if (savedTheme) {
         document.documentElement.setAttribute('data-theme', savedTheme);
       } else {
@@ -22,7 +30,7 @@
     }
   </script>
   {% endif %}
-  <title>{% block title %}Kairo — Intelligent Task Workspace{% endblock %}</title>
+  <title>{% block title %}StartBy — Intelligent Task Workspace{% endblock %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -31,7 +39,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}?v=20">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}?v=20">
   <style>
-    /* Emerald & Obsidian High-End Fintech Design System */
+    /* StartBy brand overrides (violet) */
     body {
       background-color: var(--color-bg) !important;
       background-image: none !important;
@@ -48,9 +56,9 @@
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%) !important;
       border: 1px solid rgba(255, 255, 255, 0.2) !important;
-      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35) !important;
+      box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35) !important;
       color: #ffffff !important;
       flex-shrink: 0 !important;
     }
@@ -62,7 +70,7 @@
       color: var(--color-text) !important;
     }
 
-    /* Sleek Emerald Sidebar Navigation */
+    /* Sidebar navigation */
     .app-sidebar__nav {
       gap: 0.25rem !important;
     }
@@ -95,9 +103,9 @@
     }
 
     .nav-item--active {
-      background: rgba(16, 185, 129, 0.1) !important;
+      background: rgba(124, 58, 237, 0.1) !important;
       color: var(--color-primary) !important;
-      border: 1px solid rgba(16, 185, 129, 0.25) !important;
+      border: 1px solid rgba(124, 58, 237, 0.25) !important;
       font-weight: 600 !important;
       box-shadow: none !important;
     }
@@ -120,23 +128,23 @@
     }
 
     [data-theme="dark"] .nav-item--active {
-      background: rgba(16, 185, 129, 0.14) !important;
-      border-color: rgba(16, 185, 129, 0.3) !important;
-      color: #34d399 !important;
-      box-shadow: 0 0 16px rgba(16, 185, 129, 0.18) !important;
+      background: rgba(124, 58, 237, 0.14) !important;
+      border-color: rgba(124, 58, 237, 0.3) !important;
+      color: #c4b5fd !important;
+      box-shadow: 0 0 16px rgba(124, 58, 237, 0.18) !important;
     }
 
     [data-theme="dark"] .nav-item--active .icon svg,
     [data-theme="dark"] .nav-item--active svg {
-      stroke: #34d399 !important;
+      stroke: #c4b5fd !important;
     }
 
     /* Emerald New Task Button */
     .btn-sidebar-add {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%) !important;
       color: #ffffff !important;
       border: 1px solid rgba(255, 255, 255, 0.15) !important;
-      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.35) !important;
+      box-shadow: 0 2px 10px rgba(124, 58, 237, 0.35) !important;
       border-radius: 8px !important;
       font-weight: 600 !important;
       transition: all 0.15s ease !important;
@@ -144,7 +152,7 @@
     }
 
     .btn-sidebar-add:hover {
-      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.5) !important;
+      box-shadow: 0 4px 16px rgba(124, 58, 237, 0.5) !important;
       transform: translateY(-1px) !important;
     }
 
@@ -188,8 +196,8 @@
     [data-theme="dark"] .settings-card:hover,
     [data-theme="dark"] .dashboard__analytics-card:hover,
     [data-theme="dark"] .dashboard__shortcuts-card:hover {
-      border-color: rgba(16, 185, 129, 0.3) !important;
-      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.55), 0 0 14px rgba(16, 185, 129, 0.08) !important;
+      border-color: rgba(124, 58, 237, 0.3) !important;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.55), 0 0 14px rgba(124, 58, 237, 0.08) !important;
     }
 
     /* Counter Cards Top Accent Borders */
@@ -225,13 +233,13 @@
     }
 
     .btn--primary {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%) !important;
       color: #ffffff !important;
-      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.35) !important;
+      box-shadow: 0 2px 10px rgba(124, 58, 237, 0.35) !important;
     }
 
     .btn--primary:hover {
-      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.5) !important;
+      box-shadow: 0 4px 16px rgba(124, 58, 237, 0.5) !important;
     }
 
     .btn--secondary {
@@ -252,25 +260,25 @@
       gap: 7px;
       padding: 5px 12px;
       border-radius: 9999px;
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.25);
+      background: rgba(124, 58, 237, 0.1);
+      border: 1px solid rgba(124, 58, 237, 0.25);
       font-size: 12px;
       font-weight: 600;
-      color: #059669;
+      color: #6d28d9;
     }
 
     [data-theme="dark"] .focus-status-badge {
-      color: #34d399;
-      background: rgba(16, 185, 129, 0.12);
-      border-color: rgba(16, 185, 129, 0.3);
+      color: #c4b5fd;
+      background: rgba(124, 58, 237, 0.12);
+      border-color: rgba(124, 58, 237, 0.3);
     }
 
     .focus-pulse-dot {
       width: 7px;
       height: 7px;
       border-radius: 50%;
-      background: #10b981;
-      box-shadow: 0 0 8px #10b981;
+      background: #8b5cf6;
+      box-shadow: 0 0 8px #8b5cf6;
       display: inline-block;
     }
 
@@ -280,7 +288,7 @@
       width: 34px !important;
       height: 34px !important;
       border-radius: 50% !important;
-      background: linear-gradient(135deg, #10b981 0%, #047857 100%) !important;
+      background: linear-gradient(135deg, #8b5cf6 0%, #5b21b6 100%) !important;
       color: #ffffff !important;
       display: flex !important;
       align-items: center !important;
@@ -289,7 +297,7 @@
       font-weight: 700 !important;
       flex-shrink: 0 !important;
       border: 1.5px solid rgba(52, 211, 153, 0.4) !important;
-      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3) !important;
+      box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3) !important;
     }
 
     .user-avatar__indicator {
@@ -299,7 +307,7 @@
       width: 9px !important;
       height: 9px !important;
       border-radius: 50% !important;
-      background: #34d399 !important;
+      background: #c4b5fd !important;
       border: 2px solid var(--color-surface) !important;
       box-shadow: 0 0 6px rgba(52, 211, 153, 0.8) !important;
     }
@@ -312,14 +320,14 @@
       letter-spacing: 0.05em;
       padding: 4px 9px;
       border-radius: 6px;
-      background: rgba(16, 185, 129, 0.12);
-      color: #059669;
-      border: 1px solid rgba(16, 185, 129, 0.25);
+      background: rgba(124, 58, 237, 0.12);
+      color: #6d28d9;
+      border: 1px solid rgba(124, 58, 237, 0.25);
     }
 
     [data-theme="dark"] .momentum-tag {
-      color: #34d399;
-      border-color: rgba(16, 185, 129, 0.35);
+      color: #c4b5fd;
+      border-color: rgba(124, 58, 237, 0.35);
     }
 
     .momentum-tag--warning {
@@ -330,7 +338,7 @@
 
     .momentum-tag--high {
       background: rgba(52, 211, 153, 0.18) !important;
-      color: #34d399 !important;
+      color: #c4b5fd !important;
       border-color: rgba(52, 211, 153, 0.35) !important;
       box-shadow: 0 0 12px rgba(52, 211, 153, 0.2) !important;
     }
@@ -514,10 +522,10 @@
 
     .velocity-fill {
       height: 100% !important;
-      background: linear-gradient(90deg, #10b981 0%, #34d399 100%) !important;
+      background: linear-gradient(90deg, #8b5cf6 0%, #c4b5fd 100%) !important;
       border-radius: 9999px !important;
       transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
-      box-shadow: 0 0 10px rgba(16, 185, 129, 0.5) !important;
+      box-shadow: 0 0 10px rgba(124, 58, 237, 0.5) !important;
     }
 
     .category-distribution-list {
@@ -641,7 +649,7 @@
       align-items: center !important;
       justify-content: center !important;
       margin-bottom: 0.5rem !important;
-      background: rgba(16, 185, 129, 0.1) !important;
+      background: rgba(124, 58, 237, 0.1) !important;
       color: var(--color-primary) !important;
     }
 
@@ -657,8 +665,8 @@
     }
 
     .pro-tip-box {
-      background: rgba(16, 185, 129, 0.06) !important;
-      border: 1px solid rgba(16, 185, 129, 0.2) !important;
+      background: rgba(124, 58, 237, 0.06) !important;
+      border: 1px solid rgba(124, 58, 237, 0.2) !important;
       border-radius: 10px !important;
       padding: 0.85rem 1rem !important;
       display: flex !important;
@@ -684,6 +692,7 @@
       color: var(--color-text) !important;
     }
   </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/brand.css') }}?v=2">
   {% block head %}{% endblock %}
 </head>
 
@@ -692,6 +701,7 @@
   <div class="app-shell">
     {% if current_user.is_authenticated %}
     <!-- Mobile Top Navigation Bar -->
+    <a class="skip-link" href="#main-content">Skip to content</a>
     <div class="mobile-top-bar">
       <button id="mobile-sidebar-toggle" class="sidebar-icon-btn" type="button" aria-label="Open menu">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -710,7 +720,7 @@
             <path d="M2 12l10 5 10-5"></path>
           </svg>
         </div>
-        <span class="brand-monogram__name">Kairo</span>
+        <span class="brand-monogram__name">StartBy</span>
       </a>
 
       <button id="theme-toggle-btn-mobile" class="sidebar-icon-btn" type="button" aria-label="Toggle theme">
@@ -738,24 +748,26 @@
     <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
 
     <!-- Desktop & Drawer Sidebar -->
-    <aside id="app-sidebar" class="app-sidebar">
+    <aside id="app-sidebar" class="app-sidebar" aria-label="Sidebar">
       <div class="app-sidebar__header">
         <a href="{{ url_for('pages.home_page') }}" class="brand-monogram">
           <div class="brand-monogram__logo">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
               <path d="M2 17l10 5 10-5"></path>
               <path d="M2 12l10 5 10-5"></path>
             </svg>
           </div>
-          <span class="brand-monogram__name">Kairo</span>
+          <span class="brand-monogram__text">
+            <span class="brand-monogram__name">StartBy</span>
+            <span class="brand-monogram__tag">Start before it's urgent</span>
+          </span>
         </a>
       </div>
 
       <div class="sidebar-action-wrap">
-        <a href="{{ url_for('pages.tasks_page') }}" class="btn-sidebar-add">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-            stroke-linecap="round" stroke-linejoin="round">
+        <a href="{{ url_for('pages.tasks_page') }}?new=1" class="btn-sidebar-add">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <line x1="12" y1="5" x2="12" y2="19"></line>
             <line x1="5" y1="12" x2="19" y2="12"></line>
           </svg>
@@ -763,61 +775,65 @@
         </a>
       </div>
 
-      <nav class="app-sidebar__nav">
-        <div class="nav-section-title">Navigation</div>
-
+      <nav class="app-sidebar__nav" aria-label="Main">
+        <div class="nav-section-title">Workspace</div>
         <a href="{{ url_for('pages.home_page') }}"
-          class="nav-item {% if request.path == '/' %}nav-item--active{% endif %}">
-          <span class="icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <rect x="3" y="3" width="7" height="9"></rect>
-              <rect x="14" y="3" width="7" height="5"></rect>
-              <rect x="14" y="12" width="7" height="9"></rect>
-              <rect x="3" y="16" width="7" height="5"></rect>
-            </svg>
-          </span>
+          class="nav-item {% if request.path == '/' %}nav-item--active{% endif %}"{% if request.path == '/' %} aria-current="page"{% endif %}>
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg></span>
           <span>Dashboard</span>
         </a>
-
         <a href="{{ url_for('pages.tasks_page') }}"
-          class="nav-item {% if request.path == '/tasks' %}nav-item--active{% endif %}">
-          <span class="icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-              <path d="m9 14 2 2 4-4"></path>
-            </svg>
-          </span>
+          class="nav-item {% if request.path == '/tasks' %}nav-item--active{% endif %}"{% if request.path == '/tasks' %} aria-current="page"{% endif %}>
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="m9 14 2 2 4-4"></path></svg></span>
           <span>My Tasks</span>
         </a>
+        {% if feature_flags.smart_capture %}
+        <a href="{{ url_for('pages.capture_page') }}"
+          class="nav-item {% if request.path == '/capture' %}nav-item--active{% endif %}"{% if request.path == '/capture' %} aria-current="page"{% endif %}>
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z"></path><path d="M19 15l.7 1.8L21.5 17.5l-1.8.7L19 20l-.7-1.8-1.8-.7 1.8-.7L19 15z"></path></svg></span>
+          <span>Smart Capture</span>
+        </a>
+        {% endif %}
 
+                {% if feature_flags.voice %}
+        <a href="{{ url_for('pages.voice_notes_page') }}"
+          class="nav-item {% if request.path == '/voice' %}nav-item--active{% endif %}"{% if request.path == '/voice' %} aria-current="page"{% endif %}>
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0M12 18v4"></path></svg></span>
+          <span>Voice Notes</span>
+        </a>
+        {% endif %}
+
+        {% if feature_flags.insights %}
+        <div class="nav-section-title">Understand</div>
+        <a href="{{ url_for('pages.insights_page') }}"
+          class="nav-item {% if request.path == '/insights' %}nav-item--active{% endif %}"{% if request.path == '/insights' %} aria-current="page"{% endif %}>
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></span>
+          <span>Insights</span>
+        </a>
+        {% endif %}
+        {% if not feature_flags.insights %}<div class="nav-section-title">Understand</div>{% endif %}
         <a href="{{ url_for('pages.activity_page') }}"
-          class="nav-item {% if request.path == '/activity' %}nav-item--active{% endif %}">
-          <span class="icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-            </svg>
-          </span>
+          class="nav-item {% if request.path == '/activity' %}nav-item--active{% endif %}"{% if request.path == '/activity' %} aria-current="page"{% endif %}>
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg></span>
           <span>Activity Log</span>
         </a>
 
+        <div class="nav-section-title">Account</div>
         <a href="{{ url_for('pages.settings_page') }}"
-          class="nav-item {% if request.path == '/settings' %}nav-item--active{% endif %}">
-          <span class="icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <circle cx="12" cy="12" r="3"></circle>
-              <path
-                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
-              </path>
-            </svg>
-          </span>
+          class="nav-item {% if request.path == '/settings' %}nav-item--active{% endif %}"{% if request.path == '/settings' %} aria-current="page"{% endif %}>
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></span>
           <span>Settings</span>
         </a>
       </nav>
+
+      <div id="sidebar-today" class="sidebar-today" aria-label="Today at a glance">
+        <div class="sidebar-today__title">Today at a glance</div>
+        <div class="sidebar-today__grid">
+          <div class="sidebar-today__stat"><span class="sidebar-today__num" data-count="pending">–</span><span class="sidebar-today__lbl">Pending</span></div>
+          <div class="sidebar-today__stat sidebar-today__stat--overdue"><span class="sidebar-today__num" data-count="overdue">–</span><span class="sidebar-today__lbl">Overdue</span></div>
+          <div class="sidebar-today__stat sidebar-today__stat--done"><span class="sidebar-today__num" data-count="completed">–</span><span class="sidebar-today__lbl">Done</span></div>
+        </div>
+      </div>
 
       <div class="app-sidebar__footer">
         <div class="user-profile-pill">
@@ -830,7 +846,6 @@
             <div class="user-meta__role">{{ current_user.timezone }}</div>
           </div>
         </div>
-
         <button id="theme-toggle-btn" class="sidebar-icon-btn" type="button" aria-label="Toggle dark mode"
           title="Toggle theme">
           <svg class="theme-icon-svg theme-icon-svg--moon" width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -852,7 +867,6 @@
             <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
           </svg>
         </button>
-
         <button id="logout-btn" class="sidebar-icon-btn" type="button" aria-label="Log out" title="Log out">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round">
@@ -866,21 +880,50 @@
     {% endif %}
 
     <div class="app-main-content">
-      <main class="{% block main_class %}app-main{% endblock %}">
+      <main id="main-content" tabindex="-1" class="{% block main_class %}app-main{% endblock %}">
         {% block content %}{% endblock %}
       </main>
     </div>
   </div>
   {% endblock %}
 
+  {% if current_user.is_authenticated %}
+  <!-- Phone/tablet tab bar (hidden on desktop, where the sidebar is used) -->
+  <nav class="bottom-nav" aria-label="Main">
+    <a href="{{ url_for('pages.home_page') }}" class="bottom-nav__item{% if request.path == '/' %} is-active{% endif %}"{% if request.path == '/' %} aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg><span>Home</span></a>
+    <a href="{{ url_for('pages.tasks_page') }}" class="bottom-nav__item{% if request.path == '/tasks' %} is-active{% endif %}"{% if request.path == '/tasks' %} aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span>Tasks</span></a>
+    {% if feature_flags.smart_capture %}
+    <a href="{{ url_for('pages.capture_page') }}" class="bottom-nav__item{% if request.path == '/capture' %} is-active{% endif %}"{% if request.path == '/capture' %} aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z"/></svg><span>Capture</span></a>
+    {% endif %}
+    {% if feature_flags.insights %}
+    <a href="{{ url_for('pages.insights_page') }}" class="bottom-nav__item{% if request.path == '/insights' %} is-active{% endif %}"{% if request.path == '/insights' %} aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span>Insights</span></a>
+    {% endif %}
+    <a href="{{ url_for('pages.settings_page') }}" class="bottom-nav__item{% if request.path == '/settings' %} is-active{% endif %}"{% if request.path == '/settings' %} aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.2 4.2l2.8 2.8M17 17l2.8 2.8M1 12h4M19 12h4M4.2 19.8L7 17M17 7l2.8-2.8"/></svg><span>Settings</span></a>
+  </nav>
+  {% endif %}
+
+  {% if current_user.is_authenticated and feature_flags.voice and request.path != '/voice' %}
+  <a href="{{ url_for('pages.voice_notes_page') }}" class="fab-mic" aria-label="Record a voice note" title="Record a voice note">
+    <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0M12 18v4"></path></svg>
+  </a>
+  {% endif %}
+
   <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
   <script type="module" src="{{ url_for('static', filename='js/api.js') }}?v=4"></script>
   {% if current_user.is_authenticated %}
   <script type="module" src="{{ url_for('static', filename='js/theme.js') }}?v=4"></script>
   {% endif %}
+  {% if current_user.is_authenticated %}<script type="module" src="{{ url_for('static', filename='js/sidebar.js') }}?v=1"></script>{% endif %}
   {% block scripts %}{% endblock %}
 
   <script>
+    // Installable app: the worker only adds offline fallback + asset caching.
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      });
+    }
+
     // Responsive sidebar toggle for mobile
     const sidebarToggle = document.getElementById('mobile-sidebar-toggle');
     const sidebar = document.getElementById('app-sidebar');

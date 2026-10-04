@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Settings & Preferences — Kairo{% endblock %}
+{% block title %}Settings & Preferences — StartBy{% endblock %}
 
 {% block content %}
 <style>
@@ -513,7 +513,7 @@
         </div>
         <div class="settings-card__title-group">
           <h2 class="settings-card__title">Appearance</h2>
-          <p class="settings-card__desc">Choose between Kairo's obsidian dark theme and crisp daylight theme.</p>
+          <p class="settings-card__desc">Choose between StartBy's obsidian dark theme and crisp daylight theme.</p>
         </div>
       </div>
 
@@ -523,7 +523,7 @@
           <span class="settings-row__sublabel">Reduces eye fatigue with deep contrast and glowing accent colors.</span>
         </div>
         <label class="toggle-switch" for="dark-mode-checkbox">
-          <input id="dark-mode-checkbox" name="dark_mode" type="checkbox" {% if current_user.dark_mode %}checked{% endif %}>
+          <input id="dark-mode-checkbox" name="dark_mode" type="checkbox" role="switch" aria-label="Dark mode" {% if current_user.dark_mode %}checked{% endif %}>
           <span class="toggle-slider"></span>
         </label>
       </div>
@@ -548,7 +548,7 @@
         <label class="settings-control-label" for="timezone-select">Display Timezone</label>
         <div class="settings-select-wrapper">
           <select id="timezone-select" name="timezone" class="settings-select">
-            {% for tz in ["Asia/Kolkata", "Asia/Kathmandu", "Asia/Dhaka", "Asia/Dubai", "Asia/Singapore", "UTC", "Europe/London", "America/New_York"] %}
+            {% for tz in timezones %}
             <option value="{{ tz }}" {% if current_user.timezone == tz %}selected{% endif %}>{{ tz }}</option>
             {% endfor %}
           </select>
@@ -569,6 +569,23 @@
       </div>
     </div>
 
+    {% if feature_flags.voice %}
+    <!-- Voice assistant name -->
+    <div class="settings-card">
+      <div class="settings-card__header">
+        <div class="settings-card__title-group">
+          <h2 class="settings-card__title">Voice assistant</h2>
+          <p class="settings-card__desc">Give your assistant any name you like. It introduces the briefing and answers to it. Leave blank to use the default ({{ assistant_default }}).</p>
+        </div>
+      </div>
+      <div class="settings-control-group">
+        <label class="settings-control-label" for="assistant-name-input">Assistant name</label>
+        <input id="assistant-name-input" name="assistant_name" type="text" maxlength="30" autocomplete="off"
+          class="settings-text-input" placeholder="{{ assistant_default }}" value="{{ current_user.assistant_name_custom or '' }}">
+      </div>
+    </div>
+    {% endif %}
+
     <!-- Workspace Account Profile -->
     <div class="settings-card">
       <div class="settings-card__header">
@@ -580,7 +597,7 @@
         </div>
         <div class="settings-card__title-group">
           <h2 class="settings-card__title">Workspace Profile</h2>
-          <p class="settings-card__desc">Identity verification and tenant database security status.</p>
+          <p class="settings-card__desc">Your account details.</p>
         </div>
       </div>
 
@@ -622,7 +639,7 @@
               </svg>
               Storage Engine
             </span>
-            <span class="settings-prop-card__value">SQLite · WAL Isolation</span>
+            <span class="settings-prop-card__value">Stored on the server (SQLite)</span>
           </div>
 
           <div class="settings-prop-card">
@@ -632,7 +649,7 @@
               </svg>
               Authentication
             </span>
-            <span class="settings-prop-card__value">PBKDF2-SHA256 Encrypted</span>
+            <span class="settings-prop-card__value">Password stored as a salted hash (scrypt)</span>
           </div>
         </div>
       </div>
@@ -657,6 +674,23 @@
       </button>
     </div>
   </form>
+
+  {% if calendar_available %}
+  <!-- Google Calendar -->
+  <div class="settings-card" id="calendar-card" style="margin-top: 1.25rem;">
+    <div class="settings-card__header">
+      <div>
+        <h2 class="settings-card__title">Google Calendar</h2>
+        <p class="settings-card__desc">Add each pending task to your calendar as a block from its start time to its deadline. Completed or deleted tasks are removed again. Only events StartBy creates are touched.</p>
+      </div>
+    </div>
+    <p id="calendar-status" class="settings-card__desc" role="status">Checking connection…</p>
+    <div class="settings-actions">
+      <a id="calendar-connect" class="btn btn--primary" href="/calendar/connect" hidden>Connect Google Calendar</a>
+      <button id="calendar-disconnect" type="button" class="btn btn--secondary" hidden>Disconnect</button>
+    </div>
+  </div>
+  {% endif %}
 </section>
 {% endblock %}
 

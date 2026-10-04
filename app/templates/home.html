@@ -1,18 +1,18 @@
 {% extends "base.html" %}
-{% block title %}Dashboard — Kairo{% endblock %}
+{% block title %}Dashboard — StartBy{% endblock %}
 
 {% block content %}
 <div class="page-header">
   <div class="page-header__left">
-    <h1 class="page-header__title" id="dashboard-greeting">
-      <span id="dashboard-greeting-prefix">Good evening</span>, {{ current_user.name }}.
+    <h1 class="page-header__title page-header__title--inline" id="dashboard-greeting">
+      <span id="dashboard-greeting-prefix">Welcome back</span>, {{ current_user.name }}.
     </h1>
     <p class="page-header__desc">Here is what needs your attention today across your commitments.</p>
   </div>
   <div class="page-header__right">
     <div class="focus-status-badge">
       <span class="focus-pulse-dot"></span>
-      <span class="focus-status-text" id="dashboard-live-date">Workspace Active</span>
+      <span class="focus-status-text" id="dashboard-live-date">Today</span>
     </div>
   </div>
 </div>
@@ -72,6 +72,41 @@
 </div>
 
 <!-- Primary Dashboard Columns (Quick Capture & Priority Radar) -->
+{% if feature_flags.voice %}
+<section id="assistant-card" class="assistant-card" aria-labelledby="assistant-title">
+  <div class="assistant-card__head">
+    <div>
+      <h2 id="assistant-title" class="assistant-card__title">{{ assistant_name }} <span class="assistant-card__sub">your briefing</span></h2>
+      <p class="assistant-card__hint" id="assistant-hint">Tap to hear what needs you today.</p>
+    </div>
+    <div class="assistant-card__actions">
+      <button type="button" id="assistant-brief-btn" class="btn btn--primary">
+        <span aria-hidden="true">&#127897;</span> Brief me
+      </button>
+      <button type="button" id="assistant-stop-btn" class="btn btn--secondary" hidden>Stop</button>
+    </div>
+  </div>
+  <form id="assistant-ask-form" class="assistant-ask" novalidate>
+    <label for="assistant-ask-input" class="sr-only">Ask {{ assistant_name }} a question</label>
+    <input id="assistant-ask-input" type="text" maxlength="300" autocomplete="off"
+      placeholder="Ask: what should I do now? what&rsquo;s due tomorrow?">
+    <button type="button" id="assistant-mic-btn" class="btn btn--secondary" aria-pressed="false">
+      <span aria-hidden="true">&#127908;</span> <span id="assistant-mic-label">Speak</span>
+    </button>
+    <button type="submit" id="assistant-ask-btn" class="btn btn--primary">Ask</button>
+  </form>
+  <p id="assistant-mic-status" class="voice-status" role="status" aria-live="polite"></p>
+  <div id="assistant-output" class="assistant-card__output" aria-label="Assistant answer" hidden></div>
+</section>
+{% endif %}
+
+{% if feature_flags.insights %}
+<div id="overload-banner" class="overload-banner" hidden role="status">
+  <span id="overload-banner-text"></span>
+  <a href="{{ url_for('pages.insights_page') }}">View insights</a>
+</div>
+{% endif %}
+
 {% if feature_flags.estimates %}
 <section id="do-this-now" class="do-this-now" hidden>
   <h2 class="do-this-now__title">Do this now</h2>
@@ -106,6 +141,7 @@
       <div class="form-group">
         <label for="quick-add-due">Target Deadline (optional)</label>
         <input id="quick-add-due" name="due_at" type="datetime-local">
+      <small class="field-hint">Times are in your timezone: {{ current_user.timezone }} (change in Settings)</small>
       </div>
 
       <div id="quick-add-error" class="form-error" role="alert" hidden></div>
@@ -163,15 +199,15 @@
           </svg>
           Productivity & Velocity
         </h2>
-        <p class="dashboard__card-subtitle">Real-time completion metrics across your workspace</p>
+        <p class="dashboard__card-subtitle">Completed vs. total tasks, from your task list</p>
       </div>
-      <span class="momentum-tag" id="momentum-badge">Steady Progress</span>
+      <span class="momentum-tag" id="momentum-badge">…</span>
     </div>
 
     <div class="velocity-meter">
       <div class="velocity-meter__top">
         <span class="velocity-meter__label">Workspace Completion Ratio</span>
-        <span class="velocity-meter__pct" id="velocity-pct-text">0%</span>
+        <span class="velocity-meter__pct" id="velocity-pct-text">—</span>
       </div>
       <div class="velocity-track">
         <div class="velocity-fill" id="velocity-fill-bar" style="width: 0%;"></div>
@@ -185,7 +221,7 @@
             <span class="category-dot category-dot--study"></span>
             Study Tasks
           </span>
-          <span class="category-distribution-stat" id="stat-study-ratio">0 of 0 done</span>
+          <span class="category-distribution-stat" id="stat-study-ratio">—</span>
         </div>
         <div class="mini-track">
           <div class="mini-fill mini-fill--study" id="mini-bar-study" style="width: 0%;"></div>
@@ -198,7 +234,7 @@
             <span class="category-dot category-dot--work"></span>
             Work Tasks
           </span>
-          <span class="category-distribution-stat" id="stat-work-ratio">0 of 0 done</span>
+          <span class="category-distribution-stat" id="stat-work-ratio">—</span>
         </div>
         <div class="mini-track">
           <div class="mini-fill mini-fill--work" id="mini-bar-work" style="width: 0%;"></div>
@@ -211,7 +247,7 @@
             <span class="category-dot category-dot--personal"></span>
             Personal Tasks
           </span>
-          <span class="category-distribution-stat" id="stat-personal-ratio">0 of 0 done</span>
+          <span class="category-distribution-stat" id="stat-personal-ratio">—</span>
         </div>
         <div class="mini-track">
           <div class="mini-fill mini-fill--personal" id="mini-bar-personal" style="width: 0%;"></div>
@@ -243,7 +279,7 @@
           </svg>
         </div>
         <span class="shortcut-action-title">Pending Queue</span>
-        <span class="shortcut-action-subtitle" id="shortcut-pending-count">Active items</span>
+        <span class="shortcut-action-subtitle" id="shortcut-pending-count">…</span>
       </a>
 
       <a href="{{ url_for('pages.tasks_page') }}?tag=study" class="shortcut-action-btn">
@@ -294,5 +330,6 @@
 {% endblock %}
 
 {% block scripts %}
+{% if feature_flags.voice %}<script type="module" src="{{ url_for('static', filename='js/voice.js') }}?v=1"></script>{% endif %}
 <script type="module" src="{{ url_for('static', filename='js/dashboard.js') }}?v=20"></script>
 {% endblock %}

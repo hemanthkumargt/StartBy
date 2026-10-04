@@ -25,6 +25,9 @@ from app.constants import (
     MAX_ESTIMATE_HOURS,
     MULTIPLIER_MAX,
     MULTIPLIER_MIN,
+    RATIO_CLAMP_MAX,
+    RATIO_CLAMP_MIN,
+    REPLAN_LATE_NOISE_HOURS,
     RISK_AMBER_WINDOW_HOURS,
     START_BY_BUFFER,
 )
@@ -58,7 +61,86 @@ def compute_start_by(
     if due_at is None or estimate_hours is None:
         return None
     lead_time_hours = estimate_hours * multiplier * (1 + START_BY_BUFFER)
-    return timeutil.add_hours_iso(due_at, -lead_time_hours)
+    try:
+        return timeutil.add_hours_iso(due_at, -lead_time_hours)
+    except OverflowError:
+        # A deadline at the very edge of the calendar: no start time rather
+        # than a crash that takes the whole list (and the reminder job) down.
+        return None
+
+
+def compute_replan(due_at: str, start_by: str) -> dict:
+    """Adaptive Replanning (CLAUDE.md 2.5) for a task already past its
+    start_by: the original schedule is gone, so recommend the new one —
+    start right now, and say honestly when the work can no longer finish by
+    the deadline. Computed fresh on every read like start_by itself (I11),
+    so the recommendation keeps moving as time passes."""
+    lead = timeutil.parse_iso(due_at) - timeutil.parse_iso(start_by)
+    now = timeutil.utcnow()
+    finish = now + lead
+    # "Late" is measured against the work itself, not the 15% safety buffer:
+    # a job with 6h of real work and 6.4h left is not late, it has eaten buffer.
+    work = lead / (1 + START_BY_BUFFER)
+    late_hours = (now + work - timeutil.parse_iso(due_at)).total_seconds() / 3600
+    late_hours = late_hours if late_hours >= REPLAN_LATE_NOISE_HOURS else 0.0
+    return {
+        "start_at": timeutil.to_iso(now),
+        "projected_finish": timeutil.to_iso(finish),
+        "late_by_hours": round(late_hours, 2),
+    }
+
+
+def describe_replan(replan: dict, lead_hours: float) -> str:
+    """Plain-language replan for the reminder email (no clock times: the
+    server doesn't format in the user's timezone)."""
+    work = f"At your pace this takes about {format_hours(lead_hours)}, so start now."
+    if replan["late_by_hours"] > 0:
+        return (
+            f"{work} You have already missed the planned start, so it will finish about "
+            f"{format_hours(replan['late_by_hours'])} after the due time — consider asking "
+            "for an extension or moving the deadline."
+        )
+    return f"{work} You can still finish before the due time."
+
+
+def format_hours(hours: float) -> str:
+    total_minutes = round(hours * 60)
+    whole_hours, minutes = divmod(total_minutes, 60)
+    if whole_hours and minutes:
+        return f"{whole_hours}h {minutes}m"
+    if whole_hours:
+        return f"{whole_hours}h"
+    return f"{minutes}m"
+
+
+def explain_start_by(estimate_hours: float, multiplier: float, *, tag: str, learned: bool) -> str:
+    """Plain-language version of I10, for anywhere a user asks "why this
+    start time?" — the dashboard card and the start-now reminder email both
+    use this one function so they can't describe the calculation
+    differently. `learned` is whether the multiplier came from the user's
+    own completed tasks of this tag (I13) rather than the cold-start
+    default."""
+    planned_hours = estimate_hours * multiplier
+    lead_time_hours = planned_hours * (1 + START_BY_BUFFER)
+    planned = format_hours(planned_hours)
+    if learned:
+        # The learned figure is blended with the 1.5x starting assumption until
+        # there is plenty of history, so it is a planning factor, not an average
+        # of what happened — don't call it "have taken".
+        basis = (
+            f"Your completed {tag} tasks suggest planning for about {multiplier:.2f}x your "
+            f"estimates, so we plan for {planned}"
+        )
+    else:
+        basis = (
+            f"You have no completed {tag} tasks yet, so we assume {multiplier:.2f}x "
+            f"until we learn your pace and plan for {planned}"
+        )
+    return (
+        f"You estimated {format_hours(estimate_hours)}. {basis}, "
+        f"plus a {round(START_BY_BUFFER * 100)}% buffer, "
+        f"which is {format_hours(lead_time_hours)}. Start that long before the due time."
+    )
 
 
 def compute_risk(status: str, start_by: str | None) -> str:
@@ -85,9 +167,9 @@ def multipliers_by_tag(rows: Iterable[sqlite3.Row]) -> dict[str, float]:
     0.0) would have returned anyway."""
     log_ratios_by_tag: dict[str, list[float]] = {}
     for row in rows:
-        log_ratios_by_tag.setdefault(row["tag"], []).append(
-            math.log(row["actual_hours"] / row["estimate_hours"])
-        )
+        ratio = row["actual_hours"] / row["estimate_hours"]
+        ratio = max(RATIO_CLAMP_MIN, min(RATIO_CLAMP_MAX, ratio))  # one typo != your pace
+        log_ratios_by_tag.setdefault(row["tag"], []).append(math.log(ratio))
     return {
         tag: multiplier_from_history(len(ratios), sum(ratios) / len(ratios))
         for tag, ratios in log_ratios_by_tag.items()
@@ -102,4 +184,13 @@ def pick_do_this_now(tasks: list[dict]) -> dict | None:
     candidates = [t for t in tasks if t["risk"] in _DO_THIS_NOW_RISK_RANK]
     if not candidates:
         return None
-    return min(candidates, key=lambda t: (_DO_THIS_NOW_RISK_RANK[t["risk"]], t["start_by"]))
+    # Tasks that can still be met come before ones already past their deadline,
+    # so a task abandoned weeks ago never outranks one due in half an hour.
+    return min(
+        candidates,
+        key=lambda t: (
+            t.get("is_overdue", False),
+            _DO_THIS_NOW_RISK_RANK[t["risk"]],
+            t["start_by"],
+        ),
+    )

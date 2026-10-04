@@ -15,6 +15,9 @@ def test_run_migrations_creates_all_tables():
             "002_estimates",
             "003_start_now_reminder_kind",
             "004_actual_hours",
+            "005_calendar",
+            "006_assistant_name",
+            "007_voice_notes",
         ]
 
         conn = sqlite3.connect(db_path)
@@ -29,6 +32,8 @@ def test_run_migrations_creates_all_tables():
             "tasks",
             "activity_log",
             "reminders_sent",
+            "calendar_links",
+            "calendar_events",
         } <= tables
 
 

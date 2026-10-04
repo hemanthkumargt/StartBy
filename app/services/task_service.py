@@ -2,11 +2,14 @@
 and wiring every write into the activity log (routes stay HTTP-only;
 repositories stay SQL-only)."""
 
+import re
 import sqlite3
 
 from app import timeutil
 from app.constants import (
     DEFAULT_MULTIPLIER,
+    DUE_YEAR_MAX,
+    DUE_YEAR_MIN,
     MAX_ESTIMATE_HOURS,
     MIN_ESTIMATE_HOURS,
     TAGS,
@@ -43,13 +46,33 @@ def _field_is_patchable(name: str, flags: dict, status: str) -> bool:
     return required_flag is None or flags.get(required_flag, False)
 
 
+_CONTROL_RUN = re.compile(r"[\x00-\x1f\x7f\u200b\u2028\u2029\u2060\ufeff]+")
+NOTES_MAX_LENGTH = 5000
+
+
+def _one_line(text: str) -> str:
+    """Newlines, tabs, NULs and zero-width SPACES become single spaces. A newline
+    in a title breaks the reminder email's Subject header, and a task that can
+    never be emailed would block everyone behind it. U+200C/U+200D (ZWNJ/ZWJ)
+    are kept: they are part of the spelling of emoji families and of Malayalam,
+    Hindi and Persian words, and stripping them corrupts the text."""
+    return " ".join(_CONTROL_RUN.sub(" ", text).split())
+
+
 def _validate_title(title: object) -> str:
-    title = require_str(title, "title").strip()
+    title = _one_line(require_str(title, "title"))
     if not title:
         raise ApiError("validation", "Title is required", 422)
     if len(title) > TITLE_MAX_LENGTH:
         raise ApiError("validation", f"Title must be at most {TITLE_MAX_LENGTH} characters", 422)
     return title
+
+
+def _validate_notes(notes: object) -> str | None:
+    text = require_str(notes, "notes").replace("\x00", "").strip()
+    if len(text) > NOTES_MAX_LENGTH:
+        raise ApiError("validation", f"Notes must be at most {NOTES_MAX_LENGTH} characters", 422)
+    return text or None
 
 
 def _validate_tag(tag: str) -> str:
@@ -61,10 +84,17 @@ def _validate_tag(tag: str) -> str:
 def _validate_due_at(due_at: str | None) -> str | None:
     if due_at is None or due_at == "":
         return None
+    if not isinstance(due_at, str):
+        raise ApiError("validation", "due_at must be a date-time string", 422)
     try:
-        return timeutil.normalize_due_at(due_at)
-    except ValueError as exc:
+        normalized = timeutil.normalize_due_at(due_at)
+    except (ValueError, OverflowError) as exc:
         raise ApiError("validation", "due_at must be a valid ISO-8601 datetime", 422) from exc
+    if not DUE_YEAR_MIN <= int(normalized[:4]) <= DUE_YEAR_MAX:
+        raise ApiError(
+            "validation", f"Deadline year must be between {DUE_YEAR_MIN} and {DUE_YEAR_MAX}", 422
+        )
+    return normalized
 
 
 def _validate_hours(value: object, field_name: str) -> float | None:
@@ -123,6 +153,7 @@ def serialize_task(
         # I15: these keys only exist when the flag is on, so a flags-off
         # response is byte-identical to v1.0's shape, not just its values.
         start_by = None
+        explanation = None
         if row["estimate_hours"] is not None:
             # I13: a tag with no completed-task history (no key in
             # multipliers) falls back to DEFAULT_MULTIPLIER — exactly what
@@ -132,9 +163,18 @@ def serialize_task(
             start_by = estimate_service.compute_start_by(
                 row["due_at"], row["estimate_hours"], multiplier
             )
+            # Only meaningful once there's a due date to count back from.
+            if start_by is not None:
+                explanation = estimate_service.explain_start_by(
+                    row["estimate_hours"],
+                    multiplier,
+                    tag=row["tag"],
+                    learned=row["tag"] in multipliers,
+                )
         task["estimate_hours"] = row["estimate_hours"]
         task["actual_hours"] = row["actual_hours"]
         task["start_by"] = start_by
+        task["start_by_explanation"] = explanation
         # I12 risk radar. Adaptive Replanning (CLAUDE.md 2.5): risk is always
         # computed fresh from the current status/start_by (never stored), so
         # a missed start time shows up as "red" on the very next read, the
@@ -142,6 +182,13 @@ def serialize_task(
         # recompute step, and freezegun-testable since it goes through
         # timeutil here instead of comparing dates in JS.
         task["risk"] = estimate_service.compute_risk(row["status"], start_by)
+        # Adaptive Replanning: a red task gets the recomputed plan (start now,
+        # projected finish, how late that is) instead of just a colour.
+        task["replan"] = (
+            estimate_service.compute_replan(row["due_at"], start_by)
+            if task["risk"] == "red"
+            else None
+        )
     return task
 
 
@@ -150,6 +197,31 @@ def _get_active_or_404(conn: sqlite3.Connection, user_id: int, task_id: int) -> 
     if row is None:
         raise ApiError("not_found", "Task not found", 404)
     return row
+
+
+def validate_new_task(
+    *,
+    title: object,
+    notes: object = None,
+    tag: object = None,
+    due_at: object = None,
+    estimate_hours: object = None,
+    flags: dict | None = None,
+) -> dict:
+    """Every create-time rule in one place, with no DB access — so a batch
+    (smart capture's confirm) can validate all rows before writing any."""
+    flags = flags or {}
+    return {
+        "title": _validate_title(title),
+        "tag": _validate_tag(tag) if tag is not None else "personal",
+        "due_at": _validate_due_at(due_at),
+        "notes": _validate_notes(notes),
+        "estimate_hours": (
+            _validate_hours(estimate_hours, "estimate_hours")
+            if flags.get("estimates", False)
+            else None
+        ),
+    }
 
 
 def create_task(
@@ -164,13 +236,16 @@ def create_task(
     flags: dict | None = None,
 ) -> dict:
     flags = flags or {}
-    title = _validate_title(title)
-    tag = _validate_tag(tag) if tag is not None else "personal"
-    due_at = _validate_due_at(due_at)
-    notes = require_str(notes, "notes").strip() or None
-    estimate_hours = (
-        _validate_hours(estimate_hours, "estimate_hours") if flags.get("estimates", False) else None
+    fields = validate_new_task(
+        title=title,
+        notes=notes,
+        tag=tag,
+        due_at=due_at,
+        estimate_hours=estimate_hours,
+        flags=flags,
     )
+    title, tag, due_at = fields["title"], fields["tag"], fields["due_at"]
+    notes, estimate_hours = fields["notes"], fields["estimate_hours"]
 
     row = task_repo.create(
         conn,
@@ -185,7 +260,7 @@ def create_task(
     activity_service.record(conn, user_id=user_id, task_id=row["id"], action="created")
 
     task = serialize_task(row, flags=flags, multipliers=_multipliers_for(conn, user_id, flags))
-    hooks.on_task_created(task)
+    hooks.on_task_created(task, user_id=user_id)
     return task
 
 
@@ -241,7 +316,7 @@ def update_task(
         elif name == "due_at":
             value = _validate_due_at(value)
         elif name == "notes":
-            value = require_str(value, "notes").strip() or None
+            value = _validate_notes(value)
         elif name == "estimate_hours":
             value = _validate_hours(value, "estimate_hours")
 
@@ -266,18 +341,20 @@ def update_task(
             new_value=None if new_value is None else str(new_value),
         )
 
-    if "due_at" in updates or "estimate_hours" in updates or "tag" in updates:
-        # I8/I11: a new deadline, a new estimate, OR a new tag can move
-        # start_by (I10: start_by = due_at - estimate * multiplier * buffer,
-        # and multiplier is looked up per tag per I13), so the old
-        # due_soon/overdue/start_now reminder records for this task no
-        # longer apply to whatever start_by now is.
+    if "due_at" in updates:
+        # I8: a new deadline makes every earlier due_soon/overdue/start_now
+        # record stale, so all three may fire again for the new date.
         reminder_repo.clear_for_task(conn, task_id)
+    elif "estimate_hours" in updates or "tag" in updates:
+        # I11: a new estimate or tag moves start_by (I10/I13), so only the
+        # start-now notice is re-armed. due_soon/overdue are about the
+        # (unchanged) deadline; re-sending them on every estimate tweak was spam.
+        reminder_repo.clear_kinds(conn, task_id, ("start_now",))
 
     task = serialize_task(
         updated_row, flags=flags, multipliers=_multipliers_for(conn, user_id, flags)
     )
-    hooks.on_task_updated(task, [c[0] for c in changes])
+    hooks.on_task_updated(task, [c[0] for c in changes], user_id=user_id)
     return task
 
 
@@ -341,7 +418,7 @@ def complete_task(
     task = serialize_task(
         updated_row, flags=flags, multipliers=_multipliers_for(conn, user_id, flags)
     )
-    hooks.on_task_completed(task)
+    hooks.on_task_completed(task, user_id=user_id)
     return task
 
 
@@ -363,15 +440,18 @@ def reopen_task(
     # reasoning as update_task's due_at branch, not just a due_at change.
     reminder_repo.clear_for_task(conn, task_id)
 
-    return serialize_task(
+    task = serialize_task(
         updated_row, flags=flags, multipliers=_multipliers_for(conn, user_id, flags)
     )
+    hooks.on_task_reopened(task, user_id=user_id)
+    return task
 
 
 def delete_task(conn: sqlite3.Connection, *, user_id: int, task_id: int) -> None:
     _get_active_or_404(conn, user_id, task_id)
     task_repo.soft_delete(conn, task_id, deleted_at=timeutil.utcnow_iso())
     activity_service.record(conn, user_id=user_id, task_id=task_id, action="deleted")
+    hooks.on_task_deleted(task_id, user_id=user_id)
 
 
 def get_dashboard(conn: sqlite3.Connection, *, user_id: int, flags: dict | None = None) -> dict:
@@ -380,7 +460,7 @@ def get_dashboard(conn: sqlite3.Connection, *, user_id: int, flags: dict | None 
     counts = task_repo.counts_for_user(conn, user_id, now_iso=timeutil.utcnow_iso())
     due_next = [
         serialize_task(row, flags=flags, multipliers=multipliers)
-        for row in task_repo.due_next_for_user(conn, user_id)
+        for row in task_repo.due_next_for_user(conn, user_id, now_iso=timeutil.utcnow_iso())
     ]
     dashboard = {**counts, "due_next": due_next}
     if flags.get("estimates", False):

@@ -12,7 +12,9 @@ never recorded in reminders_sent on failure)."""
 import logging
 import smtplib
 import time
+from collections.abc import Mapping
 from email.mime.text import MIMEText
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +56,7 @@ class SmtpNotifier(Notifier):
             server.sendmail(self.user, [to], message.as_string())
 
 
-def get_notifier(config) -> Notifier:
+def get_notifier(config: Mapping[str, Any]) -> Notifier:
     return SmtpNotifier(
         host=config["SMTP_HOST"],
         port=config["SMTP_PORT"],

@@ -43,8 +43,12 @@ def serialize_entry(row: sqlite3.Row) -> dict:
     }
 
 
+MAX_PAGE_SIZE = 200
+
+
 def list_activity(
     conn: sqlite3.Connection, user_id: int, *, limit: int = 50, before_id: int | None = None
 ) -> list[dict]:
+    limit = max(1, min(MAX_PAGE_SIZE, limit))  # a negative LIMIT means "no limit" in SQLite
     rows = activity_repo.list_for_user(conn, user_id, limit=limit, before_id=before_id)
     return [serialize_entry(row) for row in rows]

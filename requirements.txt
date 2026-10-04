@@ -1,6 +1,23 @@
+# Direct dependencies
 flask==3.0.3
 flask-login==0.6.3
 flask-wtf==1.2.1
 python-dotenv==1.0.1
-gunicorn==22.0.0
+gunicorn==23.0.0
 dateparser==1.2.0
+pypdf==4.3.1
+
+# Transitive dependencies, pinned to the versions the test suite runs on so a
+# fresh `pip install` on the VM cannot pick up something newer than CI tested.
+# Every one supports Python 3.10 (the VM's Ubuntu 22.04 interpreter).
+werkzeug==3.1.9
+jinja2==3.1.6
+markupsafe==3.0.3
+itsdangerous==2.2.0
+blinker==1.9.0
+click==8.5.0
+wtforms==3.2.2
+python-dateutil==2.9.0.post0
+pytz==2026.4
+regex==2026.9.29
+tzlocal==5.4.4

@@ -18,7 +18,7 @@ You are the lead engineer on StartBy, a task manager web app for a Cognizant-run
 5. **Phase 2 is back in scope.** Team decision (2026-10-03) reverses the 2026-10-02 "drop Phase 2" decision: build all six Phase 2 features from the PRD preview, plus a new seventh feature, **Adaptive Replanning**, not in the original PRD — automatically recompute a task's `start_by` recommendation when the user misses it (now past `start_by`, task still pending) or changes the due date/estimate, rather than only recomputing on an explicit input change. This is substantially invariant I11 (recompute on due_at/estimate/multiplier change) plus a time-based trigger (recompute on every read when `now` has crossed `start_by` with no action taken) — treat it as part of the S5 estimate/start-by work, not a separate feature flag, since it's the same calculation re-run at a different trigger.
    - Build order (one feature at a time; each gets its own deep code review via the `code-review` skill and a manual browser test pass before moving to the next): (1) effort estimate + start_by formula + Adaptive Replanning's missed-start-time recompute, (2) risk radar + "Do this now" card, (3) start-now reminders, (4) per-tag estimate-correction multiplier (feeds back into 1's formula), (5) smart capture (Gemini + regex/dateparser fallback), (6) overload warning + report card.
    - Every Phase 2 feature still sits behind its feature flag (`FEATURE_ESTIMATES`, `FEATURE_SMART_CAPTURE`, `FEATURE_INSIGHTS`); with every flag off, behaviour must still equal `v1.0` exactly (I15).
-   - **Known risk, flagged to the user twice already and accepted**: code freeze is 2026-10-05 12:00 IST and the app is not yet deployed to a VM (that's still step 2/6 of the original brief, untouched). Building all of Phase 2 before deploying means deployment — the one mandatory, non-negotiable deliverable — gets less runway. Proceeding per explicit instruction; the plan is now to deploy once all 7 features are built and tested, not before.
+   - **Known risk, flagged to the user twice already and accepted**: code freeze is 2026-10-05 12:00 IST and the app is not yet deployed to a VM (that's still step 2/6 of the original brief, untouched). Building all of Phase 2 before deploying means deployment — the one mandatory, non-negotiable deliverable — gets less runway. Proceeding per explicit instruction; all Phase 2 features and the GCP integrations are now built and tested locally (2026-10-04); deployment is the remaining step.
 6. Never weaken, skip or delete a test to make CI pass. Fix the code, or ask.
 7. Ask before adding any dependency not listed in section 5.
 8. Small commits, Conventional Commits style: `feat(tasks): add soft delete`, `test(reminders): idempotency`, `fix(ui): modal overflow on 360px`.
@@ -29,27 +29,20 @@ You are the lead engineer on StartBy, a task manager web app for a Cognizant-run
 
 * Compute Engine e2-micro only, region us-central1 (Always Free applies only in us-west1, us-central1, us-east1). 30 GB standard disk. Any other size/region costs money.
 * e2-micro has 1 GB RAM: Gunicorn `--workers 2`, no Docker, no Redis, no extra daemons beyond Nginx and the Ops Agent.
-* Cloud Scheduler: 3 free jobs per billing account in total. We use exactly ONE.
-* Do not create static IPs, load balancers, or Cloud SQL.
-* No paid APIs. Gemini via a free Google AI Studio key only.
+* Cloud Scheduler: 3 free jobs per billing account in total. We use TWO (reminder sweep, nightly backup).
+* No load balancers or Cloud SQL. One static IP is reserved for the VM (a changing IP would break DNS). It is **billed** (about $3/month for an external IPv4; the new-account credit covers it), so never leave it reserved after deleting the VM.
+* No paid APIs by default: Gemini via a free Google AI Studio key (`GEMINI_BACKEND=ai_studio`). The Vertex AI backend (`GEMINI_BACKEND=vertex`) is billed per token — only enable it if the team accepts that. See ADR 0008.
 
-### GCP service breadth (added 2026-10-03, team decision pending)
+### GCP service breadth (decided 2026-10-03: the 11-service stack)
 
-The judging mentor (Vinith) flagged that the number of distinct GCP services/tools used and justified is a scored criterion on its own, separate from the use case itself. The single-VM design keeps cost and operational risk at zero, which is still non-negotiable — but it also means the services list was thin. Decide the items below at the team's 5:30 meeting, since several interact with the ₹0 and e2-micro constraints above.
+The team adopted an 11-service stack — Compute Engine, Cloud Scheduler, Cloud Monitoring, Cloud Logging, Secret Manager, Cloud Storage, Vertex AI/Gemini, Pub/Sub, Cloud Tasks, BigQuery and the Google Calendar API — each with a real job in the app. **`docs/decisions/0008-eleven-service-gcp-stack.md` is the authority** (it supersedes ADR 0007 and replaces the earlier "decide at the 5:30 meeting" list that used to be here).
 
-**Already in the plan (count these first — 4 services, no new decision needed):** Compute Engine, Cloud Scheduler, Cloud Monitoring + Cloud Logging (via the Ops Agent), and the Gemini API (Phase 2 smart capture, already scoped below).
+Rules that follow from it and still bind:
 
-**Proposed additions — low risk, recommend adopting:**
-* **Secret Manager** — store `SECRET_KEY`, `SMTP_PASSWORD`, `CRON_SECRET` here instead of in the VM's `.env`. Free tier: 6 secret versions/month, far more than our ~3-4 secrets need. Small setup cost (the app reads secrets at boot via the client library instead of `python-dotenv`), and it directly answers the judging criterion for "security awareness" too, not just service count.
-* **Cloud Storage** — a nightly cron step (or a second, tiny Cloud Scheduler job) copies the SQLite file to a bucket. Free tier: 5 GB-months, trivially enough for this DB's size. Removes the single VM disk as the one copy of all data, which is a real resiliency improvement worth having regardless of the judging angle.
-
-**Proposed additions — worth documenting as "considered," not necessarily deploying before the freeze:**
-* **Cloud Build + Artifact Registry** — could replace or sit alongside the existing GitHub Actions CI to run tests/deploy on push. Free tier (120 build-minutes/day) comfortably covers this repo. Real setup work this close to the Oct 5 freeze; if time is short, write the ADR for it (judges score "alternatives considered") and keep GitHub Actions as the actual CI, rather than risk a half-migrated pipeline the week of the demo.
-* **Cloud Natural Language API** — entity/date detection in pasted task text. Functionally overlaps with what Gemini already does for Feature 5 (smart capture) plus the regex/`dateparser` fallback; adding a third extraction path is redundant surface area for the same job. Worth a line in the roadmap as a considered alternative, not a second live integration.
-
-**Flagged conflict — needs a team decision, not a unilateral change:**
-* **Cloud Run Functions** (to run the Gemini/PDF step as a separate function) directly contradicts the "no Cloud Functions" rule a few lines above, which exists specifically to keep the architecture at one VM with zero extra moving parts the e2-micro's 1 GB RAM has to carry. Don't add this without the team explicitly deciding to relax that constraint — it's a real architecture change (a second deployed surface, a second place that can fail, a second thing to monitor), not a documentation update.
-* **Document AI** — PDF task/date extraction. The team's own research couldn't confirm a free tier; don't add a service to the architecture with an unconfirmed ₹0 story. `pypdf` (already an allowed dependency, below) covers the same PDF-text-extraction need for Feature 5 without this risk.
+* Google Cloud is called over REST with the stdlib (`app/gcp/`), never the `google-cloud-*` client libraries (memory on the 1 GB VM).
+* Every integration is optional and fail-safe: blank config = no-op, a Google outage is logged and dropped, never shown to the user, and never allowed to slow a request (slow calls go through `app/gcp/dispatcher.py`).
+* Events sent to Pub/Sub/BigQuery carry no titles or notes and a hashed user id.
+* Cloud Run Functions stays out (the VM runs every job). Document AI stays out (no confirmed free tier; `pypdf` covers PDFs).
 
 ### Gemini free tier
 
@@ -60,13 +53,14 @@ The judging mentor (Vinith) flagged that the number of distinct GCP services/too
 
 ### Email
 
+* Secrets: `SECRET_KEY` and `CRON_SECRET` are required (the app refuses to start without them); other `GCP_SECRETS` entries (`SMTP_PASSWORD`, `GEMINI_API_KEY`, ...) are optional and skipped with a warning when absent.
 * Gmail SMTP with an app password (`SMTP_USER`, `SMTP_PASSWORD`). Gmail has daily sending limits; cron must cap sends per run (100) and log counts.
 * A failed send must NOT be recorded as sent, so it retries next run.
 
 ### HTTPS / DNS
 
 * Free DuckDNS subdomain + Let's Encrypt (certbot, Nginx plugin).
-* Let's Encrypt has strict rate limits on repeated issuance. Test with `--staging` first; issue the real certificate once. Document this in `deploy/README-deploy.md`.
+* Let's Encrypt has strict rate limits on repeated issuance. Test with `--staging` first, then `certbot delete --cert-name <domain>` and issue the real certificate once (a staging cert is not replaced by re-running the normal command). Do not set `SECURE_COOKIES=1` before the real certificate is installed. Documented in `deploy/README-deploy.md`.
 
 ### Time
 

@@ -9,6 +9,7 @@ Credentials come from SEED_USER_EMAIL / SEED_USER_PASSWORD in .env.
 """
 
 import argparse
+import os
 import sys
 from datetime import timedelta
 from pathlib import Path
@@ -18,6 +19,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from dotenv import load_dotenv  # noqa: E402
 
 load_dotenv()
+
+from app.gcp import secrets as gcp_secrets  # noqa: E402
+
+# On a GCP VM SECRET_KEY / CRON_SECRET live in Secret Manager, not in .env;
+# without this the production check below would refuse to even start the app.
+gcp_secrets.load_into_environ(os.environ)
 
 from app import create_app, timeutil  # noqa: E402
 from app.config import Config  # noqa: E402
@@ -94,6 +101,16 @@ def main() -> None:
         conn = get_db()
         email = app.config["SEED_USER_EMAIL"]
         password = app.config["SEED_USER_PASSWORD"]
+        db_file = Path(app.config["DATABASE_PATH"]).resolve()
+        print(f"Database: {db_file}  (DATABASE_PATH from the environment / .env in the repo root)")
+        if app.config["ENV_NAME"] == "production" and (
+            len(password) < 12 or any(p in password.lower() for p in Config._PLACEHOLDERS)
+        ):
+            # The demo login would be a public username/password on the live site.
+            sys.exit(
+                "Refusing to seed in production with a placeholder SEED_USER_PASSWORD. "
+                "Set a real, unguessable SEED_USER_PASSWORD (12+ characters) first."
+            )
 
         existing = user_repo.find_by_email(conn, email)
         if existing is not None:

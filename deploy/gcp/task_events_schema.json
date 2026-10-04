@@ -1,0 +1,13 @@
+[
+  {"name": "event_id", "type": "STRING", "mode": "REQUIRED"},
+  {"name": "event", "type": "STRING", "mode": "REQUIRED"},
+  {"name": "ts", "type": "TIMESTAMP", "mode": "REQUIRED"},
+  {"name": "task_id", "type": "INTEGER", "mode": "REQUIRED"},
+  {"name": "user_hash", "type": "STRING", "mode": "REQUIRED"},
+  {"name": "tag", "type": "STRING", "mode": "NULLABLE"},
+  {"name": "status", "type": "STRING", "mode": "NULLABLE"},
+  {"name": "estimate_hours", "type": "FLOAT", "mode": "NULLABLE"},
+  {"name": "actual_hours", "type": "FLOAT", "mode": "NULLABLE"},
+  {"name": "ratio", "type": "FLOAT", "mode": "NULLABLE"},
+  {"name": "risk", "type": "STRING", "mode": "NULLABLE"}
+]

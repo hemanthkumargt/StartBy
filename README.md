@@ -58,17 +58,19 @@ that logic lives). Phase 2 plugs into the extension points already in the
 code (`app/services/hooks.py`, feature flags in `.env`) without touching
 Phase 1.
 
-**GCP services:** Compute Engine (runs the app), Cloud Scheduler (reminder
-cron + nightly backup trigger), Cloud Monitoring + Cloud Logging (uptime
-check and structured logs via the Ops Agent), Secret Manager (`SECRET_KEY`,
-`SMTP_PASSWORD`, `CRON_SECRET` instead of a `.env` file on the VM), Cloud
-Storage (nightly SQLite backup, so the VM's disk isn't the only copy of the
-data), and the Gemini API (Phase 2 smart capture). Cloud Build/Artifact
-Registry and the Cloud Natural Language API were evaluated and are written
-up as considered alternatives rather than second live integrations — see
-[`docs/decisions/0007-gcp-service-breadth.md`](docs/decisions/0007-gcp-service-breadth.md)
-for why, including the one open question (Cloud Run Functions vs. this
-single-VM design) still pending a team decision.
+**GCP services (11):** Compute Engine runs the app; Cloud Scheduler triggers
+the reminder sweep and the nightly backup; Cloud Tasks fires each task's
+start-now reminder at its exact start time; Pub/Sub and BigQuery receive
+anonymised task events for analytics; Cloud Storage keeps uploaded PDFs and
+SQLite backups; Secret Manager holds the secrets; Vertex AI / Gemini powers
+smart capture (with a regex fallback); Cloud Logging and Cloud Monitoring
+give structured logs, an uptime check and custom metrics; the Google
+Calendar API mirrors tasks into a user's own calendar. Every one is optional
+and fails safe — see
+[`docs/decisions/0008-eleven-service-gcp-stack.md`](docs/decisions/0008-eleven-service-gcp-stack.md)
+for what each does, how it stays within a 1 GB VM, and what is *not* free.
+`deploy/gcp/provision.sh` creates the resources (not yet run against a real
+project).
 
 See [`docs/decisions/`](docs/decisions/) for why Flask/SQLite/a VM/vanilla JS
 over the obvious alternatives.
@@ -102,19 +104,25 @@ pytest --cov=app --cov-report=term-missing    # with coverage
 ruff check . && ruff format --check .         # lint
 ```
 
-128 tests, ruff clean. Every PRD logic invariant (I1–I13 so far) has a named
-test, e.g. `test_I7_due_soon_reminder_sent_exactly_once...`.
+The suite is 600+ tests and `ruff` is clean. Every PRD logic invariant has a named
+test, e.g. `test_I7_due_soon_reminder_sent_exactly_once...`. The browser-side modules
+have Node tests too: `node --test tests/js/*.test.mjs` (CI runs both).
 
 ## Deploy
 
-See [`deploy/README-deploy.md`](deploy/README-deploy.md) for the exact VM
-steps, cost traps, and rollback procedure as it stands today: Compute Engine
-e2-micro in `us-central1` (Always Free), Nginx + Gunicorn (2 workers) behind
-Let's Encrypt, a `.env` file for secrets, one Cloud Scheduler job hitting
-`/api/cron/reminders`, and a Cloud Monitoring uptime check on `/healthz`.
-**Planned, not yet written into that doc:** moving secrets to Secret
-Manager and a second Cloud Scheduler job for a nightly SQLite backup to
-Cloud Storage — see [ADR 0007](docs/decisions/0007-gcp-service-breadth.md).
+See [`deploy/README-deploy.md`](deploy/README-deploy.md). The primary path is
+`deploy/gcp/provision.sh` (two phases: infrastructure, then — once HTTPS is live —
+`PHASE=after-https` for the uptime check and Cloud Scheduler jobs); the page lists the
+dry-run order, the staging-to-real certbot recipe, secret rotation, and the manual
+console flow as the fallback. Target: Compute Engine e2-micro in `us-central1` (Always
+Free), Nginx + Gunicorn (2 workers x 4 threads) behind Let's Encrypt, secrets in Secret
+Manager, two Cloud Scheduler jobs (reminder sweep, nightly backup to Cloud Storage), and
+a Cloud Monitoring uptime check on `/healthz`. The reserved static IP is **billed**
+(about $3/month; the new-account credit covers it).
+
+**Known limits:** reminders are at-most-once; emails per sweep are limited by SMTP
+latency (about 7-14 per 10 minutes); Google Calendar refresh tokens expire after 7 days
+while the OAuth consent screen is in Testing mode; BigQuery streaming needs billing.
 
 ## Roadmap
 
@@ -134,3 +142,22 @@ text-extraction path alongside Gemini + regex — see
 [ADR 0007](docs/decisions/0007-gcp-service-breadth.md).
 
 
+
+## Voice assistant ("SARA", `FEATURE_VOICE=1`)
+
+A spoken executive-assistant layer on the dashboard and Smart Capture. The name is
+`ASSISTANT_NAME` in `.env`.
+
+| Step | What it does | Needs |
+|---|---|---|
+| **Briefing** | "Brief me" reads what needs you today: tasks past their start time, ones starting soon, what's due, whether you are overloaded, and abandoned tasks. Built from the app's own data with fixed templates — **no AI call**, so it works offline or over quota. | Browser speech synthesis (all modern browsers) |
+| **Voice capture** | A mic on Smart Capture turns *"remind me to submit the lab record by Friday five pm, two hours, and then email the professor"* into draft tasks. Nothing is saved until you review and confirm. | Chrome/Edge/Safari speech recognition, **or** (Brave, Firefox) recording sent to Gemini via `/api/voice/transcribe` — needs `GEMINI_API_KEY`/Vertex |
+| **Ask** | Type or say "what should I do now?", "what's due tomorrow?", "how many are overdue?", "am I overloaded?", "how accurate are my estimates?", "why is that the start time?". Read-only, rule-based: it cannot be talked into changing data. "Add …" opens capture. | Same as above for the mic |
+
+Notes: the microphone needs HTTPS (or `localhost`). Audio is only uploaded on the
+recording route, only after you tap Stop, and is not stored. Everything spoken is also
+shown as text.
+
+### Voice Notes (dictaphone)
+
+With `FEATURE_VOICE=1`, the **Voice Notes** page (and the floating microphone on every page) records what you say, keeps the transcript as a note (the audio is never stored), and can hand any note to Smart Capture ("Turn into tasks"), which previews first. Saving a note never creates a task.

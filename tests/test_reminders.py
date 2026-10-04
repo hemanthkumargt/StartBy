@@ -304,3 +304,89 @@ def test_run_reminders_respects_max_per_run_budget(app, monkeypatch):
                 conn, get_notifier(app.config), now_iso="2026-10-03T12:00:00", max_per_run=1
             )
     assert counts["due_soon_sent"] == 1
+
+
+@freeze_time("2026-10-10T15:00:00")
+def test_start_now_reminder_email_explains_how_the_start_time_was_calculated(
+    estimates_client, monkeypatch
+):
+    """The reminder says WHY it's time to start (estimate x learned pace +
+    buffer), not just that it is — the question a user asks first."""
+    sent = []
+    monkeypatch.setattr(SmtpNotifier, "send", lambda self, **kw: sent.append(kw) or True)
+    register(estimates_client)
+    create_task(estimates_client, due_at="2026-10-10T18:00:00", estimate_hours=2.0)
+
+    estimates_client.post("/api/cron/reminders", headers=CRON_HEADERS)
+
+    start_now = [m for m in sent if m["subject"].startswith("Time to start")]
+    assert len(start_now) == 1
+    assert "How we worked this out: You estimated 2h." in start_now[0]["body"]
+    assert "which is 3h 27m" in start_now[0]["body"]
+    # Adaptive Replanning: 3h of the 3h27m lead has elapsed unused (due 18:00,
+    # now 15:00, start_by was 14:33), so it can't finish on time any more.
+    assert (
+        "Updated plan: At your pace this takes about 3h 27m, so start now."
+        in (start_now[0]["body"])
+    )
+    # 3h of real work fits exactly in the 3h left: the buffer is spent, but it is not late.
+    assert "You can still finish before the due time." in start_now[0]["body"]
+
+
+def _fake_repo(monkeypatch, released):
+    from app.services import reminder_service as rs
+
+    monkeypatch.setattr(rs.reminder_repo, "claim", lambda conn, task_id, kind: True)
+    monkeypatch.setattr(
+        rs.reminder_repo, "release", lambda conn, task_id, kind: released.append(task_id)
+    )
+
+
+def _send(rows, notifier, budget=100):
+    from app.services import reminder_service as rs
+
+    return rs._send_candidates(
+        None, notifier, rows, kind="due_soon", subject=lambda r: "s", body=lambda r: "b",
+        budget=budget,
+    )  # fmt: skip
+
+
+def test_an_undeliverable_user_is_skipped_after_three_failures_in_a_run(monkeypatch, caplog):
+    import logging
+
+    from app.services import reminder_service as rs
+
+    class Notifier:
+        def __init__(self):
+            self.attempts = []
+
+        def send(self, *, to, subject, body):
+            self.attempts.append(to)
+            return to != "bad@example.com"
+
+    bad = [{"user_id": 1, "task_id": 100 + i, "email": "bad@example.com"} for i in range(6)]
+    ok = [{"user_id": 2, "task_id": 200 + i, "email": "ok@example.com"} for i in range(4)]
+    released: list[int] = []
+    _fake_repo(monkeypatch, released)
+    notifier = Notifier()
+    with caplog.at_level(logging.WARNING):
+        sent, budget = _send(bad + ok, notifier)
+
+    assert notifier.attempts.count("bad@example.com") == rs.MAX_USER_FAILURES == 3
+    assert sent == 4  # the healthy user is untouched
+    assert sorted(released) == [100, 101, 102]  # failed sends stay retryable next run
+    assert budget == 100 - 3 - 4  # skipped rows cost no budget
+    assert "reminders_user_skipped user_id=1" in caplog.text
+
+
+def test_a_success_resets_a_users_failure_streak(monkeypatch):
+    results = iter([False, False, True, False, False, True])
+
+    class Notifier:
+        def send(self, **kw):
+            return next(results)
+
+    _fake_repo(monkeypatch, [])
+    rows = [{"user_id": 1, "task_id": i, "email": "a@example.com"} for i in range(6)]
+    sent, _ = _send(rows, Notifier(), budget=50)
+    assert sent == 2  # never three failures in a row, so the user is never skipped

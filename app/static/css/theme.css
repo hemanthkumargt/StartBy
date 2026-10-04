@@ -1,5 +1,5 @@
 /* ============================================================
-   Kairo Design System Tokens — Inspired by HeliiX (heliix.live)
+   StartBy Design System Tokens — Inspired by HeliiX (heliix.live)
    Technical Blueprint & Neo-Brutalist Minimalism
    ============================================================ */
 
@@ -25,7 +25,7 @@
   --color-border: #1e293b;
   --color-border-subtle: #cbd5e1;
   --color-border-hover: #0f172a;
-  --color-border-focus: #4f46e5;
+  --color-border-focus: #7c3aed;
 
   /* Typography */
   --color-text: #0f172a;
@@ -34,11 +34,11 @@
   --color-text-faint: #94a3b8;
 
   /* Heliix Primary Accents (Electric Indigo & Cyan Gradient) */
-  --color-primary: #4f46e5;
-  --color-primary-hover: #4338ca;
+  --color-primary: #7c3aed;
+  --color-primary-hover: #5b21b6;
   --color-primary-text: #ffffff;
-  --color-primary-subtle: rgba(79, 70, 229, 0.08);
-  --color-primary-glow: rgba(79, 70, 229, 0.25);
+  --color-primary-subtle: rgba(124, 58, 237, 0.09);
+  --color-primary-glow: rgba(124, 58, 237, 0.25);
   --color-cyan: #0891b2;
   --color-purple: #9333ea;
   --gradient-primary: linear-gradient(135deg, #a855f7 0%, #06b6d4 100%);
@@ -113,7 +113,7 @@
   --color-border: rgba(255, 255, 255, 0.14);
   --color-border-subtle: rgba(255, 255, 255, 0.08);
   --color-border-hover: rgba(255, 255, 255, 0.24);
-  --color-border-focus: #818cf8;
+  --color-border-focus: #c4b5fd;
 
   /* Typography */
   --color-text: #ffffff;
@@ -122,11 +122,11 @@
   --color-text-faint: #64748b;
 
   /* Primary Brand (Electric Indigo & Cyan Gradient) */
-  --color-primary: #6366f1;
-  --color-primary-hover: #818cf8;
+  --color-primary: #a78bfa;
+  --color-primary-hover: #c4b5fd;
   --color-primary-text: #ffffff;
-  --color-primary-subtle: rgba(99, 102, 241, 0.15);
-  --color-primary-glow: rgba(99, 102, 241, 0.35);
+  --color-primary-subtle: rgba(167, 139, 250, 0.16);
+  --color-primary-glow: rgba(167, 139, 250, 0.35);
   --color-cyan: #22d3ee;
   --color-purple: #c084fc;
   --gradient-primary: linear-gradient(135deg, #c084fc 0%, #22d3ee 100%);

@@ -11,4 +11,5 @@ def read_feature_flags(config) -> dict:
         "estimates": config["FEATURE_ESTIMATES"],
         "smart_capture": config["FEATURE_SMART_CAPTURE"],
         "insights": config["FEATURE_INSIGHTS"],
+        "voice": config["FEATURE_VOICE"],
     }

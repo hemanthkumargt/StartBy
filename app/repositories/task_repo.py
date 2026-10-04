@@ -176,6 +176,21 @@ def estimate_actual_pairs_for_user(conn: sqlite3.Connection, user_id: int) -> li
     ).fetchall()
 
 
+def estimate_history_for_user(conn: sqlite3.Connection, user_id: int) -> list[sqlite3.Row]:
+    """Completed, non-deleted tasks with both estimate and actual recorded,
+    oldest completion first — the report card's raw input (it needs order
+    for the trend, which the multiplier query above does not)."""
+    return conn.execute(
+        """
+        SELECT title, tag, estimate_hours, actual_hours, completed_at FROM tasks
+        WHERE user_id = ? AND status = 'done' AND deleted_at IS NULL
+          AND estimate_hours IS NOT NULL AND actual_hours IS NOT NULL
+        ORDER BY completed_at ASC, id ASC
+        """,
+        (user_id,),
+    ).fetchall()
+
+
 def soft_delete(conn: sqlite3.Connection, task_id: int, *, deleted_at: str) -> None:
     conn.execute("UPDATE tasks SET deleted_at = ? WHERE id = ?", (deleted_at, task_id))
     conn.commit()
@@ -204,14 +219,17 @@ def counts_for_user(conn: sqlite3.Connection, user_id: int, *, now_iso: str) -> 
 
 
 def due_next_for_user(
-    conn: sqlite3.Connection, user_id: int, *, limit: int = 5
+    conn: sqlite3.Connection, user_id: int, *, now_iso: str, limit: int = 5
 ) -> list[sqlite3.Row]:
+    """Upcoming deadlines first (nearest first), then overdue ones (most
+    recently missed first). Ordering purely by due_at filled the list with
+    long-forgotten overdue tasks and hid the deadline due in an hour."""
     return conn.execute(
         """
         SELECT * FROM tasks
         WHERE user_id = ? AND deleted_at IS NULL AND status = 'pending' AND due_at IS NOT NULL
-        ORDER BY due_at ASC
+        ORDER BY (due_at < ?) ASC, ABS(julianday(due_at) - julianday(?)) ASC
         LIMIT ?
         """,
-        (user_id, limit),
+        (user_id, now_iso, now_iso, limit),
     ).fetchall()

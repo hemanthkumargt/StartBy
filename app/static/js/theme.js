@@ -6,6 +6,9 @@ export async function setDarkMode(isDark) {
   await apiFetch("/api/me", { method: "PATCH", body: JSON.stringify({ dark_mode: isDark }) });
   document.documentElement.dataset.theme = isDark ? "dark" : "light";
   updateThemeIcons(isDark);
+  // Keep the Settings switch honest when the header toggle changes the theme.
+  const settingsSwitch = document.getElementById("dark-mode-checkbox");
+  if (settingsSwitch) settingsSwitch.checked = isDark;
 }
 
 function updateThemeIcons(isDark) {

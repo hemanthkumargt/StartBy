@@ -301,6 +301,7 @@ def test_I15_flag_off_response_has_no_estimate_or_start_by_keys(client):
     task = create_task(client, estimate_hours=2.0, due_at="2026-10-10T18:00:00").get_json()
     assert "estimate_hours" not in task
     assert "start_by" not in task
+    assert "start_by_explanation" not in task
     assert "risk" not in task
 
 
@@ -672,3 +673,64 @@ def test_list_filters_by_status_tag_and_search(client):
 
     searched = client.get("/api/tasks?q=dbms").get_json()
     assert [t["title"] for t in searched] == ["Study DBMS"]
+
+
+def test_flag_on_task_explains_how_its_start_by_was_worked_out(estimates_client):
+    register(estimates_client)
+    task = create_task(
+        estimates_client, estimate_hours=2.0, due_at="2026-10-10T18:00:00"
+    ).get_json()
+    assert task["start_by"] == "2026-10-10T14:33:00"
+    assert "You estimated 2h." in task["start_by_explanation"]
+    assert "no completed study tasks yet" in task["start_by_explanation"]
+    assert "which is 3h 27m" in task["start_by_explanation"]
+
+
+def test_flag_on_explanation_switches_to_learned_once_the_tag_has_history(estimates_client):
+    register(estimates_client)
+    for estimate, actual in [(1.0, 2.0), (2.0, 5.0), (3.0, 6.0)]:
+        t = create_task(estimates_client, estimate_hours=estimate).get_json()
+        estimates_client.post(f"/api/tasks/{t['id']}/complete", json={"actual_hours": actual})
+    task = create_task(
+        estimates_client, estimate_hours=2.0, due_at="2026-10-10T18:00:00"
+    ).get_json()
+    assert (
+        "Your completed study tasks suggest planning for about 1.72x"
+        in task["start_by_explanation"]
+    )
+
+
+def test_flag_on_explanation_is_null_without_a_due_date_or_estimate(estimates_client):
+    register(estimates_client)
+    no_due = create_task(estimates_client, estimate_hours=2.0).get_json()
+    no_estimate = create_task(estimates_client, due_at="2026-10-10T18:00:00").get_json()
+    assert no_due["start_by_explanation"] is None
+    assert no_estimate["start_by_explanation"] is None
+
+
+@freeze_time("2026-10-04T08:00:00")
+def test_red_task_carries_a_replan_and_other_risks_do_not(estimates_client):
+    from tests.conftest import register
+
+    register(estimates_client)
+    red = estimates_client.post(
+        "/api/tasks",
+        json={"title": "late", "due_at": "2026-10-04T10:00:00", "estimate_hours": 2},
+    ).get_json()
+    green = estimates_client.post(
+        "/api/tasks",
+        json={"title": "fine", "due_at": "2026-10-20T10:00:00", "estimate_hours": 2},
+    ).get_json()
+    assert red["risk"] == "red"
+    # 2h * 1.5 * 1.15 = 3h27m of work, starting now (08:00) -> 11:27, 1h27m late.
+    assert red["replan"]["projected_finish"] == "2026-10-04T11:27:00"
+    assert red["replan"]["late_by_hours"] == 1.0  # 3h of real work (the 15% buffer is not "late")
+    assert green["replan"] is None
+
+
+def test_replan_key_absent_when_estimates_flag_off(client):
+    from tests.conftest import register
+
+    register(client)
+    task = client.post("/api/tasks", json={"title": "t"}).get_json()
+    assert "replan" not in task

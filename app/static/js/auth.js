@@ -23,8 +23,15 @@ function wireForm(formId, path) {
     }
 
     const data = Object.fromEntries(new FormData(form).entries());
+    if (formId === "register-form") {
+      // New accounts start in the browser's own timezone, so the times people
+      // type and the times they are shown agree from the first task.
+      data.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    }
+    let succeeded = false;
     try {
       await apiFetch(path, { method: "POST", body: JSON.stringify(data) });
+      succeeded = true;
       window.location.href = "/";
     } catch (err) {
       if (errorTextEl) {
@@ -32,7 +39,9 @@ function wireForm(formId, path) {
       }
       if (errorEl) errorEl.hidden = false;
     } finally {
-      if (submitBtn) {
+      // Stay disabled on success: the redirect is in flight, and re-enabling
+      // here would let an impatient second click submit twice.
+      if (submitBtn && !succeeded) {
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalBtnHtml;
       }
@@ -88,6 +97,13 @@ if (registerPasswordInput && passwordReqHelper) {
 
 const demoFillBtn = document.getElementById("demo-fill-btn");
 if (demoFillBtn) {
+  // It is a div with role=button, so it must answer Enter and Space itself.
+  demoFillBtn.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      demoFillBtn.click();
+    }
+  });
   demoFillBtn.addEventListener("click", () => {
     const emailInput = document.getElementById("email");
     const passwordInput = document.getElementById("password");
@@ -140,7 +156,6 @@ if (authThemeToggle) {
     const newTheme = isDark ? "light" : "dark";
     document.documentElement.dataset.theme = newTheme;
     try {
-      localStorage.setItem("kairo-theme", newTheme);
       localStorage.setItem("startby-theme", newTheme);
     } catch (_) {}
     updateThemeUI(newTheme);
@@ -157,7 +172,7 @@ if (forgotPasswordLink) {
   forgotPasswordLink.addEventListener("click", (e) => {
     e.preventDefault();
     showToast(
-      "Demo Environment: To reset password, use `python scripts/seed.py --reset` or register a new account.",
+      "Password reset isn't available yet. Ask a teammate to reset your account, or register a new one.",
       "info"
     );
   });

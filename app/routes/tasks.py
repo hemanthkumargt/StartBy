@@ -4,6 +4,7 @@ from flask_login import current_user, login_required
 from app.db import get_db
 from app.errors import ApiError
 from app.feature_flags import read_feature_flags
+from app.ratelimit import enforce
 from app.services import activity_service, task_service
 
 bp = Blueprint("tasks", __name__, url_prefix="/api")
@@ -37,6 +38,12 @@ def list_tasks():
 @bp.post("/tasks")
 @login_required
 def create_task():
+    enforce(
+        current_app.extensions["api_limiters"],
+        "task_create",
+        current_user.id,
+        "Too many new tasks too quickly — wait a minute and retry",
+    )
     body = _json_body()
     task = task_service.create_task(
         get_db(),
