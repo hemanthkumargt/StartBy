@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="{{ 'light' if (current_user.is_authenticated and not current_user.dark_mode) else 'dark' }}">
+<html lang="en" data-theme="{{ 'dark' if (current_user.is_authenticated and current_user.dark_mode) else ('light' if current_user.is_authenticated else (request.cookies.get('startby-theme') if request.cookies.get('startby-theme') in ('light', 'dark') else 'dark')) }}">
 
 <head>
   <meta charset="utf-8">
@@ -13,22 +13,19 @@
   <meta name="apple-mobile-web-app-title" content="StartBy">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232f63e0'/%3E%3Cpath d='M16 6L6 11l10 5 10-5-10-5zM6 21l10 5 10-5M6 16l10 5 10-5' stroke='%23ffffff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%238b5cf6'/%3E%3Cpath d='M16 6L6 11l10 5 10-5-10-5zM6 21l10 5 10-5M6 16l10 5 10-5' stroke='%23ffffff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
+  <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('startby-theme');
+        if (saved === 'light' || saved === 'dark') {
+          document.documentElement.setAttribute('data-theme', saved);
+        }
+      } catch (e) {}
+    })();
+  </script>
   {% if current_user.is_authenticated %}
   <meta name="user-timezone" content="{{ current_user.timezone }}">
-  {% else %}
-  <script>
-    try {
-      const savedTheme = localStorage.getItem('startby-theme');
-      if (savedTheme) {
-        document.documentElement.setAttribute('data-theme', savedTheme);
-      } else {
-        document.documentElement.setAttribute('data-theme', 'dark');
-      }
-    } catch (e) {
-      document.documentElement.setAttribute('data-theme', 'dark');
-    }
-  </script>
   {% endif %}
   <title>{% block title %}StartBy — Intelligent Task Workspace{% endblock %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -880,6 +877,29 @@
     {% endif %}
 
     <div class="app-main-content">
+      {% if current_user.is_authenticated %}
+      <header class="app-top-header">
+        <button class="theme-switch-btn" type="button" aria-label="Toggle theme">
+          <span class="theme-icon">
+            <svg class="theme-svg theme-svg--moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <svg class="theme-svg theme-svg--sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </span>
+          <span class="theme-label">Light</span>
+        </button>
+      </header>
+      {% endif %}
       <main id="main-content" tabindex="-1" class="{% block main_class %}app-main{% endblock %}">
         {% block content %}{% endblock %}
       </main>
@@ -910,9 +930,7 @@
 
   <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
   <script type="module" src="{{ url_for('static', filename='js/api.js') }}?v=4"></script>
-  {% if current_user.is_authenticated %}
-  <script type="module" src="{{ url_for('static', filename='js/theme.js') }}?v=4"></script>
-  {% endif %}
+  <script type="module" src="{{ url_for('static', filename='js/theme.js') }}?v=31"></script>
   {% if current_user.is_authenticated %}<script type="module" src="{{ url_for('static', filename='js/sidebar.js') }}?v=1"></script>{% endif %}
   {% block scripts %}{% endblock %}
 

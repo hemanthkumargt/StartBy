@@ -429,6 +429,23 @@ a:hover {
   min-width: 0;
 }
 
+.app-top-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 1.25rem 2rem 0;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .app-top-header {
+    display: none;
+  }
+}
+
 .app-main {
   width: 100%;
   max-width: 1100px;

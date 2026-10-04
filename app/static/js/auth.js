@@ -128,39 +128,7 @@ if (demoFillBtn) {
   });
 }
 
-// ============================================================
-// Theme Switcher for Unauthenticated Auth Pages
-// ============================================================
-
-const authThemeToggle = document.getElementById("auth-theme-toggle");
-if (authThemeToggle) {
-  function updateThemeUI(theme) {
-    const isDark = theme === "dark";
-    const moonSvg = authThemeToggle.querySelector(".theme-svg--moon");
-    const sunSvg = authThemeToggle.querySelector(".theme-svg--sun");
-    const label = authThemeToggle.querySelector(".theme-label");
-
-    if (moonSvg && sunSvg) {
-      moonSvg.style.display = isDark ? "none" : "block";
-      sunSvg.style.display = isDark ? "block" : "none";
-    }
-    if (label) label.textContent = isDark ? "Light" : "Dark";
-  }
-
-  // Initial state check
-  const currentTheme = document.documentElement.dataset.theme || "light";
-  updateThemeUI(currentTheme);
-
-  authThemeToggle.addEventListener("click", () => {
-    const isDark = document.documentElement.dataset.theme === "dark";
-    const newTheme = isDark ? "light" : "dark";
-    document.documentElement.dataset.theme = newTheme;
-    try {
-      localStorage.setItem("startby-theme", newTheme);
-    } catch (_) {}
-    updateThemeUI(newTheme);
-  });
-}
+// Theme switching is handled globally by theme.js across all pages
 
 
 // ============================================================
