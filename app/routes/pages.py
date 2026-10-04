@@ -103,8 +103,11 @@ def register_page():
 
 
 @bp.get("/")
-@login_required
 def home_page():
+    # Signed-out visitors see the public landing page instead of being bounced
+    # to /login, so the bare URL is a usable front door.
+    if not current_user.is_authenticated:
+        return redirect(url_for("pages.landing_page"))
     return render_template(
         "home.html",
         assistant_name=current_user.assistant_name(current_app.config["ASSISTANT_NAME"]),

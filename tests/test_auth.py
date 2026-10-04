@@ -112,10 +112,11 @@ def test_logout_ends_session(client):
     assert home.status_code == 302
 
 
-def test_home_page_requires_login(client):
+def test_home_page_redirects_anon_to_landing(client):
+    # Signed-out visitors at the root land on the public marketing page, not login.
     response = client.get("/")
     assert response.status_code == 302
-    assert "/login" in response.headers["Location"]
+    assert "/welcome" in response.headers["Location"]
 
 
 def test_social_login_registers_new_user(app, client):

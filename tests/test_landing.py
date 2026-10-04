@@ -22,6 +22,6 @@ def test_landing_redirects_signed_in_users_to_dashboard(client):
     assert res.status_code == 302 and res.location.endswith("/")
 
 
-def test_signed_out_root_still_redirects_to_login(client):
+def test_signed_out_root_redirects_to_landing(client):
     res = client.get("/")
-    assert res.status_code == 302 and "/login" in res.location
+    assert res.status_code == 302 and "/welcome" in res.location
