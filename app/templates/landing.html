@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+{% block title %}StartBy — Know exactly when to start{% endblock %}
+
+{% block head %}
+<meta name="description" content="StartBy tells you when to start, not just when it's due. Effort estimates, a risk radar, smart capture and voice notes that learn how long your work really takes.">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}?v=1">
+{% endblock %}
+
+{% block shell %}
+<div class="lp" id="top">
+  <div class="lp-aurora" aria-hidden="true"></div>
+  <div class="lp-grid" aria-hidden="true"></div>
+
+  <!-- ===== Nav ===== -->
+  <header class="lp-nav" id="lp-nav">
+    <div class="lp-wrap lp-nav__inner">
+      <a class="lp-brand" href="#top" aria-label="StartBy home">
+        <span class="lp-brand__logo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </span>
+        StartBy
+      </a>
+      <nav class="lp-nav__links" aria-label="Sections">
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+        <a href="#try">Try the math</a>
+        <a href="#stack">Under the hood</a>
+      </nav>
+      <div class="lp-nav__cta">
+        <button class="lp-icon-btn theme-switch-btn" type="button" aria-label="Toggle theme">
+          <span class="theme-icon">
+            <svg class="theme-svg theme-svg--moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            <svg class="theme-svg theme-svg--sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          </span>
+          <span class="theme-label visually-hidden">Theme</span>
+        </button>
+        <a class="lp-btn lp-btn--ghost lp-hide-sm" href="{{ url_for('pages.login_page') }}">Log in</a>
+        <a class="lp-btn lp-btn--primary" href="{{ url_for('pages.register_page') }}">Get started</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content" tabindex="-1">
+
+    <!-- ===== Hero ===== -->
+    <section class="lp-hero lp-wrap">
+      <div class="lp-hero__copy">
+        <a class="lp-pill" href="#features">
+          <span class="lp-pill__dot"></span> Now with voice notes &amp; adaptive replanning
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <h1 class="lp-h1">
+          Due dates tell you <span class="lp-strike">when it's late</span>.<br>
+          <span class="lp-grad">StartBy tells you when to begin.</span>
+        </h1>
+        <p class="lp-lead">
+          A task manager that works backwards from the deadline. It estimates the effort,
+          learns how long <em>you</em> actually take, and nudges you at the moment starting
+          still feels easy.
+        </p>
+        <div class="lp-hero__actions">
+          <a class="lp-btn lp-btn--primary lp-btn--lg" href="{{ url_for('pages.register_page') }}">
+            Start free
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a class="lp-btn lp-btn--ghost lp-btn--lg" href="#try">See the math</a>
+        </div>
+        <ul class="lp-trust">
+          <li>No card, ever</li>
+          <li>Installs as an app</li>
+          <li>Free to run, free to use</li>
+        </ul>
+      </div>
+
+      <!-- Product mock -->
+      <div class="lp-hero__visual" aria-hidden="true">
+        <div class="lp-mock" id="lp-mock">
+          <div class="lp-mock__bar">
+            <i></i><i></i><i></i>
+            <span>startby / today</span>
+          </div>
+          <div class="lp-mock__body">
+            <div class="lp-now">
+              <div class="lp-now__label"><span class="lp-live"></span> Do this now</div>
+              <div class="lp-now__title">Operating Systems — Lab 4 report</div>
+              <div class="lp-now__meta">
+                <span>Due Fri 6:00 PM</span><span>·</span><span>Est. 3h 30m</span>
+              </div>
+              <div class="lp-now__start">
+                <small>Start by</small>
+                <strong id="lp-countdown">00:42:17</strong>
+              </div>
+              <div class="lp-bar"><span id="lp-bar-fill"></span></div>
+            </div>
+
+            <div class="lp-row lp-row--red">
+              <span class="lp-risk"></span>
+              <div><b>Statistics assignment</b><small>Past start-by · replanned to 7:30 PM</small></div>
+              <em>At risk</em>
+            </div>
+            <div class="lp-row lp-row--amber">
+              <span class="lp-risk"></span>
+              <div><b>Read Ch. 7 — Networks</b><small>Start by tomorrow 9:00 AM</small></div>
+              <em>Soon</em>
+            </div>
+            <div class="lp-row lp-row--green">
+              <span class="lp-risk"></span>
+              <div><b>Gym session</b><small>Start by Sat 6:30 AM</small></div>
+              <em>On track</em>
+            </div>
+          </div>
+        </div>
+
+        <div class="lp-float lp-float--a">
+          <span class="lp-float__ico">⏱</span>
+          <div><b>Study ×1.6</b><small>learned from 38 tasks</small></div>
+        </div>
+        <div class="lp-float lp-float--b">
+          <span class="lp-float__ico">🎙</span>
+          <div><b>“Remind me to submit the lab Friday”</b><small>captured in 2 s</small></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Proof strip ===== -->
+    <section class="lp-strip lp-wrap lp-reveal" aria-label="At a glance">
+      <div><strong data-count="7">0</strong><span>smart features</span></div>
+      <div><strong data-count="11">0</strong><span>Google Cloud services</span></div>
+      <div><strong data-count="360" data-suffix="px">0</strong><span>mobile-first, up to desktop</span></div>
+      <div><strong>₹0</strong><span>to run, by design</span></div>
+    </section>
+
+    <!-- ===== Features ===== -->
+    <section class="lp-section lp-wrap" id="features">
+      <div class="lp-head lp-reveal">
+        <span class="lp-eyebrow">Features</span>
+        <h2 class="lp-h2">Built around one question: <span class="lp-grad">“When should I start?”</span></h2>
+        <p class="lp-sub">Every feature feeds the same calculation, so the answer gets sharper the more you use it.</p>
+      </div>
+
+      <div class="lp-bento">
+        <article class="lp-card lp-card--wide lp-reveal">
+          <div class="lp-card__ico lp-ico--violet">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          </div>
+          <h3>Start-by time, not just a deadline</h3>
+          <p>Give a task an effort estimate and StartBy works backwards from the due date, with a buffer, to the latest sensible moment to begin.</p>
+          <div class="lp-chiprow"><span>due − estimate × multiplier × 1.15</span></div>
+        </article>
+
+        <article class="lp-card lp-reveal">
+          <div class="lp-card__ico lp-ico--red">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+          </div>
+          <h3>Risk radar</h3>
+          <p>Green, amber, red, with a label as well as a colour. A “Do this now” card surfaces the one task that matters.</p>
+        </article>
+
+        <article class="lp-card lp-reveal">
+          <div class="lp-card__ico lp-ico--blue">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+          </div>
+          <h3>Adaptive replanning</h3>
+          <p>Missed your start time? Changed the due date? The plan recomputes itself instead of quietly going stale.</p>
+        </article>
+
+        <article class="lp-card lp-reveal">
+          <div class="lp-card__ico lp-ico--amber">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>
+          </div>
+          <h3>Learns your real pace</h3>
+          <p>Per-tag correction multipliers come from actual vs. estimated hours. If study always takes 1.6×, your plan knows.</p>
+        </article>
+
+        <article class="lp-card lp-card--wide lp-reveal">
+          <div class="lp-card__ico lp-ico--green">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15.5l-1.9-4.6L5.5 9l4.6-1.4L12 3z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15z"/></svg>
+          </div>
+          <h3>Smart capture with Gemini</h3>
+          <p>Paste a messy handout, drop a PDF or just type “lab report friday 6pm”. Gemini pulls out tasks and dates, and a local parser takes over if the API is slow, so capture never fails.</p>
+          <div class="lp-chiprow"><span>Gemini</span><span>regex + dateparser fallback</span><span>PDF text</span></div>
+        </article>
+
+        <article class="lp-card lp-reveal">
+          <div class="lp-card__ico lp-ico--violet">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg>
+          </div>
+          <h3>Voice assistant &amp; notes</h3>
+          <p>Talk to it. Add tasks, ask what's next, or record a note, hands free.</p>
+        </article>
+
+        <article class="lp-card lp-card--wide lp-reveal">
+          <div class="lp-card__ico lp-ico--blue">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+          </div>
+          <h3>Start-now reminders</h3>
+          <p>A nudge when it's time to begin, sent once, never twice, and retried if a send fails.</p>
+        </article>
+
+        <article class="lp-card lp-card--wide lp-reveal">
+          <div class="lp-card__ico lp-ico--amber">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg>
+          </div>
+          <h3>Overload warning &amp; report card</h3>
+          <p>See a crunch coming a week ahead, and review how accurate your estimates really were.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===== How it works ===== -->
+    <section class="lp-section lp-wrap" id="how">
+      <div class="lp-head lp-reveal">
+        <span class="lp-eyebrow">How it works</span>
+        <h2 class="lp-h2">From messy inbox to a calm plan <span class="lp-grad">in three steps</span></h2>
+      </div>
+      <ol class="lp-steps">
+        <li class="lp-reveal">
+          <span class="lp-step__n">01</span>
+          <h3>Capture anything</h3>
+          <p>Type it, say it, paste a syllabus or upload a PDF. Titles, due dates and estimates are filled in for you to confirm.</p>
+        </li>
+        <li class="lp-reveal">
+          <span class="lp-step__n">02</span>
+          <h3>See your start-by</h3>
+          <p>Each task gets a latest-start time and a risk colour. The dashboard puts the most urgent one up front.</p>
+        </li>
+        <li class="lp-reveal">
+          <span class="lp-step__n">03</span>
+          <h3>Get nudged, then get better</h3>
+          <p>A reminder lands when it's time. Finish the task and StartBy learns from how long it really took.</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ===== Interactive calculator ===== -->
+    <section class="lp-section lp-wrap" id="try">
+      <div class="lp-calc lp-reveal">
+        <div class="lp-calc__copy">
+          <span class="lp-eyebrow">Try the math</span>
+          <h2 class="lp-h2">Move the sliders. <span class="lp-grad">Watch your start time move.</span></h2>
+          <p class="lp-sub">A simplified version of the real formula. In the app, the multiplier is learned from your own history.</p>
+        </div>
+        <form class="lp-calc__panel" id="lp-calc" onsubmit="return false" aria-label="Start-by calculator">
+          <label>
+            <span>Due in <output id="o-due">48</output> hours</span>
+            <input type="range" id="in-due" min="2" max="168" step="1" value="48">
+          </label>
+          <label>
+            <span>Estimated effort <output id="o-est">3</output> h</span>
+            <input type="range" id="in-est" min="0.5" max="12" step="0.5" value="3">
+          </label>
+          <label>
+            <span>Your pace multiplier <output id="o-mul">1.6</output>×</span>
+            <input type="range" id="in-mul" min="1" max="2.5" step="0.1" value="1.6">
+          </label>
+          <div class="lp-calc__result" aria-live="polite">
+            <small>Start by in</small>
+            <strong id="o-start">—</strong>
+            <span class="lp-chip" id="o-risk">On track</span>
+            <p id="o-explain"></p>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ===== Stack ===== -->
+    <section class="lp-section lp-wrap" id="stack">
+      <div class="lp-head lp-reveal">
+        <span class="lp-eyebrow">Under the hood</span>
+        <h2 class="lp-h2">Serious engineering, <span class="lp-grad">free-tier budget</span></h2>
+        <p class="lp-sub">One small VM, eleven Google Cloud services, each with a real job. Every integration is optional and fails safe, so a Google outage never reaches you.</p>
+      </div>
+      <div class="lp-stack lp-reveal">
+        {% for s in ["Compute Engine", "Cloud Scheduler", "Cloud Monitoring", "Cloud Logging", "Secret Manager", "Cloud Storage", "Vertex AI / Gemini", "Pub/Sub", "Cloud Tasks", "BigQuery", "Google Calendar"] %}
+        <span>{{ s }}</span>
+        {% endfor %}
+      </div>
+      <ul class="lp-principles">
+        <li class="lp-reveal"><b>Private by design</b><span>Analytics events carry no titles or notes, and user ids are hashed.</span></li>
+        <li class="lp-reveal"><b>Never hangs on AI</b><span>10 s timeout, one retry, then a local parser. Capture always works.</span></li>
+        <li class="lp-reveal"><b>Tested invariants</b><span>Every logic rule has a named test, from reminders sent once to flags-off parity.</span></li>
+      </ul>
+    </section>
+
+    <!-- ===== CTA ===== -->
+    <section class="lp-wrap">
+      <div class="lp-cta lp-reveal">
+        <h2>Stop guessing. <span class="lp-grad">Start by.</span></h2>
+        <p>Create an account in under a minute and have your first plan before your coffee cools.</p>
+        <div class="lp-hero__actions lp-center">
+          <a class="lp-btn lp-btn--primary lp-btn--lg" href="{{ url_for('pages.register_page') }}">Create free account</a>
+          <a class="lp-btn lp-btn--ghost lp-btn--lg" href="{{ url_for('pages.login_page') }}">I already have one</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="lp-foot lp-wrap">
+    <span>© StartBy · Built for the NPN GCP Hackathon, Amrita School of Engineering</span>
+    <nav aria-label="Footer">
+      <a href="#features">Features</a>
+      <a href="{{ url_for('pages.login_page') }}">Log in</a>
+      <a href="{{ url_for('pages.register_page') }}">Sign up</a>
+    </nav>
+  </footer>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='js/landing.js') }}?v=1"></script>
+{% endblock %}
