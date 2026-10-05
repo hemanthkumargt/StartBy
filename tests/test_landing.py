@@ -11,6 +11,12 @@ def test_landing_is_public_and_links_to_signup(client):
     assert "css/landing.css" in html and "js/landing.js" in html
 
 
+def test_landing_alias_is_public(client):
+    res = client.get("/landing")
+    assert res.status_code == 200
+    assert "Cloud 6" in res.get_data(as_text=True)
+
+
 def test_landing_assets_are_served(client):
     assert client.get("/static/css/landing.css").status_code == 200
     assert client.get("/static/js/landing.js").status_code == 200

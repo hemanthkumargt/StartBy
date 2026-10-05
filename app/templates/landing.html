@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %}StartBy — Know when to start, not just when it's due{% endblock %}
+{% block title %}Cloud 6 — Know when to start, not just when it's due{% endblock %}
 
 {% block head %}
-<meta name="description" content="StartBy works backwards from your deadline: effort estimates, a risk radar, smart capture and voice notes that learn how long your work really takes.">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}?v=4">
+<meta name="description" content="Cloud 6 works backwards from your deadline: effort estimates, a risk radar, smart capture and voice notes that learn how long your work really takes.">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}?v=10">
 {% endblock %}
 
 {% block shell %}
@@ -11,11 +11,8 @@
 
   <header class="lp-nav" id="lp-nav">
     <div class="lp-wrap lp-nav__inner">
-      <a class="lp-brand" href="#top" aria-label="StartBy home">
-        <span class="lp-brand__mark">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4v16"/><path d="M11 5.5l9 6.5-9 6.5z"/></svg>
-        </span>
-        StartBy
+      <a class="lp-brand" href="#top" aria-label="Cloud 6 home">
+        <img class="lp-brand__logo" src="{{ url_for('static', filename='cloud-6-logo.svg') }}" alt="Cloud 6">
       </a>
       <nav class="lp-nav__links" aria-label="Sections">
         <a href="#features">Features</a>
@@ -28,7 +25,7 @@
             <svg class="theme-svg theme-svg--moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
             <svg class="theme-svg theme-svg--sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
           </span>
-          <span class="theme-label visually-hidden">Theme</span>
+          <span class="theme-label">Theme</span>
         </button>
         <a class="lp-link lp-hide-sm" href="{{ url_for('pages.login_page') }}">Log in</a>
         <a class="lp-btn lp-btn--solid" href="{{ url_for('pages.register_page') }}">Get started</a>
@@ -45,7 +42,7 @@
         <h1 class="lp-h1">Know when to <em>start</em>, not just when it's due.</h1>
         <p class="lp-lead">
           Most task apps remind you at the deadline, which is already too late.
-          StartBy works backwards from it: how long the work really takes you,
+          Cloud 6 works backwards from it: how long the work really takes you,
           plus a margin, tells you the latest sensible moment to begin.
         </p>
         <div class="lp-actions">
@@ -87,7 +84,7 @@
       <ol class="lp-list">
         <li class="lp-reveal">
           <h3>Start-by time</h3>
-          <p>Give a task an effort estimate. StartBy subtracts the time you'll need, with a margin, from the due date, and shows you the result on every card.</p>
+          <p>Give a task an effort estimate. Cloud 6 subtracts the time you'll need, with a margin, from the due date, and shows you the result on every card.</p>
           <code>due − estimate × pace × 1.15</code>
         </li>
         <li class="lp-reveal">
@@ -148,7 +145,7 @@
             <span class="lp-step__n">3</span>
             <h3>Learn</h3>
           </div>
-          <p>A reminder lands when it's time. Finish the task and StartBy learns from how long it really took.</p>
+          <p>A reminder lands when it's time. Finish the task and Cloud 6 learns from how long it really took.</p>
         </li>
       </ol>
     </section>
@@ -184,7 +181,7 @@
   </main>
 
   <footer class="lp-foot lp-wrap">
-    <span>StartBy · built for the NPN GCP Hackathon, Amrita School of Engineering</span>
+    <span>Cloud 6 · built for the NPN GCP Hackathon, Amrita School of Engineering</span>
     <nav aria-label="Footer">
       <a href="#features">Features</a>
       <a href="{{ url_for('pages.login_page') }}">Log in</a>

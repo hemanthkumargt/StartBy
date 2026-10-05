@@ -32,7 +32,7 @@ test("the edit form shows the same clock time the card shows", () => {
   zone = "America/New_York";
   const stored = "2026-10-09T21:00:00"; // naive UTC, as the API sends it
   assert.equal(toLocalInputValue(stored), "2026-10-09T17:00");
-  assert.match(formatDateTime(stored), /5:00\s?PM/);
+  assert.match(formatDateTime(stored), /5:00\s?pm/i);
 });
 
 test("round trip is stable across zones and seasons", () => {

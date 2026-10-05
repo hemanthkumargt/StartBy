@@ -1,51 +1,51 @@
 /* ============================================================
-   StartBy design tokens. Warm paper + ink, one lavender accent, flat
-   surfaces with hairline borders. No gradients, glows or glass.
+   Cloud 6 design tokens. Obsidian canvas with violet/cyan light,
+   glass surfaces and animated ambient depth.
    ============================================================ */
 
 :root {
-  --font-sans: 'Instrument Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-  --font-heading: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Manrope', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-heading: 'Space Grotesk', 'Manrope', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
 
   /* Surfaces */
-  --color-bg: #f8f6fd;
-  --color-surface: #ffffff;
-  --color-surface-subtle: #f4f1fb;
-  --color-surface-hover: #ede9f8;
-  --color-surface-active: #e2ddf3;
-  --color-surface-elevated: #ffffff;
-  --color-surface-glass: #ffffff;
+  --color-bg: #07050d;
+  --color-surface: rgba(18, 13, 32, 0.72);
+  --color-surface-subtle: rgba(28, 20, 48, 0.72);
+  --color-surface-hover: rgba(45, 28, 70, 0.82);
+  --color-surface-active: rgba(57, 35, 88, 0.9);
+  --color-surface-elevated: rgba(24, 17, 42, 0.88);
+  --color-surface-glass: rgba(18, 13, 32, 0.62);
 
   --grid-line-color: transparent;
   --grid-size: 24px;
 
   /* Borders */
-  --color-border: #1a1730;
-  --color-border-subtle: #ddd8ee;
-  --color-border-hover: #1a1730;
-  --color-border-focus: #6552c9;
+  --color-border: rgba(190, 167, 255, 0.22);
+  --color-border-subtle: rgba(190, 167, 255, 0.12);
+  --color-border-hover: rgba(91, 231, 255, 0.58);
+  --color-border-focus: #8b5cf6;
 
   /* Text */
-  --color-text: #1a1730;
-  --color-text-secondary: #423e5b;
-  --color-text-muted: #6a6682;
-  --color-text-faint: #9a95b2;
+  --color-text: #f8f7ff;
+  --color-text-secondary: #c5bfdc;
+  --color-text-muted: #9189aa;
+  --color-text-faint: #68617d;
 
   /* Accent: lavender */
-  --accent-rgb: 101, 82, 201;
+  --accent-rgb: 139, 92, 246;
   --success-rgb: 63, 125, 78;
-  --color-primary: #6552c9;
-  --color-primary-fg: #6552c9;
-  --color-primary-hover: #4f3fb0;
+  --color-primary: #8b5cf6;
+  --color-primary-fg: #b99cff;
+  --color-primary-hover: #a879ff;
   --color-primary-text: #ffffff;
-  --color-primary-subtle: rgba(101, 82, 201, 0.09);
-  --color-primary-glow: transparent;
-  --color-cyan: #2f5d8a;
-  --color-purple: #8b6fd6;
-  --gradient-primary: var(--color-primary);
-  --gradient-heliix: var(--color-primary);
-  --gradient-hero: var(--color-text);
+  --color-primary-subtle: rgba(139, 92, 246, 0.14);
+  --color-primary-glow: rgba(139, 92, 246, 0.38);
+  --color-cyan: #5be7ff;
+  --color-purple: #a879ff;
+  --gradient-primary: linear-gradient(135deg, #7c3aed, #c026d3 52%, #22d3ee);
+  --gradient-heliix: var(--gradient-primary);
+  --gradient-hero: linear-gradient(135deg, #f8f7ff 20%, #b99cff 52%, #5be7ff);
 
   /* Status */
   --color-success: #3f7d4e;
@@ -79,19 +79,19 @@
   --color-badge-overdue: #c2570c;
 
   /* Flat depth: hairlines, with real shadow only for floating layers */
-  --shadow-sketch: none;
-  --shadow-sketch-lg: none;
-  --shadow-xs: none;
-  --shadow-sm: 0 1px 0 rgba(28, 24, 16, 0.06);
-  --shadow-md: 0 1px 0 rgba(28, 24, 16, 0.08);
-  --shadow-lg: 0 10px 28px -14px rgba(28, 24, 16, 0.35);
-  --shadow-xl: 0 18px 44px -18px rgba(28, 24, 16, 0.4);
-  --shadow-glow: none;
+  --shadow-sketch: 0 18px 50px rgba(0, 0, 0, 0.36);
+  --shadow-sketch-lg: 0 24px 70px rgba(0, 0, 0, 0.5);
+  --shadow-xs: 0 4px 16px rgba(0, 0, 0, 0.22);
+  --shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.28);
+  --shadow-md: 0 14px 36px rgba(0, 0, 0, 0.34);
+  --shadow-lg: 0 22px 54px rgba(0, 0, 0, 0.44);
+  --shadow-xl: 0 30px 80px rgba(0, 0, 0, 0.58);
+  --shadow-glow: 0 0 32px rgba(139, 92, 246, 0.28);
 
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-xl: 12px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
   --radius-full: 9999px;
 
   --transition-fast: 120ms ease;
@@ -99,7 +99,7 @@
 }
 
 [data-theme="dark"] {
-  /* ── Modern Obsidian & Emerald — Linear/Vercel Aesthetic ── */
+  /* ── Modern Violet & Cyan — Linear/Vercel Aesthetic ── */
   --color-bg: #090a0f;
   --color-surface: #12141a;
   --color-surface-subtle: #171a23;
@@ -114,7 +114,7 @@
   --color-border: rgba(255, 255, 255, 0.08);
   --color-border-subtle: rgba(255, 255, 255, 0.05);
   --color-border-hover: rgba(255, 255, 255, 0.16);
-  --color-border-focus: #10b981;
+  --color-border-focus: #8b5cf6;
 
   /* Text — crisp high contrast */
   --color-text: #f8fafc;
@@ -122,24 +122,24 @@
   --color-text-muted: #64748b;
   --color-text-faint: #475569;
 
-  /* Primary Accent — Crisp Emerald */
-  --accent-rgb: 16, 185, 129;
-  --success-rgb: 16, 185, 129;
-  --color-primary: #10b981;
-  --color-primary-fg: #34d399;
-  --color-primary-hover: #059669;
+  /* Primary accent: violet; completion accent: cyan */
+  --accent-rgb: 139, 92, 246;
+  --success-rgb: 91, 231, 255;
+  --color-primary: #8b5cf6;
+  --color-primary-fg: #b99cff;
+  --color-primary-hover: #a879ff;
   --color-primary-text: #ffffff;
-  --color-primary-subtle: rgba(16, 185, 129, 0.12);
-  --color-primary-glow: rgba(16, 185, 129, 0.25);
+  --color-primary-subtle: rgba(139, 92, 246, 0.14);
+  --color-primary-glow: rgba(139, 92, 246, 0.32);
   --color-cyan: #38bdf8;
   --color-purple: #a78bfa;
-  --gradient-primary: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  --gradient-hero: var(--color-surface-subtle);
+  --gradient-primary: linear-gradient(135deg, #7c3aed, #c026d3 52%, #22d3ee);
+  --gradient-hero: linear-gradient(135deg, #f8f7ff 20%, #b99cff 52%, #5be7ff);
 
   /* Status */
-  --color-success: #10b981;
-  --color-success-subtle: rgba(16, 185, 129, 0.12);
-  --color-success-text: #34d399;
+  --color-success: #5be7ff;
+  --color-success-subtle: rgba(91, 231, 255, 0.12);
+  --color-success-text: #67e8f9;
 
   --color-warning: #f97316;
   --warning-rgb: 249, 115, 22;
@@ -160,18 +160,18 @@
   --color-tag-work-bg: rgba(56, 189, 248, 0.12);
   --color-tag-study: #a78bfa;
   --color-tag-study-bg: rgba(167, 139, 250, 0.12);
-  --color-tag-personal: #34d399;
-  --color-tag-personal-bg: rgba(16, 185, 129, 0.12);
+  --color-tag-personal: #5be7ff;
+  --color-tag-personal-bg: rgba(139, 92, 246, 0.12);
 
   --color-badge-pending: #94a3b8;
-  --color-badge-done: #10b981;
+  --color-badge-done: #5be7ff;
   --color-badge-overdue: #ef4444;
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
   --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.55);
   --shadow-xl: 0 20px 56px rgba(0, 0, 0, 0.65);
-  --shadow-glow: 0 0 24px rgba(16, 185, 129, 0.2);
+  --shadow-glow: 0 0 24px rgba(139, 92, 246, 0.2);
 }
 
 /* ============================================================

@@ -1,4 +1,4 @@
-# StartBy
+# Cloud 6
 
 A task manager web app built for the NPN GCP Hackathon (Use Case 1), deployed
 on a single Google Compute Engine VM at ₹0 cost. See [`PRD.md`](PRD.md) for

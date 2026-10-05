@@ -110,7 +110,7 @@ if (root) {
     statusEl,
     idleLabel: "Record",
     idleStopMs: 3500, // pauses while thinking are normal in a note
-    unsupportedMessage: "This browser can't record. Open StartBy in Chrome, Edge or Safari.",
+    unsupportedMessage: "This browser can't record. Open Cloud 6 in Chrome, Edge or Safari.",
     onLive: (spoken) => {
       headline.textContent = "Listening…";
       liveEl.textContent = spoken;

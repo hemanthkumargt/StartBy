@@ -521,9 +521,11 @@ def test_backups_never_contain_calendar_refresh_tokens(linked):
     with tempfile.TemporaryDirectory() as tmp:
         path = Path(tmp) / "b.db"
         path.write_bytes(blob)
-        tokens = [
-            r[0] for r in sqlite3.connect(path).execute("SELECT refresh_token FROM calendar_links")
-        ]
+        restored_db = sqlite3.connect(path)
+        try:
+            tokens = [r[0] for r in restored_db.execute("SELECT refresh_token FROM calendar_links")]
+        finally:
+            restored_db.close()
     assert tokens == [""]
     with app.app_context():  # the live database keeps the real token
         assert calendar_repo.get_link(get_db(), 1)["refresh_token"] == "rt-code1"

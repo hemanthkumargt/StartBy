@@ -1,5 +1,5 @@
 /* ============================================================
-   StartBy — Precision SaaS Authentication Stylesheet
+   Cloud 6 — Precision SaaS Authentication Stylesheet
    Linear, Raycast & Stripe Inspired Design
    ============================================================ */
 
@@ -20,6 +20,100 @@
   position: relative;
   overflow-x: hidden;
   box-sizing: border-box;
+}
+
+/* Glass authentication surface */
+.auth-page {
+  background: transparent !important;
+}
+
+.auth-card {
+  background: linear-gradient(145deg, rgba(32, 21, 54, 0.82), rgba(10, 8, 20, 0.76)) !important;
+  border: 1px solid rgba(190, 167, 255, 0.24) !important;
+  border-radius: 22px !important;
+  box-shadow: 0 26px 80px rgba(0, 0, 0, 0.5), 0 0 34px rgba(139, 92, 246, 0.18) !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.auth-title {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+}
+
+.auth-brand-logo {
+  background: var(--gradient-primary) !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+  box-shadow: 0 0 26px rgba(139, 92, 246, 0.36) !important;
+}
+
+.auth-card input,
+.auth-card select,
+.auth-card textarea {
+  background: rgba(7, 5, 13, 0.58) !important;
+  border-color: rgba(190, 167, 255, 0.2) !important;
+  color: #f8f7ff !important;
+}
+
+.auth-card input:focus,
+.auth-card select:focus,
+.auth-card textarea:focus {
+  border-color: var(--color-cyan) !important;
+  box-shadow: 0 0 0 3px rgba(91, 231, 255, 0.12), 0 0 20px rgba(139, 92, 246, 0.18) !important;
+}
+
+.btn-auth-submit {
+  background: var(--gradient-primary) !important;
+  box-shadow: 0 12px 30px rgba(124, 58, 237, 0.32), 0 0 22px rgba(34, 211, 238, 0.14) !important;
+}
+
+html[data-theme="light"] .auth-card {
+  background: rgba(255, 255, 255, 0.76) !important;
+  border-color: rgba(31, 24, 48, 0.12) !important;
+  box-shadow: 0 26px 80px rgba(37, 27, 67, 0.14) !important;
+}
+
+html[data-theme="light"] .auth-card input,
+html[data-theme="light"] .auth-card select,
+html[data-theme="light"] .auth-card textarea {
+  background: rgba(255, 255, 255, 0.82) !important;
+  border-color: rgba(31, 24, 48, 0.16) !important;
+  color: #171321 !important;
+}
+
+html[data-theme="light"] .auth-title {
+  color: #171321 !important;
+}
+
+html[data-theme="light"] .auth-brand-logo {
+  background: linear-gradient(135deg, #f97316, #ea580c) !important;
+  box-shadow: 0 0 26px rgba(234, 108, 20, 0.22) !important;
+}
+
+html[data-theme="light"] .btn-auth-submit {
+  background: linear-gradient(135deg, #f97316, #ea580c) !important;
+  box-shadow: 0 12px 30px rgba(234, 108, 20, 0.24) !important;
+}
+
+html[data-theme="light"] .btn-auth-submit:hover,
+html[data-theme="light"] .oauth-custom-btn:hover {
+  box-shadow: 0 14px 34px rgba(234, 88, 12, 0.3), 0 0 24px rgba(251, 191, 36, 0.18) !important;
+}
+
+html[data-theme="dark"] .btn-auth-submit,
+html[data-theme="dark"] .oauth-custom-btn {
+  background: linear-gradient(135deg, #7c3aed 0%, #c026d3 52%, #22d3ee 100%) !important;
+  border-color: rgba(192, 170, 255, 0.55) !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 28px rgba(124, 58, 237, 0.34), 0 0 22px rgba(34, 211, 238, 0.16) !important;
+}
+
+html[data-theme="dark"] .btn-auth-submit:hover,
+html[data-theme="dark"] .oauth-custom-btn:hover {
+  background: linear-gradient(135deg, #8b5cf6 0%, #d946ef 52%, #67e8f9 100%) !important;
+  border-color: rgba(103, 232, 249, 0.8) !important;
+  box-shadow: 0 12px 34px rgba(139, 92, 246, 0.42), 0 0 28px rgba(34, 211, 238, 0.24) !important;
 }
 
 [data-theme="dark"] .auth-page {
@@ -114,6 +208,17 @@
   border-radius: 12px;
   color: #ffffff;
   margin-bottom: 1.25rem;
+}
+
+.auth-brand-logo img {
+  display: block;
+  width: 42px;
+  height: auto;
+  filter: none;
+}
+
+html[data-theme="dark"] .auth-brand-logo img {
+  filter: brightness(0) invert(1);
 }
 
 .auth-title {
@@ -738,4 +843,55 @@
 
 .oauth-custom-btn:hover {
   background: var(--color-primary-hover);
+}
+
+/* Keep auth surfaces fluid on narrow and landscape devices. */
+@media (max-width: 600px) {
+  html,
+  body {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .auth-page {
+    width: 100%;
+    min-width: 0;
+    min-height: 100svh;
+    justify-content: flex-start;
+    padding: max(5rem, env(safe-area-inset-top) + 4rem) clamp(0.75rem, 4vw, 1.25rem) 1.25rem;
+  }
+
+  .auth-top-bar {
+    top: max(0.75rem, env(safe-area-inset-top));
+    right: max(0.75rem, env(safe-area-inset-right));
+  }
+
+  .auth-container {
+    width: min(100%, 440px);
+    max-width: none;
+    margin: 0 auto;
+  }
+
+  .auth-card {
+    width: 100%;
+    padding: clamp(1.5rem, 6vw, 2rem) clamp(1.25rem, 7vw, 2rem);
+  }
+
+  .auth-title {
+    font-size: clamp(1.4rem, 6vw, 1.6rem);
+  }
+
+  .auth-subtitle {
+    font-size: clamp(0.82rem, 3.6vw, 0.9rem);
+  }
+
+  .form-input {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 600px) and (orientation: landscape) {
+  .auth-page {
+    padding-top: max(4rem, env(safe-area-inset-top) + 3rem);
+  }
 }

@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% block title %}Create Account — StartBy{% endblock %}
+{% block title %}Create Account — Cloud 6{% endblock %}
 
 {% block head %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}?v=13">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}?v=17">
 {% endblock %}
 
 {% block shell %}
@@ -37,12 +37,10 @@
       <!-- Brand Header -->
       <div class="auth-header">
         <div class="auth-brand-logo">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6 4v16"/><path d="M11 5.5l9 6.5-9 6.5z"/>
-          </svg>
+          <img src="{{ url_for('static', filename='cloud-6-logo.svg') }}" alt="Cloud 6">
         </div>
         <h1 class="auth-title">Create Account</h1>
-        <p class="auth-subtitle">Join StartBy and experience focused task management.</p>
+        <p class="auth-subtitle">Join Cloud 6 and experience focused task management.</p>
       </div>
 
       {% if demo_social_login %}
@@ -159,7 +157,7 @@
       <div class="oauth-modal__header">
         <div id="oauth-provider-logo" class="oauth-modal__logo"></div>
         <h3 id="oauth-modal-title" class="oauth-modal__title">Sign in with Provider</h3>
-        <p class="oauth-modal__subtitle">Select an account to continue to StartBy</p>
+        <p class="oauth-modal__subtitle">Select an account to continue to Cloud 6</p>
       </div>
 
       <div id="oauth-account-list" class="oauth-account-list"></div>

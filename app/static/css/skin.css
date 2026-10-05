@@ -1,5 +1,5 @@
 /* ============================================================
-   StartBy skin: loaded last. Editorial type, flat surfaces, no lifts.
+   Cloud 6 skin: loaded last. Editorial type, flat surfaces, no lifts.
    Keeps the earlier layers intact; delete the <link> to compare.
    ============================================================ */
 body { font-family: var(--font-sans); font-feature-settings: "ss01", "cv11"; }
@@ -45,6 +45,11 @@ h1, h2, h3, .page-header__title, .auth-title, .card-title, .panel__title,
 .btn-primary { box-shadow: none !important; }
 .btn-primary:hover { background: var(--color-primary-hover) !important; }
 .brand-monogram__logo { border-radius: var(--radius-md) !important; border: 0 !important; box-shadow: none !important; background: var(--color-primary) !important; }
+.brand-monogram__logo--wordmark {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
 .theme-switch-btn { box-shadow: none; }
 .theme-switch-btn:hover { box-shadow: none; }
 
@@ -130,3 +135,277 @@ html[data-theme] .btn--primary *, html[data-theme] .btn-primary * {
 
 /* Dashboard columns: radar leads, quick add is the narrow helper */
 .dashboard__columns { gap: 1.25rem; }
+
+/* Atmospheric glass system */
+body {
+  background: #07050d !important;
+  color: #f8f7ff;
+  overflow-x: hidden;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::before {
+  background:
+    radial-gradient(ellipse 55% 45% at 8% 12%, rgba(124, 58, 237, 0.28), transparent 68%),
+    radial-gradient(ellipse 48% 42% at 92% 10%, rgba(34, 211, 238, 0.2), transparent 68%),
+    radial-gradient(ellipse 65% 55% at 52% 100%, rgba(192, 38, 211, 0.16), transparent 70%);
+  animation: ambient-drift 18s ease-in-out infinite alternate;
+}
+
+body::after {
+  opacity: 0.12;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E");
+  mix-blend-mode: screen;
+}
+
+.app-shell,
+.auth-page,
+.lp {
+  position: relative;
+  z-index: 1;
+  background: transparent !important;
+}
+
+.app-sidebar,
+.mobile-top-bar {
+  background: rgba(9, 7, 18, 0.78) !important;
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
+
+.card, .panel, .task-card, .modal, dialog, .auth-card, .assistant-card,
+.counter-card, .settings-card, .activity-stream-card, .dashboard__analytics-card,
+.dashboard__shortcuts-card, .dashboard__quick-add, .dashboard__due-next {
+  background: linear-gradient(145deg, rgba(28, 19, 48, 0.78), rgba(11, 9, 22, 0.66)) !important;
+  border: 1px solid rgba(190, 167, 255, 0.2) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.35), inset 0 1px rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.card:hover, .panel:hover, .task-card:hover, .settings-card:hover,
+.counter-card:hover, .dashboard__quick-add:hover, .dashboard__due-next:hover {
+  border-color: rgba(91, 231, 255, 0.48) !important;
+  box-shadow: 0 18px 65px rgba(124, 58, 237, 0.2), 0 0 24px rgba(91, 231, 255, 0.08) !important;
+}
+
+.btn--primary, .btn-primary, .btn-sidebar-add, .btn-auth-submit {
+  background: var(--gradient-primary) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 10px 28px rgba(124, 58, 237, 0.3), 0 0 20px rgba(91, 231, 255, 0.12) !important;
+}
+
+.nav-item { border-radius: 12px !important; }
+.nav-item--active { box-shadow: 0 0 22px rgba(139, 92, 246, 0.2) !important; }
+
+@keyframes ambient-drift {
+  0% { transform: translate3d(-2%, -1%, 0) scale(1); }
+  50% { transform: translate3d(2%, 1%, 0) scale(1.06); }
+  100% { transform: translate3d(-1%, 2%, 0) scale(1.02); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before { animation: none; }
+}
+
+/* Final light-theme normalization: white canvas with orange energy. */
+html[data-theme="light"] {
+  --color-bg: #f7f8fc;
+  --color-surface: rgba(255, 255, 255, 0.76);
+  --color-surface-subtle: #f4f5fa;
+  --color-surface-hover: #fff7ed;
+  --color-surface-active: #ffedd5;
+  --color-surface-elevated: #ffffff;
+  --color-surface-glass: rgba(255, 255, 255, 0.72);
+  --color-border: rgba(31, 24, 48, 0.14);
+  --color-border-subtle: rgba(31, 24, 48, 0.1);
+  --color-border-hover: rgba(234, 108, 20, 0.45);
+  --color-border-focus: #ea580c;
+  --color-text: #171321;
+  --color-text-secondary: #4f485d;
+  --color-text-muted: #746d82;
+  --color-text-faint: #a39bab;
+  --accent-rgb: 234, 88, 12;
+  --color-primary: #f97316;
+  --color-primary-fg: #c2410c;
+  --color-primary-hover: #ea580c;
+  --color-primary-text: #ffffff;
+  --color-primary-subtle: rgba(249, 115, 22, 0.1);
+  --color-primary-glow: rgba(234, 108, 20, 0.24);
+  --color-cyan: #c2410c;
+  --color-purple: #ea580c;
+  --color-tag-study: #c2410c;
+  --color-tag-study-bg: #ffedd5;
+  --gradient-primary: linear-gradient(135deg, #f97316, #ea580c);
+  --gradient-hero: linear-gradient(135deg, #171321 20%, #c2410c 70%, #f97316);
+  --shadow-glow: 0 0 28px rgba(234, 108, 20, 0.2);
+}
+
+html[data-theme="light"] body {
+  background: #f7f8fc !important;
+  color: #171321;
+}
+
+html[data-theme="light"] body::before {
+  background:
+    radial-gradient(ellipse 55% 45% at 8% 12%, rgba(255, 145, 52, 0.16), transparent 68%),
+    radial-gradient(ellipse 48% 42% at 92% 10%, rgba(255, 190, 80, 0.14), transparent 68%),
+    radial-gradient(ellipse 65% 55% at 52% 100%, rgba(255, 112, 48, 0.1), transparent 70%);
+}
+
+html[data-theme="light"] body::after {
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+}
+
+html[data-theme="light"] .app-sidebar,
+html[data-theme="light"] .mobile-top-bar {
+  background: rgba(255, 255, 255, 0.78) !important;
+  border-color: rgba(31, 24, 48, 0.1) !important;
+}
+
+html[data-theme="light"] .card,
+html[data-theme="light"] .panel,
+html[data-theme="light"] .task-card,
+html[data-theme="light"] .modal,
+html[data-theme="light"] dialog,
+html[data-theme="light"] .auth-card,
+html[data-theme="light"] .assistant-card,
+html[data-theme="light"] .counter-card,
+html[data-theme="light"] .settings-card,
+html[data-theme="light"] .activity-stream-card,
+html[data-theme="light"] .dashboard__analytics-card,
+html[data-theme="light"] .dashboard__shortcuts-card,
+html[data-theme="light"] .dashboard__quick-add,
+html[data-theme="light"] .dashboard__due-next {
+  background: rgba(255, 255, 255, 0.72) !important;
+  border-color: rgba(31, 24, 48, 0.12) !important;
+  box-shadow: 0 18px 50px rgba(37, 27, 67, 0.1), inset 0 1px rgba(255, 255, 255, 0.9) !important;
+}
+
+html[data-theme="light"] .card:hover,
+html[data-theme="light"] .panel:hover,
+html[data-theme="light"] .task-card:hover,
+html[data-theme="light"] .settings-card:hover,
+html[data-theme="light"] .counter-card:hover {
+  border-color: rgba(234, 108, 20, 0.45) !important;
+  box-shadow: 0 18px 55px rgba(234, 108, 20, 0.14) !important;
+}
+
+html[data-theme="light"] .btn--primary,
+html[data-theme="light"] .btn-primary,
+html[data-theme="light"] .btn-sidebar-add,
+html[data-theme="light"] .btn-auth-submit {
+  background: linear-gradient(135deg, #f97316, #ea580c) !important;
+  color: #fff !important;
+  border-color: rgba(194, 65, 12, 0.28) !important;
+  box-shadow: 0 10px 24px rgba(234, 108, 20, 0.22) !important;
+}
+
+html[data-theme="light"] .btn--primary:hover,
+html[data-theme="light"] .btn-primary:hover,
+html[data-theme="light"] .btn-sidebar-add:hover,
+html[data-theme="light"] .btn-auth-submit:hover {
+  background: linear-gradient(135deg, #fb923c, #f97316) !important;
+}
+
+html[data-theme="light"] .nav-item--active {
+  color: #c2410c !important;
+  background: rgba(249, 115, 22, 0.1) !important;
+  border-color: rgba(234, 108, 20, 0.2) !important;
+}
+
+html[data-theme="light"] .nav-item--active::before {
+  background: #f97316 !important;
+}
+
+/* Shared animated glass edge. effects.js animates the angle when available. */
+@property --edge-angle {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 135deg;
+}
+
+.glass-edge {
+  --edge-angle: 135deg;
+  position: relative;
+  isolation: isolate;
+  will-change: --edge-angle;
+  border-radius: var(--radius-lg) !important;
+}
+
+.glass-edge::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(from var(--edge-angle), transparent 0deg, var(--edge-a) 80deg, transparent 150deg, var(--edge-b) 250deg, transparent 320deg);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+.glass-edge > * {
+  position: relative;
+  z-index: 1;
+}
+
+html[data-theme="dark"] .glass-edge {
+  --edge-a: #5be7ff;
+  --edge-b: #a879ff;
+}
+
+html[data-theme="light"] .glass-edge {
+  --edge-a: #f97316;
+  --edge-b: #fb923c;
+}
+
+html[data-theme="light"] .glass-edge::after {
+  background: conic-gradient(
+    from var(--edge-angle),
+    transparent 0deg,
+    #f97316 80deg,
+    transparent 150deg,
+    #fb923c 250deg,
+    transparent 320deg
+  );
+  opacity: 0.62;
+}
+
+/* Keep every elevated surface on the same rounded, illuminated visual system. */
+.card,
+.panel,
+.task-card,
+.auth-card,
+.assistant-card,
+.counter-card,
+.settings-card,
+.activity-stream-card,
+.dashboard__analytics-card,
+.dashboard__shortcuts-card,
+.dashboard__quick-add,
+.dashboard__due-next,
+.insights-card,
+.settings-prop-card,
+.oauth-modal,
+.task-modal,
+.modal,
+.vnotes__item,
+.lp-slip,
+.lp-calc,
+.lp-cta {
+  border-radius: var(--radius-lg) !important;
+}

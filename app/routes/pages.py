@@ -80,6 +80,7 @@ def web_manifest():
     return Response(json.dumps(manifest, indent=2), mimetype="application/manifest+json")
 
 
+@bp.get("/landing")
 @bp.get("/welcome")
 def landing_page():
     """Public marketing page. Signed-in users go straight to their dashboard."""

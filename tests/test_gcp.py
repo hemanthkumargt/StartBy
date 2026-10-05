@@ -578,7 +578,11 @@ def test_backup_uploads_a_restorable_gzip_snapshot(gcp, monkeypatch):
     with tempfile.TemporaryDirectory() as tmp:
         path = Path(tmp) / "r.db"
         path.write_bytes(restored)
-        titles = [r[0] for r in sqlite3.connect(path).execute("SELECT title FROM tasks")]
+        restored_db = sqlite3.connect(path)
+        try:
+            titles = [r[0] for r in restored_db.execute("SELECT title FROM tasks")]
+        finally:
+            restored_db.close()
     assert titles == ["persisted row"]
 
 

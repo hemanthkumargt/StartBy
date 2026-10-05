@@ -888,13 +888,13 @@ def test_settings_page_offers_the_name_field_only_with_voice_on(app, voice_clien
     assert "assistant-name-input" not in voice_client.get("/settings").get_data(as_text=True)
 
 
-def test_the_app_is_called_startby_not_kairo(client):
+def test_the_app_is_called_cloud6_not_kairo(client):
     register(client)
     for path in ("/", "/tasks", "/settings", "/activity"):
         html = client.get(path).get_data(as_text=True)
         assert "Kairo" not in html, path
-        assert "StartBy" in html
+        assert "Cloud 6" in html
     client.post("/api/auth/logout")
     for path in ("/login", "/register"):
         html = client.get(path).get_data(as_text=True)
-        assert "Kairo" not in html and "StartBy" in html, path
+        assert "Kairo" not in html and "Cloud 6" in html, path

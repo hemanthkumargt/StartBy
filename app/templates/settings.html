@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Settings & Preferences — StartBy{% endblock %}
+{% block title %}Settings & Preferences — Cloud 6{% endblock %}
 
 {% block content %}
 <style>
@@ -212,14 +212,15 @@
     align-items: center;
     justify-content: center;
     letter-spacing: 0.03em;
-    border: 1.5px solid rgba(52, 211, 153, 0.35);
-    box-shadow: 0 0 14px rgba(16, 185, 129, 0.35);
+    border: 1.5px solid rgba(91, 231, 255, 0.35);
+    box-shadow: 0 0 14px rgba(139, 92, 246, 0.35);
     flex-shrink: 0;
   }
 
   .settings-profile-id {
     flex: 1;
     min-width: 0;
+    overflow-wrap: anywhere;
   }
 
   .settings-profile-name {
@@ -230,6 +231,8 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    min-width: 0;
+    flex-wrap: wrap;
   }
 
   .settings-profile-status {
@@ -238,9 +241,9 @@
     gap: 0.35rem;
     font-size: 0.72rem;
     font-weight: 600;
-    color: #059669;
-    background: rgba(16, 185, 129, 0.1);
-    border: 1px solid rgba(16, 185, 129, 0.25);
+    color: #7c3aed;
+    background: rgba(139, 92, 246, 0.1);
+    border: 1px solid rgba(139, 92, 246, 0.25);
     padding: 2px 7px;
     border-radius: 4px;
   }
@@ -249,13 +252,15 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #10b981;
+    background: #8b5cf6;
   }
 
   .settings-profile-email {
     font-size: 0.84rem;
     color: var(--color-text-secondary);
     margin: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .settings-profile-grid {
@@ -320,7 +325,7 @@
   }
 
   .settings-actions__note svg {
-    color: #10b981;
+    color: #8b5cf6;
     flex-shrink: 0;
   }
 
@@ -370,7 +375,7 @@
   }
 
   /* ============================================================
-     DARK MODE ENHANCEMENTS (Modern Obsidian & Emerald Theme)
+     DARK MODE ENHANCEMENTS (Modern Obsidian, Violet & Cyan Theme)
      ============================================================ */
   [data-theme="dark"] .settings-view__title {
     color: #f8fafc !important;
@@ -394,7 +399,7 @@
   [data-theme="dark"] .settings-card__icon-chip {
     background: rgba(255, 255, 255, 0.05) !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    color: #34d399 !important;
+    color: #5be7ff !important;
   }
 
   [data-theme="dark"] .settings-card__title {
@@ -428,8 +433,8 @@
   }
 
   [data-theme="dark"] .settings-select:focus {
-    border-color: #10b981 !important;
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15) !important;
+    border-color: #8b5cf6 !important;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15) !important;
   }
 
   [data-theme="dark"] .settings-select-chevron {
@@ -476,9 +481,9 @@
   }
 
   [data-theme="dark"] .toggle-switch input:checked+.toggle-slider {
-    background-color: #10b981 !important;
-    border-color: #10b981 !important;
-    box-shadow: 0 0 12px rgba(16, 185, 129, 0.4) !important;
+    background-color: #8b5cf6 !important;
+    border-color: #8b5cf6 !important;
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.4) !important;
   }
 
   [data-theme="dark"] .settings-actions {
@@ -525,7 +530,7 @@
         </div>
         <div class="settings-card__title-group">
           <h2 class="settings-card__title">Appearance</h2>
-          <p class="settings-card__desc">Choose between StartBy's obsidian dark theme and crisp daylight theme.</p>
+          <p class="settings-card__desc">Choose between Cloud 6's obsidian dark theme and crisp daylight theme.</p>
         </div>
       </div>
 
@@ -794,7 +799,7 @@
       <div>
         <h2 class="settings-card__title">Google Calendar</h2>
         <p class="settings-card__desc">Add each pending task to your calendar as a block from its start time to its
-          deadline. Completed or deleted tasks are removed again. Only events StartBy creates are touched.</p>
+          deadline. Completed or deleted tasks are removed again. Only events Cloud 6 creates are touched.</p>
       </div>
     </div>
     <p id="calendar-status" class="settings-card__desc" role="status">Checking connection…</p>

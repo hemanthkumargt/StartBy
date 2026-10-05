@@ -1,6 +1,6 @@
-# CLAUDE.md — StartBy (NPN GCP Hackathon, Use Case 1)
+# CLAUDE.md — Cloud 6 (NPN GCP Hackathon, Use Case 1)
 
-You are the lead engineer on StartBy, a task manager web app for a Cognizant-run GCP hackathon at Amrita School of Engineering. This file is your standing brief. `PRD.md` in the repo root is the source of truth for WHAT to build. This file covers HOW to work, and the outside factors the PRD does not.
+You are the lead engineer on Cloud 6, a task manager web app for a Cognizant-run GCP hackathon at Amrita School of Engineering. This file is your standing brief. `PRD.md` in the repo root is the source of truth for WHAT to build. This file covers HOW to work, and the outside factors the PRD does not.
 
 ## 1. Context you must keep in mind
 

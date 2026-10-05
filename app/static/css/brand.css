@@ -1,5 +1,5 @@
 /* ============================================================
-   StartBy brand layer — loaded after app.css and the inline overrides in
+   Cloud 6 brand layer — loaded after app.css and the inline overrides in
    base.html. Cobalt palette + a fuller, roomier sidebar.
    Delete the <link> in base.html to fall back to the previous look.
    ============================================================ */
@@ -15,6 +15,28 @@
   width: 42px !important;
   height: 42px !important;
   border-radius: 12px !important;
+}
+
+.app-sidebar .brand-monogram__logo--wordmark {
+  width: 132px !important;
+  height: auto !important;
+  max-height: 42px;
+  border-radius: 0 !important;
+  background: transparent !important;
+  object-fit: contain;
+}
+
+.mobile-top-bar .brand-monogram__logo--wordmark {
+  width: 116px !important;
+  height: auto !important;
+  max-height: 34px;
+  border-radius: 0 !important;
+  background: transparent !important;
+  object-fit: contain;
+}
+
+html[data-theme="dark"] .brand-monogram__logo--wordmark {
+  filter: brightness(0) invert(1);
 }
 
 .app-sidebar {
@@ -339,6 +361,16 @@ html:not([data-theme="dark"]) .btn-primary {
 
   .sidebar-today {
     margin-top: 1rem;
+  }
+
+  .nav-item {
+    min-height: 50px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) and (max-height: 600px) {
+  .app-sidebar {
+    width: min(86vw, 320px) !important;
   }
 
   .nav-item {

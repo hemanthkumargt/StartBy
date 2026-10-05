@@ -1,4 +1,4 @@
-"""Thin, dependency-free clients for the Google Cloud services StartBy uses.
+"""Thin, dependency-free clients for the Google Cloud services Cloud 6 uses.
 
 Every service here is called over its public REST API with the stdlib
 (urllib) instead of the google-cloud-* client libraries: those pull in

@@ -1,4 +1,4 @@
-// StartBy service worker. Deliberately small and privacy-first:
+// Cloud 6 service worker. Deliberately small and privacy-first:
 //  * It makes the app installable and gives a friendly page when offline.
 //  * It NEVER caches pages or API responses: those hold one user's private tasks,
 //    and a shared phone/laptop must not show them to the next person.

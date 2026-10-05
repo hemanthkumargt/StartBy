@@ -210,7 +210,7 @@ def event_body(task: dict[str, Any]) -> dict[str, Any]:
     if start is None or start >= due:
         start = due - _DEADLINE_ONLY_BLOCK
     end = max(due, start + _MIN_BLOCK)
-    description = "Planned by StartBy."
+    description = "Planned by Cloud 6."
     if task.get("start_by_explanation"):
         description += f"\n\n{task['start_by_explanation']}"
     return {
@@ -353,7 +353,7 @@ class CalendarSync:
 def cleanup_events_and_revoke(
     config: Any, user_id: int, refresh_token: str, event_ids: list[str]
 ) -> None:
-    """Disconnect: remove the events StartBy put on the calendar while the
+    """Disconnect: remove the events Cloud 6 put on the calendar while the
     token is still good (afterwards nothing could), then revoke the grant.
     Best-effort and run off-thread; a failure leaves events behind, never an
     error for the user."""

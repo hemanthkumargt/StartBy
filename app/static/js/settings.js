@@ -74,7 +74,7 @@ if (calendarStatus) {
     });
 
   disconnectBtn.addEventListener("click", async () => {
-    if (!confirm("Disconnect Google Calendar? Events StartBy added will be removed from it.")) return;
+    if (!confirm("Disconnect Google Calendar? Events Cloud 6 added will be removed from it.")) return;
     disconnectBtn.disabled = true;
     try {
       await apiFetch("/api/calendar/disconnect", { method: "POST" });

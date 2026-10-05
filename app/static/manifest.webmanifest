@@ -1,6 +1,6 @@
 {
-  "name": "StartBy — know when to start",
-  "short_name": "StartBy",
+  "name": "Cloud 6 — know when to start",
+  "short_name": "Cloud 6",
   "description": "Task manager that tells you when to START, not just when it is due.",
   "id": "/",
   "start_url": "/?source=pwa",

@@ -54,16 +54,23 @@ def extract_text(
 
 def _child_main() -> int:
     import io
-    import resource
 
     memory_limit, cpu_limit = int(sys.argv[1]), int(sys.argv[2])
     try:
-        resource.setrlimit(resource.RLIMIT_AS, (memory_limit, memory_limit))
-    except (ValueError, OSError):
-        # macOS refuses RLIMIT_AS; the Linux VM honours it. The CPU limit and
-        # the parent's wall-clock timeout below still apply everywhere.
-        pass
-    resource.setrlimit(resource.RLIMIT_CPU, (cpu_limit, cpu_limit + 1))
+        import resource
+    except ImportError:
+        resource = None
+    if resource is not None:
+        try:
+            resource.setrlimit(resource.RLIMIT_AS, (memory_limit, memory_limit))
+        except (ValueError, OSError):
+            # macOS refuses RLIMIT_AS; the parent's wall-clock timeout still applies.
+            pass
+        try:
+            resource.setrlimit(resource.RLIMIT_CPU, (cpu_limit, cpu_limit + 1))
+        except (ValueError, OSError):
+            # Windows does not expose POSIX resource limits.
+            pass
 
     from pypdf import PdfReader
 

@@ -1,4 +1,4 @@
-# StartBy — PRD Phase 1 (Use Case 1 Baseline)
+# Cloud 6 — PRD Phase 1 (Use Case 1 Baseline)
 
 Oct 1, 2026 · @Hk
 
@@ -17,7 +17,7 @@ Instructions for Claude Code:
 
 ## Overview
 
-StartBy is a task manager web app where users add, edit, complete and delete tasks, deployed on a single Google Compute Engine Linux VM. Phase 1 delivers every item in the hackathon brief, polished and demo-ready.
+Cloud 6 is a task manager web app where users add, edit, complete and delete tasks, deployed on a single Google Compute Engine Linux VM. Phase 1 delivers every item in the hackathon brief, polished and demo-ready.
 
 **Goals**
 
