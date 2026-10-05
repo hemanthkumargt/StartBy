@@ -1,114 +1,367 @@
 /* ================================================================
-   StartBy — Premium Dark Mode Glass System
-   Frosted glass surfaces · Atmospheric depth · Luminous accents
+   StartBy — AURORA DARK  ✦  Premium Deep-Space Theme
+   ─────────────────────────────────────────────────────────────────
+   Palette  : Midnight Cosmos · Violet-Indigo Nebula · Cyan Aurora
+   Surfaces : Multi-layer glass, volumetric depth, soft bloom
+   Motion   : Micro-animations, shimmer, orbital pulse
    Applied only when [data-theme="dark"] is set on <html>.
    ================================================================ */
 
-/* ── 1. Atmospheric background ─────────────────────────────────── */
-[data-theme="dark"] body {
-  background-color: #08080c !important;
-  background-image:
-    radial-gradient(ellipse 80% 50% at 20% 10%, rgba(80, 60, 160, 0.12) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 90%, rgba(30, 60, 120, 0.10) 0%, transparent 55%),
-    linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px) !important;
-  background-size: auto, auto, 28px 28px, 28px 28px !important;
-  background-attachment: fixed !important;
+/* ── 0. Ambient animated background ─────────────────────────────── */
+@keyframes aurora-drift {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(30px, -20px) scale(1.05); }
+  66%  { transform: translate(-20px, 15px) scale(0.97); }
+  100% { transform: translate(0, 0) scale(1); }
 }
 
-/* ── 2. Sidebar — frosted glass panel ─────────────────────────── */
+@keyframes aurora-drift-2 {
+  0%   { transform: translate(0, 0) scale(1); }
+  40%  { transform: translate(-25px, 20px) scale(1.04); }
+  80%  { transform: translate(15px, -10px) scale(0.98); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+@keyframes dark-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.6; }
+  50%       { opacity: 1; }
+}
+
+@keyframes float-up {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-3px); }
+}
+
+@keyframes border-shimmer {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ── 1. Atmospheric deep-space background ────────────────────────── */
+[data-theme="dark"] body {
+  background-color: #05040f !important;
+  background-image:
+    /* Top-left violet nebula */
+    radial-gradient(ellipse 70% 55% at -5% 5%,  rgba(108, 74, 220, 0.18) 0%, transparent 65%),
+    /* Top-right cyan aurora */
+    radial-gradient(ellipse 50% 40% at 105% 8%,  rgba(0, 212, 255, 0.10) 0%, transparent 55%),
+    /* Center-right indigo bloom */
+    radial-gradient(ellipse 40% 35% at 90% 45%,  rgba(79, 55, 185, 0.12) 0%, transparent 55%),
+    /* Bottom-left teal glow */
+    radial-gradient(ellipse 55% 40% at 10% 95%,  rgba(16, 185, 153, 0.07) 0%, transparent 55%),
+    /* Bottom-right faint pink */
+    radial-gradient(ellipse 45% 30% at 95% 95%,  rgba(168, 85, 247, 0.08) 0%, transparent 50%),
+    /* Micro star-grid */
+    linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px) !important;
+  background-size: auto, auto, auto, auto, auto, 32px 32px, 32px 32px !important;
+  background-attachment: fixed !important;
+  position: relative !important;
+}
+
+/* Animated aurora orbs via pseudo — applied on the shell */
+[data-theme="dark"] .app-shell::before,
+[data-theme="dark"] .app-shell::after {
+  content: "" !important;
+  position: fixed !important;
+  border-radius: 50% !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+  will-change: transform !important;
+}
+
+[data-theme="dark"] .app-shell::before {
+  width: 600px !important;
+  height: 600px !important;
+  top: -180px !important;
+  left: -180px !important;
+  background: radial-gradient(circle, rgba(108, 74, 220, 0.14) 0%, transparent 70%) !important;
+  animation: aurora-drift 18s ease-in-out infinite !important;
+}
+
+[data-theme="dark"] .app-shell::after {
+  width: 500px !important;
+  height: 500px !important;
+  bottom: -120px !important;
+  right: -100px !important;
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.09) 0%, transparent 70%) !important;
+  animation: aurora-drift-2 22s ease-in-out infinite !important;
+}
+
+/* ── 2. Sidebar — deep glass panel ──────────────────────────────── */
 [data-theme="dark"] .app-sidebar {
-  background: rgba(10, 8, 18, 0.80) !important;
-  backdrop-filter: blur(24px) saturate(1.4) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(1.4) !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.07) !important;
-  box-shadow: 2px 0 32px rgba(0, 0, 0, 0.65) !important;
+  background: linear-gradient(
+    160deg,
+    rgba(12, 9, 26, 0.92) 0%,
+    rgba(8, 6, 20, 0.96) 100%
+  ) !important;
+  backdrop-filter: blur(28px) saturate(1.6) brightness(0.9) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(1.6) brightness(0.9) !important;
+  border-right: 1px solid rgba(108, 74, 220, 0.18) !important;
+  box-shadow:
+    2px 0 0 rgba(108, 74, 220, 0.06),
+    4px 0 40px rgba(0, 0, 0, 0.7),
+    inset -1px 0 0 rgba(255, 255, 255, 0.04) !important;
+  position: relative !important;
+  z-index: 100 !important;
 }
 
 [data-theme="dark"] .app-sidebar__header {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-bottom: 1px solid rgba(108, 74, 220, 0.16) !important;
+  background: rgba(108, 74, 220, 0.04) !important;
 }
 
 [data-theme="dark"] .app-sidebar__footer {
-  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
-  background: rgba(255, 255, 255, 0.02) !important;
+  border-top: 1px solid rgba(108, 74, 220, 0.16) !important;
+  background: rgba(6, 4, 16, 0.6) !important;
 }
 
-/* ── 3. Brand logo ─────────────────────────────────────────────── */
+/* ── 3. Brand logo — glowing gem ────────────────────────────────── */
 [data-theme="dark"] .brand-monogram__logo {
-  background: linear-gradient(135deg, #7c6af0 0%, #4f46e5 100%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  box-shadow: 0 0 16px rgba(100, 80, 220, 0.35) !important;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 50%, #4c1d95 100%) !important;
+  border: 1px solid rgba(139, 92, 246, 0.4) !important;
+  box-shadow:
+    0 0 0 1px rgba(139, 92, 246, 0.15),
+    0 0 20px rgba(109, 40, 217, 0.45),
+    0 4px 16px rgba(0, 0, 0, 0.5) !important;
+  animation: glow-pulse 3.5s ease-in-out infinite !important;
 }
 
-/* ── 4. Nav items — glass pill style ──────────────────────────── */
+[data-theme="dark"] .brand-monogram__name {
+  background: linear-gradient(135deg, #e2d9ff 0%, #c4b5fd 50%, #a78bfa 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+[data-theme="dark"] .brand-monogram__tag {
+  color: rgba(167, 139, 250, 0.55) !important;
+}
+
+/* ── 4. Nav section titles ───────────────────────────────────────── */
+[data-theme="dark"] .nav-section-title {
+  color: rgba(167, 139, 250, 0.4) !important;
+  letter-spacing: 0.12em !important;
+}
+
+/* ── 5. Nav items — luminous glass pills ────────────────────────── */
 [data-theme="dark"] .nav-item {
   background: transparent !important;
   border: 1px solid transparent !important;
-  color: rgba(210, 210, 225, 0.55) !important;
+  color: rgba(196, 181, 253, 0.5) !important;
   box-shadow: none !important;
   transform: none !important;
-  transition: all 0.18s ease !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 [data-theme="dark"] .nav-item:hover {
-  background: rgba(255, 255, 255, 0.06) !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
-  color: #eeeef5 !important;
-  transform: none !important;
-  box-shadow: none !important;
+  background: rgba(108, 74, 220, 0.12) !important;
+  border-color: rgba(108, 74, 220, 0.22) !important;
+  color: #e2d9ff !important;
+  transform: translateX(2px) !important;
+  box-shadow: 0 2px 12px rgba(108, 74, 220, 0.1) !important;
 }
 
 [data-theme="dark"] .nav-item--active {
-  background: linear-gradient(135deg, rgba(100, 80, 220, 0.25) 0%, rgba(60, 50, 160, 0.15) 100%) !important;
-  border: 1px solid rgba(120, 100, 240, 0.32) !important;
-  color: #ccc8ff !important;
-  box-shadow: 0 0 0 1px rgba(100, 80, 220, 0.12) inset, 0 2px 12px rgba(80, 60, 200, 0.12) !important;
+  background: linear-gradient(
+    135deg,
+    rgba(109, 40, 217, 0.28) 0%,
+    rgba(76, 29, 149, 0.20) 100%
+  ) !important;
+  border: 1px solid rgba(139, 92, 246, 0.35) !important;
+  color: #d8b4fe !important;
+  box-shadow:
+    0 0 0 1px rgba(139, 92, 246, 0.15) inset,
+    0 4px 20px rgba(109, 40, 217, 0.18),
+    0 1px 0 rgba(255, 255, 255, 0.06) inset !important;
   transform: none !important;
+}
+
+[data-theme="dark"] .nav-item--active::before {
+  background: linear-gradient(180deg, #a78bfa 0%, #7c3aed 100%) !important;
+  box-shadow: 0 0 8px rgba(167, 139, 250, 0.6) !important;
 }
 
 [data-theme="dark"] .nav-item--active .icon svg,
 [data-theme="dark"] .nav-item--active svg {
-  stroke: #b8b4ff !important;
+  stroke: #c4b5fd !important;
+  filter: drop-shadow(0 0 4px rgba(167, 139, 250, 0.5)) !important;
 }
 
-/* ── 5. "+ New Task" button ────────────────────────────────────── */
+[data-theme="dark"] .nav-item:not(.nav-item--active) .icon svg {
+  stroke: rgba(167, 139, 250, 0.5) !important;
+  transition: stroke 0.2s ease, filter 0.2s ease !important;
+}
+
+[data-theme="dark"] .nav-item:not(.nav-item--active):hover .icon svg {
+  stroke: #c4b5fd !important;
+}
+
+/* ── 6. Sidebar today card ──────────────────────────────────────── */
+[data-theme="dark"] .sidebar-today {
+  background: linear-gradient(
+    135deg,
+    rgba(18, 12, 38, 0.8) 0%,
+    rgba(12, 8, 28, 0.85) 100%
+  ) !important;
+  border: 1px solid rgba(108, 74, 220, 0.2) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.04) !important;
+}
+
+[data-theme="dark"] .sidebar-today__stat {
+  background: rgba(108, 74, 220, 0.08) !important;
+  border: 1px solid rgba(108, 74, 220, 0.18) !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-theme="dark"] .sidebar-today__stat:hover {
+  background: rgba(108, 74, 220, 0.14) !important;
+  border-color: rgba(139, 92, 246, 0.3) !important;
+}
+
+[data-theme="dark"] .sidebar-today__num {
+  color: #e2d9ff !important;
+}
+
+/* ── 7. "+ New Task" button — aurora gradient CTA ───────────────── */
 [data-theme="dark"] .btn-sidebar-add {
-  background: linear-gradient(135deg, #6552c9 0%, #4f46e5 100%) !important;
-  border: 1px solid rgba(120, 100, 240, 0.4) !important;
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 50%, #5b21b6 100%) !important;
+  border: 1px solid rgba(167, 139, 250, 0.3) !important;
   color: #ffffff !important;
-  box-shadow: 0 2px 16px rgba(80, 60, 200, 0.35) !important;
+  box-shadow:
+    0 4px 20px rgba(109, 40, 217, 0.45),
+    0 1px 0 rgba(255, 255, 255, 0.12) inset !important;
   transform: none !important;
-  transition: all 0.18s ease !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+[data-theme="dark"] .btn-sidebar-add::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 100%
+  ) !important;
+  transform: translateX(-100%) !important;
+  transition: transform 0.5s ease !important;
+}
+
+[data-theme="dark"] .btn-sidebar-add:hover::before {
+  transform: translateX(100%) !important;
 }
 
 [data-theme="dark"] .btn-sidebar-add:hover {
-  background: linear-gradient(135deg, #7464d8 0%, #5a52ef 100%) !important;
-  box-shadow: 0 4px 24px rgba(80, 60, 200, 0.5) !important;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%) !important;
+  box-shadow:
+    0 6px 28px rgba(109, 40, 217, 0.6),
+    0 1px 0 rgba(255, 255, 255, 0.15) inset !important;
   transform: translateY(-1px) !important;
 }
 
 [data-theme="dark"] .btn-sidebar-add:active {
   transform: translateY(0) !important;
+  box-shadow: 0 2px 12px rgba(109, 40, 217, 0.4) !important;
 }
 
-/* ── 6. Cards — frosted glass ─────────────────────────────────── */
-[data-theme="dark"] .card {
-  background: rgba(20, 17, 35, 0.55) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.07) !important;
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.45), 0 1px 0 rgba(255, 255, 255, 0.04) inset !important;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease !important;
+/* ── 8. Cards — volumetric glass ───────────────────────────────── */
+[data-theme="dark"] .card,
+[data-theme="dark"] .dashboard__quick-add,
+[data-theme="dark"] .dashboard__due-next {
+  background: linear-gradient(
+    145deg,
+    rgba(18, 13, 36, 0.75) 0%,
+    rgba(12, 9, 26, 0.80) 100%
+  ) !important;
+  backdrop-filter: blur(16px) saturate(1.3) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1.3) !important;
+  border: 1px solid rgba(108, 74, 220, 0.15) !important;
+  box-shadow:
+    0 2px 20px rgba(0, 0, 0, 0.5),
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.2) inset !important;
+  transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease !important;
+  position: relative !important;
+}
+
+[data-theme="dark"] .card::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 1px !important;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(139, 92, 246, 0.25) 30%,
+    rgba(0, 212, 255, 0.15) 70%,
+    transparent 100%
+  ) !important;
+  border-radius: inherit !important;
+  pointer-events: none !important;
 }
 
 [data-theme="dark"] .card:hover {
-  border-color: rgba(255, 255, 255, 0.12) !important;
-  background: rgba(22, 19, 38, 0.65) !important;
-  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.55), 0 1px 0 rgba(255, 255, 255, 0.06) inset !important;
+  border-color: rgba(139, 92, 246, 0.28) !important;
+  background: linear-gradient(
+    145deg,
+    rgba(22, 16, 42, 0.82) 0%,
+    rgba(15, 11, 30, 0.87) 100%
+  ) !important;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(139, 92, 246, 0.12),
+    0 1px 0 rgba(255, 255, 255, 0.06) inset !important;
 }
 
-/* ── 7. Form inputs ──────────────────────────────────────────── */
+/* ── 9. Counter / stat cards ───────────────────────────────────── */
+[data-theme="dark"] .counter-card {
+  background: linear-gradient(
+    145deg,
+    rgba(16, 11, 34, 0.80) 0%,
+    rgba(10, 7, 22, 0.85) 100%
+  ) !important;
+  border: 1px solid rgba(108, 74, 220, 0.16) !important;
+  box-shadow:
+    0 2px 16px rgba(0, 0, 0, 0.45),
+    0 1px 0 rgba(255, 255, 255, 0.04) inset !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-theme="dark"] .counter-card:hover {
+  border-color: rgba(139, 92, 246, 0.3) !important;
+  box-shadow:
+    0 6px 24px rgba(0, 0, 0, 0.55),
+    0 0 20px rgba(109, 40, 217, 0.08) !important;
+}
+
+[data-theme="dark"] .counter-card__value {
+  color: #e2d9ff !important;
+  text-shadow: 0 0 20px rgba(139, 92, 246, 0.2) !important;
+}
+
+[data-theme="dark"] .counter-card--overdue .counter-card__value {
+  color: #fb923c !important;
+  text-shadow: 0 0 20px rgba(251, 146, 60, 0.3) !important;
+}
+
+[data-theme="dark"] .counter-card--completed .counter-card__icon {
+  background: rgba(16, 185, 129, 0.14) !important;
+  color: #34d399 !important;
+}
+
+/* ── 10. Form inputs — glassy fields ───────────────────────────── */
 [data-theme="dark"] .form-input,
 [data-theme="dark"] form input[type="text"],
 [data-theme="dark"] form input[type="email"],
@@ -120,10 +373,11 @@
 [data-theme="dark"] form textarea,
 [data-theme="dark"] textarea,
 [data-theme="dark"] select {
-  background: rgba(255, 255, 255, 0.04) !important;
-  border: 1px solid rgba(255, 255, 255, 0.09) !important;
-  color: #eeeef0 !important;
-  transition: all 0.18s ease !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(108, 74, 220, 0.2) !important;
+  color: #ede9ff !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) inset !important;
 }
 
 [data-theme="dark"] .form-input:focus,
@@ -132,94 +386,232 @@
 [data-theme="dark"] form textarea:focus,
 [data-theme="dark"] textarea:focus,
 [data-theme="dark"] select:focus {
-  background: rgba(255, 255, 255, 0.07) !important;
-  border-color: rgba(120, 100, 240, 0.5) !important;
-  box-shadow: 0 0 0 3px rgba(100, 80, 220, 0.12), 0 0 16px rgba(80, 60, 200, 0.08) !important;
+  background: rgba(109, 40, 217, 0.06) !important;
+  border-color: rgba(139, 92, 246, 0.55) !important;
+  box-shadow:
+    0 0 0 3px rgba(109, 40, 217, 0.15),
+    0 0 20px rgba(109, 40, 217, 0.10),
+    0 2px 8px rgba(0, 0, 0, 0.25) inset !important;
   outline: none !important;
 }
 
+[data-theme="dark"] .form-input::placeholder,
+[data-theme="dark"] form input::placeholder,
+[data-theme="dark"] form textarea::placeholder {
+  color: rgba(167, 139, 250, 0.3) !important;
+}
+
 [data-theme="dark"] form select option {
-  background: #16141e !important;
-  color: #eeeef0 !important;
+  background: #0e0c1e !important;
+  color: #ede9ff !important;
 }
 
-/* ── 8. Primary buttons ──────────────────────────────────────── */
-[data-theme="dark"] .btn-primary {
-  background: linear-gradient(135deg, #6552c9 0%, #4f46e5 100%) !important;
-  border: 1px solid rgba(120, 100, 240, 0.4) !important;
+/* ── 11. Primary buttons — aurora gradient ──────────────────────── */
+[data-theme="dark"] .btn-primary,
+[data-theme="dark"] .btn--primary {
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%) !important;
+  border: 1px solid rgba(167, 139, 250, 0.3) !important;
   color: #ffffff !important;
-  box-shadow: 0 2px 12px rgba(80, 60, 200, 0.3) !important;
-  transition: all 0.18s ease !important;
+  box-shadow:
+    0 4px 16px rgba(109, 40, 217, 0.4),
+    0 1px 0 rgba(255, 255, 255, 0.1) inset !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative !important;
+  overflow: hidden !important;
 }
 
-[data-theme="dark"] .btn-primary:hover {
-  background: linear-gradient(135deg, #7464d8 0%, #5a52ef 100%) !important;
-  box-shadow: 0 4px 20px rgba(80, 60, 200, 0.45) !important;
+[data-theme="dark"] .btn-primary:hover,
+[data-theme="dark"] .btn--primary:hover {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
+  box-shadow:
+    0 6px 24px rgba(109, 40, 217, 0.55),
+    0 1px 0 rgba(255, 255, 255, 0.14) inset !important;
   transform: translateY(-1px) !important;
 }
 
-/* ── 9. Secondary / ghost buttons ────────────────────────────── */
+[data-theme="dark"] .btn-primary:active,
+[data-theme="dark"] .btn--primary:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 10px rgba(109, 40, 217, 0.4) !important;
+}
+
+/* ── 12. Secondary / ghost buttons ─────────────────────────────── */
 [data-theme="dark"] .btn-secondary,
-[data-theme="dark"] .btn-ghost {
-  background: rgba(255, 255, 255, 0.05) !important;
-  border: 1px solid rgba(255, 255, 255, 0.10) !important;
-  color: #c8c8d8 !important;
-  transition: all 0.18s ease !important;
+[data-theme="dark"] .btn--secondary,
+[data-theme="dark"] .btn-ghost,
+[data-theme="dark"] .btn--ghost {
+  background: rgba(108, 74, 220, 0.06) !important;
+  border: 1px solid rgba(108, 74, 220, 0.2) !important;
+  color: #c4b5fd !important;
+  transition: all 0.2s ease !important;
 }
 
 [data-theme="dark"] .btn-secondary:hover,
-[data-theme="dark"] .btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.09) !important;
-  border-color: rgba(255, 255, 255, 0.18) !important;
-  color: #eeeef0 !important;
+[data-theme="dark"] .btn--secondary:hover,
+[data-theme="dark"] .btn-ghost:hover,
+[data-theme="dark"] .btn--ghost:hover {
+  background: rgba(108, 74, 220, 0.14) !important;
+  border-color: rgba(139, 92, 246, 0.35) !important;
+  color: #e2d9ff !important;
+  box-shadow: 0 2px 12px rgba(109, 40, 217, 0.12) !important;
 }
 
-/* ── 10. Modal ───────────────────────────────────────────────── */
+/* Danger button */
+[data-theme="dark"] .btn--danger,
+[data-theme="dark"] .btn-danger {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.8), rgba(185, 28, 28, 0.9)) !important;
+  border-color: rgba(252, 165, 165, 0.2) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.3) !important;
+}
+
+[data-theme="dark"] .btn--danger:hover,
+[data-theme="dark"] .btn-danger:hover {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.9), rgba(220, 38, 38, 1)) !important;
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4) !important;
+}
+
+/* ── 13. Modal — deep glass overlay ────────────────────────────── */
 [data-theme="dark"] .modal,
 [data-theme="dark"] .modal-content,
 [data-theme="dark"] dialog {
-  background: rgba(12, 10, 24, 0.90) !important;
-  backdrop-filter: blur(28px) saturate(1.5) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(1.5) !important;
-  border: 1px solid rgba(255, 255, 255, 0.09) !important;
-  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(100, 80, 220, 0.10) inset !important;
+  background: linear-gradient(
+    145deg,
+    rgba(10, 7, 24, 0.95) 0%,
+    rgba(7, 5, 18, 0.97) 100%
+  ) !important;
+  backdrop-filter: blur(32px) saturate(1.6) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(1.6) !important;
+  border: 1px solid rgba(108, 74, 220, 0.22) !important;
+  box-shadow:
+    0 40px 100px rgba(0, 0, 0, 0.9),
+    0 0 0 1px rgba(139, 92, 246, 0.08) inset,
+    0 1px 0 rgba(255, 255, 255, 0.06) inset !important;
+  position: relative !important;
+}
+
+[data-theme="dark"] .modal::before,
+[data-theme="dark"] dialog::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 1px !important;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(139, 92, 246, 0.4) 30%,
+    rgba(0, 212, 255, 0.2) 70%,
+    transparent 100%
+  ) !important;
+  pointer-events: none !important;
 }
 
 [data-theme="dark"] .modal-overlay,
 [data-theme="dark"] .modal-backdrop,
 [data-theme="dark"] .sidebar-backdrop {
-  background: rgba(4, 4, 12, 0.75) !important;
-  backdrop-filter: blur(4px) !important;
-  -webkit-backdrop-filter: blur(4px) !important;
+  background: rgba(2, 1, 10, 0.8) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
 }
 
-/* ── 11. Dropdown menus ──────────────────────────────────────── */
+/* ── 14. Dropdown menus ─────────────────────────────────────────── */
 [data-theme="dark"] .dropdown-menu,
 [data-theme="dark"] .popover {
-  background: rgba(16, 13, 28, 0.94) !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.09) !important;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75) !important;
+  background: linear-gradient(
+    145deg,
+    rgba(12, 9, 26, 0.97) 0%,
+    rgba(8, 6, 20, 0.98) 100%
+  ) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border: 1px solid rgba(108, 74, 220, 0.22) !important;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.8),
+    0 1px 0 rgba(255, 255, 255, 0.05) inset !important;
 }
 
-/* ── 12. Task items ──────────────────────────────────────────── */
+/* ── 15. Task items / task cards ───────────────────────────────── */
 [data-theme="dark"] .task-item,
 [data-theme="dark"] .task-card,
 [data-theme="dark"] [class*="task-row"] {
-  background: rgba(255, 255, 255, 0.02) !important;
-  border-color: rgba(255, 255, 255, 0.055) !important;
-  transition: background 0.15s ease, border-color 0.15s ease !important;
+  background: rgba(255, 255, 255, 0.015) !important;
+  border-color: rgba(108, 74, 220, 0.14) !important;
+  transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease !important;
 }
 
 [data-theme="dark"] .task-item:hover,
 [data-theme="dark"] .task-card:hover,
 [data-theme="dark"] [class*="task-row"]:hover {
-  background: rgba(255, 255, 255, 0.05) !important;
-  border-color: rgba(255, 255, 255, 0.10) !important;
+  background: rgba(108, 74, 220, 0.07) !important;
+  border-color: rgba(139, 92, 246, 0.25) !important;
+  box-shadow: 0 4px 16px rgba(109, 40, 217, 0.08) !important;
 }
 
-/* ── 13. Scrollbar ───────────────────────────────────────────── */
+/* ── 16. Page / section header ─────────────────────────────────── */
+[data-theme="dark"] .page-header {
+  border-bottom-color: rgba(108, 74, 220, 0.18) !important;
+}
+
+[data-theme="dark"] .page-header__title {
+  color: #f0ecff !important;
+}
+
+[data-theme="dark"] .page-header__desc {
+  color: rgba(196, 181, 253, 0.55) !important;
+}
+
+/* ── 17. User avatar & profile ─────────────────────────────────── */
+[data-theme="dark"] .user-avatar {
+  background: linear-gradient(135deg, #7c3aed, #5b21b6) !important;
+  border: 1px solid rgba(139, 92, 246, 0.35) !important;
+  box-shadow: 0 0 14px rgba(109, 40, 217, 0.35) !important;
+}
+
+[data-theme="dark"] .user-avatar__indicator {
+  background: #22d3ee !important;
+  box-shadow: 0 0 8px rgba(34, 211, 238, 0.7) !important;
+  border-color: #06040f !important;
+}
+
+[data-theme="dark"] .user-meta__name {
+  color: #e2d9ff !important;
+}
+
+[data-theme="dark"] .user-meta__role {
+  color: rgba(167, 139, 250, 0.5) !important;
+}
+
+/* ── 18. Dashboard greeting badge ──────────────────────────────── */
+[data-theme="dark"] .dashboard__greeting-badge {
+  background: rgba(109, 40, 217, 0.16) !important;
+  color: #c4b5fd !important;
+  border: 1px solid rgba(139, 92, 246, 0.22) !important;
+}
+
+/* ── 19. Sidebar icon buttons ───────────────────────────────────── */
+[data-theme="dark"] .sidebar-icon-btn {
+  color: rgba(167, 139, 250, 0.5) !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-theme="dark"] .sidebar-icon-btn:hover {
+  background: rgba(108, 74, 220, 0.14) !important;
+  border-color: rgba(108, 74, 220, 0.25) !important;
+  color: #c4b5fd !important;
+  box-shadow: 0 2px 10px rgba(109, 40, 217, 0.12) !important;
+}
+
+/* ── 20. Mobile top bar ─────────────────────────────────────────── */
+[data-theme="dark"] .mobile-top-bar {
+  background: rgba(8, 5, 20, 0.94) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-bottom-color: rgba(108, 74, 220, 0.18) !important;
+}
+
+/* ── 21. Scrollbar — subtle violet track ──────────────────────── */
 [data-theme="dark"] ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -230,59 +622,215 @@
 }
 
 [data-theme="dark"] ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.10);
+  background: rgba(109, 40, 217, 0.25);
   border-radius: 999px;
 }
 
 [data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.20);
+  background: rgba(139, 92, 246, 0.5);
 }
 
-/* ── 14. Selection ───────────────────────────────────────────── */
+/* ── 22. Selection ──────────────────────────────────────────────── */
 [data-theme="dark"] ::selection {
-  background: rgba(100, 80, 220, 0.38);
+  background: rgba(109, 40, 217, 0.45);
   color: #ffffff;
 }
 
-/* ── 15. Focus ring ──────────────────────────────────────────── */
+/* ── 23. Focus ring — violet aurora ─────────────────────────────── */
 [data-theme="dark"] :focus-visible {
-  outline: 2px solid rgba(120, 100, 240, 0.6) !important;
+  outline: 2px solid rgba(139, 92, 246, 0.7) !important;
   outline-offset: 2px !important;
+  box-shadow: 0 0 0 4px rgba(109, 40, 217, 0.12) !important;
 }
 
-/* ── 16. Checkbox ────────────────────────────────────────────── */
+/* ── 24. Checkbox & accent ──────────────────────────────────────── */
 [data-theme="dark"] input[type="checkbox"] {
-  accent-color: #7c6af0;
+  accent-color: #8b5cf6;
 }
 
-/* ── 17. Theme toggle — glass pill ──────────────────────────── */
+/* ── 25. Theme switch button ─────────────────────────────────────── */
 [data-theme="dark"] .theme-switch-btn {
-  background: rgba(255, 255, 255, 0.06) !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.10) !important;
-  color: #d0d0e0 !important;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.4) !important;
+  background: rgba(108, 74, 220, 0.10) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(108, 74, 220, 0.25) !important;
+  color: #c4b5fd !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255,255,255,0.04) inset !important;
+  transition: all 0.2s ease !important;
 }
 
 [data-theme="dark"] .theme-switch-btn:hover {
-  background: rgba(255, 255, 255, 0.10) !important;
-  border-color: rgba(255, 255, 255, 0.18) !important;
-  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.5) !important;
+  background: rgba(108, 74, 220, 0.18) !important;
+  border-color: rgba(139, 92, 246, 0.4) !important;
+  color: #e2d9ff !important;
+  box-shadow:
+    0 4px 16px rgba(109, 40, 217, 0.25),
+    0 0 0 1px rgba(255,255,255,0.06) inset !important;
 }
 
-/* ── 18. Skeleton shimmer ────────────────────────────────────── */
+/* ── 26. Skeleton shimmer — aurora gradient ──────────────────────── */
 [data-theme="dark"] .skeleton,
 [data-theme="dark"] [class*="skeleton"] {
   background: linear-gradient(90deg,
-    rgba(255,255,255,0.04) 25%,
-    rgba(255,255,255,0.08) 50%,
-    rgba(255,255,255,0.04) 75%) !important;
+    rgba(108, 74, 220, 0.05) 25%,
+    rgba(139, 92, 246, 0.12) 50%,
+    rgba(108, 74, 220, 0.05) 75%) !important;
   background-size: 200% 100% !important;
-  animation: dark-shimmer 1.8s infinite !important;
+  animation: dark-shimmer 2s infinite !important;
 }
 
-@keyframes dark-shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+/* ── 27. FAB microphone button ───────────────────────────────────── */
+[data-theme="dark"] .fab-mic {
+  background: linear-gradient(135deg, #7c3aed, #5b21b6) !important;
+  border: 2px solid rgba(167, 139, 250, 0.3) !important;
+  box-shadow:
+    0 8px 32px rgba(109, 40, 217, 0.5),
+    0 0 0 0 rgba(109, 40, 217, 0) !important;
+  animation: float-up 3s ease-in-out infinite !important;
+}
+
+[data-theme="dark"] .fab-mic:hover {
+  box-shadow:
+    0 12px 40px rgba(109, 40, 217, 0.65),
+    0 0 20px rgba(139, 92, 246, 0.3) !important;
+  filter: brightness(1.1) !important;
+}
+
+/* ── 28. Voice note items ────────────────────────────────────────── */
+[data-theme="dark"] .vnotes__item {
+  background: rgba(18, 12, 38, 0.6) !important;
+  border-color: rgba(108, 74, 220, 0.18) !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-theme="dark"] .vnotes__item:hover {
+  background: rgba(108, 74, 220, 0.12) !important;
+  border-color: rgba(139, 92, 246, 0.35) !important;
+  box-shadow: 0 4px 16px rgba(109, 40, 217, 0.12) !important;
+}
+
+[data-theme="dark"] .vnotes__item.is-active {
+  background: rgba(109, 40, 217, 0.18) !important;
+  border-color: rgba(139, 92, 246, 0.45) !important;
+  box-shadow: 0 4px 20px rgba(109, 40, 217, 0.2) !important;
+}
+
+[data-theme="dark"] .vnotes__transcript {
+  background: rgba(108, 74, 220, 0.06) !important;
+  border-color: rgba(108, 74, 220, 0.18) !important;
+}
+
+[data-theme="dark"] .vnotes__mic {
+  background: linear-gradient(135deg, #7c3aed, #5b21b6) !important;
+  box-shadow: 0 6px 24px rgba(109, 40, 217, 0.45) !important;
+}
+
+/* ── 29. Assistant card ─────────────────────────────────────────── */
+[data-theme="dark"] .assistant-card {
+  background: linear-gradient(
+    135deg,
+    rgba(16, 10, 36, 0.75) 0%,
+    rgba(10, 7, 24, 0.80) 100%
+  ) !important;
+  border-color: rgba(108, 74, 220, 0.2) !important;
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.4),
+    0 1px 0 rgba(255,255,255,0.04) inset !important;
+}
+
+/* ── 30. "Do This Now" / overload banners ───────────────────────── */
+[data-theme="dark"] .do-now,
+[data-theme="dark"] .do-this-now {
+  background: linear-gradient(
+    135deg,
+    rgba(109, 40, 217, 0.14) 0%,
+    rgba(76, 29, 149, 0.10) 100%
+  ) !important;
+  border-color: rgba(139, 92, 246, 0.25) !important;
+  box-shadow: 0 4px 20px rgba(109, 40, 217, 0.10) !important;
+}
+
+[data-theme="dark"] .overload-banner {
+  background: rgba(251, 146, 60, 0.08) !important;
+  border-color: rgba(251, 146, 60, 0.22) !important;
+}
+
+/* ── 31. Status / tag badges ─────────────────────────────────────── */
+[data-theme="dark"] .badge,
+[data-theme="dark"] .tag,
+[data-theme="dark"] .tag-pill {
+  backdrop-filter: blur(6px) !important;
+}
+
+/* ── 32. Text color hierarchy ───────────────────────────────────── */
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6 {
+  color: #f0ecff !important;
+}
+
+[data-theme="dark"] p,
+[data-theme="dark"] .text-secondary {
+  color: rgba(196, 181, 253, 0.75) !important;
+}
+
+/* ── 33. Links ──────────────────────────────────────────────────── */
+[data-theme="dark"] a:not(.nav-item):not(.btn):not(.brand-monogram) {
+  color: #a78bfa !important;
+  transition: color 0.15s ease, text-shadow 0.15s ease !important;
+}
+
+[data-theme="dark"] a:not(.nav-item):not(.btn):not(.brand-monogram):hover {
+  color: #c4b5fd !important;
+  text-shadow: 0 0 8px rgba(167, 139, 250, 0.4) !important;
+}
+
+/* ── 34. Dividers and horizontal rules ──────────────────────────── */
+[data-theme="dark"] hr,
+[data-theme="dark"] [class*="divider"] {
+  border-color: rgba(108, 74, 220, 0.18) !important;
+}
+
+/* ── 35. Toast / notification ───────────────────────────────────── */
+[data-theme="dark"] .toast,
+[data-theme="dark"] [class*="toast"] {
+  background: rgba(12, 9, 26, 0.96) !important;
+  border: 1px solid rgba(108, 74, 220, 0.25) !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255,255,255,0.05) inset !important;
+  color: #e2d9ff !important;
+}
+
+/* ── 36. Sidebar today stat — overdue highlight ─────────────────── */
+[data-theme="dark"] .sidebar-today.has-overdue .sidebar-today__stat--overdue {
+  background: rgba(251, 146, 60, 0.12) !important;
+  border-color: rgba(251, 146, 60, 0.28) !important;
+  box-shadow: 0 0 12px rgba(251, 146, 60, 0.08) inset !important;
+}
+
+[data-theme="dark"] .sidebar-today__stat--done .sidebar-today__num {
+  color: #34d399 !important;
+  text-shadow: 0 0 10px rgba(52, 211, 153, 0.3) !important;
+}
+
+/* ── 37. 3D depth: main content subtle floating shadow ──────────── */
+[data-theme="dark"] .app-main-content {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* ── 38. Panel hover shimmer effect ────────────────────────────── */
+[data-theme="dark"] .panel,
+[data-theme="dark"] .auth-card {
+  background: linear-gradient(
+    145deg,
+    rgba(18, 13, 36, 0.80) 0%,
+    rgba(12, 9, 26, 0.85) 100%
+  ) !important;
+  border: 1px solid rgba(108, 74, 220, 0.18) !important;
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.5),
+    0 1px 0 rgba(255, 255, 255, 0.04) inset !important;
 }
