@@ -132,4 +132,3 @@ def update_profile(
 
     updated_row = user_repo.update_profile(conn, user_id, name=new_name, email=new_email)
     return serialize_user(updated_row, include_assistant_name=False)
-

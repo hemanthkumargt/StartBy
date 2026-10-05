@@ -10,7 +10,7 @@ import test from "node:test";
 
 const handlers = {}; // window event handlers by name
 globalThis.window = { addEventListener: (n, f) => (handlers[n] = f) };
-globalThis.navigator = { language: "en-IN" };
+Object.defineProperty(globalThis, "navigator", { value: { language: "en-IN" }, configurable: true, writable: true });
 globalThis.FormData = class {
   append() { }
 };

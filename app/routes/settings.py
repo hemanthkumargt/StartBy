@@ -45,4 +45,3 @@ def update_profile():
         email=body.get("email"),
     )
     return jsonify(user), 200
-
