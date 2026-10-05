@@ -99,74 +99,79 @@
 }
 
 [data-theme="dark"] {
-  /* ── Terminal Dark — Charcoal & Phosphor Green ── */
-  --color-bg: #111214;
-  --color-surface: #161819;
-  --color-surface-subtle: #1a1c1e;
-  --color-surface-hover: #1e2022;
-  --color-surface-active: #222426;
-  --color-surface-elevated: #1e2022;
-  --color-surface-glass: #161819;
+  /* ── Modern Obsidian & Emerald — Linear/Vercel Aesthetic ── */
+  --color-bg: #090a0f;
+  --color-surface: #12141a;
+  --color-surface-subtle: #171a23;
+  --color-surface-hover: #1c202c;
+  --color-surface-active: #222736;
+  --color-surface-elevated: #181b24;
+  --color-surface-glass: rgba(18, 20, 26, 0.85);
 
   --grid-line-color: transparent;
 
-  --color-border: #2f3235;
-  --color-border-subtle: #252729;
-  --color-border-hover: #3a3d41;
-  --color-border-focus: rgba(46, 204, 113, 0.55);
+  /* Borders — refined translucent hairline structure */
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-subtle: rgba(255, 255, 255, 0.05);
+  --color-border-hover: rgba(255, 255, 255, 0.16);
+  --color-border-focus: #10b981;
 
-  --color-text: #e8eaed;
-  --color-text-secondary: #8b9099;
-  --color-text-muted: #5a6068;
-  --color-text-faint: #3e4348;
+  /* Text — crisp high contrast */
+  --color-text: #f8fafc;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted: #64748b;
+  --color-text-faint: #475569;
 
-  --accent-rgb: 46, 204, 113;
-  --success-rgb: 46, 204, 113;
-  --color-primary: #2ecc71;
-  --color-primary-fg: #2ecc71;
-  --color-primary-hover: #52d68a;
-  --color-primary-text: #0a1f13;
-  --color-primary-subtle: rgba(46, 204, 113, 0.10);
-  --color-primary-glow: rgba(46, 204, 113, 0.20);
-  --color-cyan: #22d3ee;
+  /* Primary Accent — Crisp Emerald */
+  --accent-rgb: 16, 185, 129;
+  --success-rgb: 16, 185, 129;
+  --color-primary: #10b981;
+  --color-primary-fg: #34d399;
+  --color-primary-hover: #059669;
+  --color-primary-text: #ffffff;
+  --color-primary-subtle: rgba(16, 185, 129, 0.12);
+  --color-primary-glow: rgba(16, 185, 129, 0.25);
+  --color-cyan: #38bdf8;
   --color-purple: #a78bfa;
-  --gradient-primary: rgba(46, 204, 113, 0.12);
+  --gradient-primary: linear-gradient(135deg, #10b981 0%, #059669 100%);
   --gradient-hero: var(--color-surface-subtle);
 
-  --color-success: #2ecc71;
-  --color-success-subtle: rgba(46, 204, 113, 0.10);
-  --color-success-text: #52d68a;
+  /* Status */
+  --color-success: #10b981;
+  --color-success-subtle: rgba(16, 185, 129, 0.12);
+  --color-success-text: #34d399;
 
   --color-warning: #f59e0b;
   --warning-rgb: 245, 158, 11;
-  --color-warning-subtle: rgba(245, 158, 11, 0.10);
+  --color-warning-subtle: rgba(245, 158, 11, 0.12);
   --color-warning-text: #fbbf24;
 
-  --color-danger: #e05252;
-  --danger-rgb: 224, 82, 82;
-  --color-danger-subtle: rgba(224, 82, 82, 0.10);
-  --color-danger-text: #f07070;
+  --color-danger: #ef4444;
+  --danger-rgb: 239, 68, 68;
+  --color-danger-subtle: rgba(239, 68, 68, 0.12);
+  --color-danger-text: #f87171;
 
   --color-info: #38bdf8;
-  --color-info-subtle: rgba(56, 189, 248, 0.10);
+  --color-info-subtle: rgba(56, 189, 248, 0.12);
   --color-info-text: #7dd3fc;
 
+  /* Tags */
   --color-tag-work: #38bdf8;
-  --color-tag-work-bg: rgba(56, 189, 248, 0.10);
+  --color-tag-work-bg: rgba(56, 189, 248, 0.12);
   --color-tag-study: #a78bfa;
-  --color-tag-study-bg: rgba(167, 139, 250, 0.10);
-  --color-tag-personal: #2ecc71;
-  --color-tag-personal-bg: rgba(46, 204, 113, 0.10);
+  --color-tag-study-bg: rgba(167, 139, 250, 0.12);
+  --color-tag-personal: #34d399;
+  --color-tag-personal-bg: rgba(16, 185, 129, 0.12);
 
   --color-badge-pending: #f59e0b;
-  --color-badge-done: #2ecc71;
-  --color-badge-overdue: #e05252;
+  --color-badge-done: #10b981;
+  --color-badge-overdue: #ef4444;
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.55);
-  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.6);
-  --shadow-xl: 0 20px 56px rgba(0, 0, 0, 0.70);
-  --shadow-glow: none;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.55);
+  --shadow-xl: 0 20px 56px rgba(0, 0, 0, 0.65);
+  --shadow-glow: 0 0 24px rgba(16, 185, 129, 0.2);
 }
 
 /* ============================================================
@@ -209,16 +214,16 @@
 }
 
 [data-theme="dark"] .theme-switch-btn {
-  background: #161819;
-  border-color: #252729;
-  color: #8b9099;
-  box-shadow: none;
+  background: #141720;
+  border-color: rgba(255, 255, 255, 0.10);
+  color: #94a3b8;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   backdrop-filter: none;
 }
 
 [data-theme="dark"] .theme-switch-btn:hover {
-  background: #1a1c1e;
-  border-color: rgba(46, 204, 113, 0.30);
-  color: #c8ccd0;
-  box-shadow: none;
+  background: #1a1e2a;
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #f8fafc;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }

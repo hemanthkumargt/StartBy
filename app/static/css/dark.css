@@ -1,32 +1,20 @@
 /* ================================================================
-   StartBy — TERMINAL DARK  ✦  Charcoal & Green Hacker Aesthetic
+   StartBy — MODERN OBSIDIAN & EMERALD DARK THEME
    ─────────────────────────────────────────────────────────────────
-   Palette  : Deep Charcoal · Zinc Grey · Phosphor Green
-   Surfaces : Solid dark panels, hairline borders, no glow soup
-   Motion   : Subtle, purposeful — cursor blink, clean transitions
+   Aesthetic : Sleek, atmospheric, Linear/Vercel-inspired dark UI
+   Palette   : Deep Obsidian (#090a0f), Slate Surfaces (#12141a),
+               Hairline Translucent Borders, Crisp Emerald CTAs
    Applied only when [data-theme="dark"] is set on <html>.
    ================================================================ */
 
-/* ── Keyframes ─────────────────────────────────────────────────── */
-@keyframes dark-shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-@keyframes cursor-blink {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0; }
-}
-
-@keyframes scan-line {
-  0%   { transform: translateY(-100%); }
-  100% { transform: translateY(100vh); }
-}
-
-/* ── 1. Background — deep charcoal, no gradients ─────────────── */
+/* ── 1. Atmosphere & Canvas ──────────────────────────────────── */
 [data-theme="dark"] body {
-  background-color: #111214 !important;
-  background-image: none !important;
+  background-color: #090a0f !important;
+  background-image:
+    radial-gradient(ellipse 90% 40% at 50% -10%, rgba(16, 185, 129, 0.06), transparent 70%),
+    radial-gradient(ellipse 60% 30% at 90% 10%, rgba(56, 189, 248, 0.04), transparent 60%) !important;
+  background-attachment: fixed !important;
+  color: #f8fafc !important;
 }
 
 [data-theme="dark"] .app-shell::before,
@@ -35,132 +23,142 @@
   display: none !important;
 }
 
-/* ── 2. Sidebar — darker zinc panel ─────────────────────────── */
+/* ── 2. Sidebar — Clean Deep Slate ───────────────────────────── */
 [data-theme="dark"] .app-sidebar {
-  background: #0d0f10 !important;
+  background: #0d0e14 !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+  box-shadow: 1px 0 0 rgba(0, 0, 0, 0.4) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  border-right: 1px solid #252729 !important;
-  box-shadow: 2px 0 0 #1a1c1e !important;
 }
 
 [data-theme="dark"] .app-sidebar__header {
-  border-bottom: 1px solid #252729 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
   background: transparent !important;
 }
 
 [data-theme="dark"] .app-sidebar__footer {
-  border-top: 1px solid #252729 !important;
-  background: #0b0c0e !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+  background: #0a0b10 !important;
 }
 
-/* ── 3. Brand logo — green terminal block ───────────────────── */
+/* ── 3. Brand Logo — Minimalist Slate & Emerald Accent ────────── */
 [data-theme="dark"] .brand-monogram__logo {
-  background: #1a1c1e !important;
-  border: 1px solid #2ecc71 !important;
-  box-shadow:
-    0 0 0 1px rgba(46, 204, 113, 0.1),
-    0 0 12px rgba(46, 204, 113, 0.12) !important;
+  background: #141720 !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
   animation: none !important;
 }
 
+[data-theme="dark"] .brand-monogram__logo svg {
+  stroke: #10b981 !important;
+}
+
 [data-theme="dark"] .brand-monogram__name {
-  background: none !important;
-  -webkit-background-clip: unset !important;
-  background-clip: unset !important;
-  -webkit-text-fill-color: unset !important;
-  color: #e8eaed !important;
+  color: #f8fafc !important;
+  -webkit-text-fill-color: #f8fafc !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em !important;
 }
 
 [data-theme="dark"] .brand-monogram__tag {
-  color: #5a6068 !important;
+  color: #64748b !important;
 }
 
-/* ── 4. Nav section titles ──────────────────────────────────── */
+/* ── 4. Nav Section Titles ───────────────────────────────────── */
 [data-theme="dark"] .nav-section-title {
-  color: #4a5158 !important;
-  letter-spacing: 0.10em !important;
+  color: #475569 !important;
+  letter-spacing: 0.08em !important;
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
 }
 
-/* ── 5. Nav items — minimal, flat ───────────────────────────── */
+/* ── 5. Nav Items ────────────────────────────────────────────── */
 [data-theme="dark"] .nav-item {
   background: transparent !important;
   border: 1px solid transparent !important;
-  color: #8b9099 !important;
+  color: #94a3b8 !important;
+  border-radius: 8px !important;
   box-shadow: none !important;
   transform: none !important;
-  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease !important;
+  transition: all 0.15s ease !important;
 }
 
 [data-theme="dark"] .nav-item:hover {
-  background: #1a1c1e !important;
-  border-color: #252729 !important;
-  color: #c8ccd0 !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.06) !important;
+  color: #f1f5f9 !important;
   transform: none !important;
   box-shadow: none !important;
 }
 
 [data-theme="dark"] .nav-item--active {
-  background: rgba(46, 204, 113, 0.08) !important;
-  border: 1px solid rgba(46, 204, 113, 0.22) !important;
-  color: #2ecc71 !important;
-  box-shadow: none !important;
+  background: rgba(16, 185, 129, 0.10) !important;
+  border: 1px solid rgba(16, 185, 129, 0.22) !important;
+  color: #34d399 !important;
+  font-weight: 600 !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2) !important;
   transform: none !important;
 }
 
 [data-theme="dark"] .nav-item--active::before {
-  background: #2ecc71 !important;
-  box-shadow: none !important;
+  background: #10b981 !important;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5) !important;
 }
 
 [data-theme="dark"] .nav-item--active .icon svg,
 [data-theme="dark"] .nav-item--active svg {
-  stroke: #2ecc71 !important;
+  stroke: #34d399 !important;
   filter: none !important;
 }
 
-[data-theme="dark"] .nav-item:not(.nav-item--active) .icon svg {
-  stroke: #4a5158 !important;
-  transition: stroke 0.12s ease !important;
-  filter: none !important;
+[data-theme="dark"] .nav-item:not(.nav-item--active) .icon svg,
+[data-theme="dark"] .nav-item:not(.nav-item--active) svg {
+  stroke: #64748b !important;
+  transition: stroke 0.15s ease !important;
 }
 
-[data-theme="dark"] .nav-item:not(.nav-item--active):hover .icon svg {
-  stroke: #8b9099 !important;
+[data-theme="dark"] .nav-item:not(.nav-item--active):hover .icon svg,
+[data-theme="dark"] .nav-item:not(.nav-item--active):hover svg {
+  stroke: #cbd5e1 !important;
 }
 
-/* ── 6. Sidebar today card ───────────────────────────────────── */
+/* ── 6. Sidebar Today Card ────────────────────────────────────── */
 [data-theme="dark"] .sidebar-today {
-  background: #161819 !important;
-  border: 1px solid #252729 !important;
+  background: #12141a !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 8px !important;
   box-shadow: none !important;
 }
 
 [data-theme="dark"] .sidebar-today__stat {
-  background: #1a1c1e !important;
-  border: 1px solid #252729 !important;
-  transition: border-color 0.12s ease !important;
+  background: #161822 !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 6px !important;
+  transition: all 0.15s ease !important;
 }
 
 [data-theme="dark"] .sidebar-today__stat:hover {
-  background: #1e2022 !important;
-  border-color: #2ecc71 !important;
+  background: #1c202c !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
 }
 
 [data-theme="dark"] .sidebar-today__num {
-  color: #e8eaed !important;
+  color: #f8fafc !important;
+  font-weight: 700 !important;
 }
 
-/* ── 7. "+ New Task" button — green terminal CTA ─────────────── */
+/* ── 7. "+ New Task" Button — Solid Punchy CTA ───────────────── */
 [data-theme="dark"] .btn-sidebar-add {
-  background: rgba(46, 204, 113, 0.10) !important;
-  border: 1px solid rgba(46, 204, 113, 0.30) !important;
-  color: #2ecc71 !important;
-  box-shadow: none !important;
+  background: #10b981 !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #042f20 !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 12px rgba(16, 185, 129, 0.20) !important;
   transform: none !important;
-  transition: background 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease !important;
-  position: relative !important;
-  overflow: hidden !important;
+  transition: all 0.15s ease !important;
 }
 
 [data-theme="dark"] .btn-sidebar-add::before {
@@ -168,27 +166,29 @@
 }
 
 [data-theme="dark"] .btn-sidebar-add:hover {
-  background: rgba(46, 204, 113, 0.16) !important;
-  border-color: rgba(46, 204, 113, 0.50) !important;
-  box-shadow: 0 0 14px rgba(46, 204, 113, 0.12) !important;
-  transform: none !important;
+  background: #059669 !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35) !important;
+  transform: translateY(-1px) !important;
 }
 
 [data-theme="dark"] .btn-sidebar-add:active {
-  background: rgba(46, 204, 113, 0.22) !important;
-  transform: none !important;
+  background: #047857 !important;
+  transform: translateY(0) !important;
 }
 
-/* ── 8. Cards — clean zinc panels ───────────────────────────── */
+/* ── 8. Cards & Dashboard Containers ──────────────────────────── */
 [data-theme="dark"] .card,
 [data-theme="dark"] .dashboard__quick-add,
 [data-theme="dark"] .dashboard__due-next {
-  background: #161819 !important;
+  background: #12141a !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  border: 1px solid #252729 !important;
-  box-shadow: none !important;
-  transition: border-color 0.14s ease !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important;
+  transition: border-color 0.15s ease !important;
   position: relative !important;
 }
 
@@ -198,40 +198,64 @@
 }
 
 [data-theme="dark"] .card:hover {
-  border-color: #2f3235 !important;
-  background: #181a1b !important;
-  box-shadow: none !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
 }
 
-/* ── 9. Counter / stat cards ────────────────────────────────── */
+/* ── 9. Counter / Stat Cards ──────────────────────────────────── */
 [data-theme="dark"] .counter-card {
-  background: #161819 !important;
-  border: 1px solid #252729 !important;
-  box-shadow: none !important;
-  transition: border-color 0.14s ease !important;
+  background: #12141a !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+  transition: all 0.15s ease !important;
 }
 
 [data-theme="dark"] .counter-card:hover {
-  border-color: rgba(46, 204, 113, 0.25) !important;
-  box-shadow: none !important;
+  background: #151820 !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+  transform: translateY(-1px) !important;
+}
+
+[data-theme="dark"] .counter-card__label {
+  color: #94a3b8 !important;
+  font-size: 0.8rem !important;
+  font-weight: 500 !important;
 }
 
 [data-theme="dark"] .counter-card__value {
-  color: #e8eaed !important;
+  color: #f8fafc !important;
+  font-weight: 700 !important;
   text-shadow: none !important;
 }
 
 [data-theme="dark"] .counter-card--overdue .counter-card__value {
-  color: #e05252 !important;
-  text-shadow: none !important;
+  color: #f87171 !important;
+}
+
+[data-theme="dark"] .counter-card--completed .counter-card__value {
+  color: #34d399 !important;
+}
+
+[data-theme="dark"] .counter-card__icon {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #94a3b8 !important;
+  border-radius: 8px !important;
 }
 
 [data-theme="dark"] .counter-card--completed .counter-card__icon {
-  background: rgba(46, 204, 113, 0.10) !important;
-  color: #2ecc71 !important;
+  background: rgba(16, 185, 129, 0.12) !important;
+  color: #34d399 !important;
+  border-color: rgba(16, 185, 129, 0.25) !important;
 }
 
-/* ── 10. Form inputs — flat dark fields ─────────────────────── */
+[data-theme="dark"] .counter-card--overdue .counter-card__icon {
+  background: rgba(239, 68, 68, 0.12) !important;
+  color: #f87171 !important;
+  border-color: rgba(239, 68, 68, 0.25) !important;
+}
+
+/* ── 10. Form Inputs & Selects ────────────────────────────────── */
 [data-theme="dark"] .form-input,
 [data-theme="dark"] form input[type="text"],
 [data-theme="dark"] form input[type="email"],
@@ -243,11 +267,12 @@
 [data-theme="dark"] form textarea,
 [data-theme="dark"] textarea,
 [data-theme="dark"] select {
-  background: #0d0f10 !important;
-  border: 1px solid #252729 !important;
-  color: #dde0e4 !important;
-  transition: border-color 0.14s ease, box-shadow 0.14s ease !important;
-  box-shadow: none !important;
+  background: #0b0c10 !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  color: #f8fafc !important;
+  border-radius: 7px !important;
+  transition: all 0.15s ease !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3) !important;
 }
 
 [data-theme="dark"] .form-input:focus,
@@ -256,58 +281,84 @@
 [data-theme="dark"] form textarea:focus,
 [data-theme="dark"] textarea:focus,
 [data-theme="dark"] select:focus {
-  background: #0d0f10 !important;
-  border-color: rgba(46, 204, 113, 0.50) !important;
-  box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.08) !important;
+  background: #0e1017 !important;
+  border-color: #10b981 !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15) !important;
   outline: none !important;
 }
 
 [data-theme="dark"] .form-input::placeholder,
 [data-theme="dark"] form input::placeholder,
 [data-theme="dark"] form textarea::placeholder {
-  color: #3e4348 !important;
+  color: #64748b !important;
+  opacity: 1 !important;
 }
 
 [data-theme="dark"] form select option {
-  background: #161819 !important;
-  color: #dde0e4 !important;
+  background: #141720 !important;
+  color: #f8fafc !important;
 }
 
-/* ── 11. Primary buttons — green terminal ───────────────────── */
+[data-theme="dark"] label,
+[data-theme="dark"] .form-group label {
+  color: #cbd5e1 !important;
+  font-weight: 500 !important;
+  font-size: 0.85rem !important;
+}
+
+[data-theme="dark"] .field-hint {
+  color: #64748b !important;
+}
+
+/* ── 11. Primary Buttons ─────────────────────────────────────── */
 [data-theme="dark"] .btn-primary,
 [data-theme="dark"] .btn--primary {
-  background: rgba(46, 204, 113, 0.12) !important;
-  border: 1px solid rgba(46, 204, 113, 0.35) !important;
-  color: #2ecc71 !important;
-  box-shadow: none !important;
-  transition: all 0.14s ease !important;
+  background: #10b981 !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #042f20 !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 12px rgba(16, 185, 129, 0.20) !important;
+  transition: all 0.15s ease !important;
   position: relative !important;
   overflow: hidden !important;
 }
 
+[data-theme="dark"] .btn-primary svg,
+[data-theme="dark"] .btn--primary svg {
+  stroke: #042f20 !important;
+}
+
 [data-theme="dark"] .btn-primary:hover,
 [data-theme="dark"] .btn--primary:hover {
-  background: rgba(46, 204, 113, 0.18) !important;
-  border-color: rgba(46, 204, 113, 0.55) !important;
-  box-shadow: 0 0 16px rgba(46, 204, 113, 0.12) !important;
-  transform: none !important;
+  background: #059669 !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35) !important;
+  transform: translateY(-1px) !important;
+}
+
+[data-theme="dark"] .btn-primary:hover svg,
+[data-theme="dark"] .btn--primary:hover svg {
+  stroke: #ffffff !important;
 }
 
 [data-theme="dark"] .btn-primary:active,
 [data-theme="dark"] .btn--primary:active {
-  background: rgba(46, 204, 113, 0.22) !important;
-  transform: none !important;
+  background: #047857 !important;
+  transform: translateY(0) !important;
 }
 
-/* ── 12. Secondary / ghost buttons ─────────────────────────── */
+/* ── 12. Secondary & Ghost Buttons ───────────────────────────── */
 [data-theme="dark"] .btn-secondary,
 [data-theme="dark"] .btn--secondary,
 [data-theme="dark"] .btn-ghost,
 [data-theme="dark"] .btn--ghost {
-  background: #1a1c1e !important;
-  border: 1px solid #252729 !important;
-  color: #8b9099 !important;
-  transition: all 0.14s ease !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+  border-radius: 8px !important;
+  transition: all 0.15s ease !important;
   box-shadow: none !important;
 }
 
@@ -315,149 +366,308 @@
 [data-theme="dark"] .btn--secondary:hover,
 [data-theme="dark"] .btn-ghost:hover,
 [data-theme="dark"] .btn--ghost:hover {
-  background: #1e2022 !important;
-  border-color: #2f3235 !important;
-  color: #c8ccd0 !important;
-  box-shadow: none !important;
+  background: rgba(255, 255, 255, 0.09) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
 }
 
-/* Danger button */
 [data-theme="dark"] .btn--danger,
 [data-theme="dark"] .btn-danger {
-  background: rgba(224, 82, 82, 0.12) !important;
-  border: 1px solid rgba(224, 82, 82, 0.30) !important;
-  color: #e05252 !important;
+  background: rgba(239, 68, 68, 0.12) !important;
+  border: 1px solid rgba(239, 68, 68, 0.30) !important;
+  color: #f87171 !important;
+  border-radius: 8px !important;
   box-shadow: none !important;
 }
 
 [data-theme="dark"] .btn--danger:hover,
 [data-theme="dark"] .btn-danger:hover {
-  background: rgba(224, 82, 82, 0.20) !important;
-  border-color: rgba(224, 82, 82, 0.50) !important;
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  border-color: #ef4444 !important;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35) !important;
 }
 
-/* ── 13. Modal — dark zinc overlay ──────────────────────────── */
-[data-theme="dark"] .modal,
-[data-theme="dark"] .modal-content,
-[data-theme="dark"] dialog {
-  background: #161819 !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  border: 1px solid #2f3235 !important;
-  box-shadow:
-    0 24px 64px rgba(0, 0, 0, 0.7),
-    0 1px 0 #252729 !important;
-  position: relative !important;
+/* ── 13. "Do This Now" Card — Hero Priority Strip ────────────── */
+[data-theme="dark"] .do-this-now,
+[data-theme="dark"] .do-now {
+  background: linear-gradient(180deg, #151822 0%, #12141a 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-left: 4px solid #10b981 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3) !important;
 }
 
-[data-theme="dark"] .modal::before,
-[data-theme="dark"] dialog::before {
-  content: none !important;
-  display: none !important;
+[data-theme="dark"] .do-this-now h2 {
+  color: #f8fafc !important;
+  font-size: 1.15rem !important;
 }
 
-[data-theme="dark"] .modal-overlay,
-[data-theme="dark"] .modal-backdrop,
-[data-theme="dark"] .sidebar-backdrop {
-  background: rgba(0, 0, 0, 0.75) !important;
-  backdrop-filter: blur(3px) !important;
-  -webkit-backdrop-filter: blur(3px) !important;
+/* ── 14. Overload Alert Banner ───────────────────────────────── */
+[data-theme="dark"] .overload-banner {
+  background: rgba(239, 68, 68, 0.09) !important;
+  border: 1px solid rgba(239, 68, 68, 0.22) !important;
+  border-radius: 10px !important;
+  color: #fca5a5 !important;
+  padding: 0.85rem 1.15rem !important;
 }
 
-/* ── 14. Dropdown menus ─────────────────────────────────────── */
-[data-theme="dark"] .dropdown-menu,
-[data-theme="dark"] .popover {
-  background: #161819 !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  border: 1px solid #2f3235 !important;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6) !important;
+[data-theme="dark"] .overload-banner a,
+[data-theme="dark"] .overload-banner .btn-insights {
+  color: #f87171 !important;
+  font-weight: 600 !important;
+  text-decoration: underline !important;
+  text-underline-offset: 3px !important;
 }
 
-/* ── 15. Task items / task cards ────────────────────────────── */
+/* ── 15. SARA AI Assistant Card ──────────────────────────────── */
+[data-theme="dark"] .assistant-card {
+  background: #12141a !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important;
+  padding: 1.15rem 1.25rem !important;
+}
+
+[data-theme="dark"] .assistant-card__title {
+  color: #f8fafc !important;
+  font-size: 1.05rem !important;
+}
+
+[data-theme="dark"] .assistant-card__sub {
+  color: #34d399 !important;
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  margin-left: 0.4rem !important;
+}
+
+[data-theme="dark"] .assistant-card__hint {
+  color: #64748b !important;
+  font-size: 0.82rem !important;
+}
+
+[data-theme="dark"] .assistant-ask {
+  display: flex !important;
+  gap: 0.5rem !important;
+  align-items: center !important;
+}
+
+[data-theme="dark"] .assistant-ask input {
+  background: #0b0c10 !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  color: #f8fafc !important;
+}
+
+/* ── 16. Task Cards & Priority Radar ─────────────────────────── */
 [data-theme="dark"] .task-item,
 [data-theme="dark"] .task-card,
 [data-theme="dark"] [class*="task-row"] {
-  background: #161819 !important;
-  border-color: #252729 !important;
-  transition: background 0.12s ease, border-color 0.12s ease !important;
+  background: #161822 !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 8px !important;
+  transition: all 0.15s ease !important;
+  padding: 0.85rem 1rem !important;
 }
 
 [data-theme="dark"] .task-item:hover,
 [data-theme="dark"] .task-card:hover,
 [data-theme="dark"] [class*="task-row"]:hover {
-  background: #1a1c1e !important;
-  border-color: rgba(46, 204, 113, 0.20) !important;
-  box-shadow: none !important;
+  background: #1b1f2b !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+  transform: translateY(-1px) !important;
 }
 
-/* ── 16. Page header ─────────────────────────────────────────── */
+/* ── 17. Badges & Tags ───────────────────────────────────────── */
+[data-theme="dark"] .badge-study,
+[data-theme="dark"] [class*="tag--study"],
+[data-theme="dark"] [class*="tag-study"] {
+  background: rgba(167, 139, 250, 0.12) !important;
+  color: #c4b5fd !important;
+  border: 1px solid rgba(167, 139, 250, 0.25) !important;
+}
+
+[data-theme="dark"] .badge-work,
+[data-theme="dark"] [class*="tag--work"],
+[data-theme="dark"] [class*="tag-work"] {
+  background: rgba(56, 189, 248, 0.12) !important;
+  color: #7dd3fc !important;
+  border: 1px solid rgba(56, 189, 248, 0.25) !important;
+}
+
+[data-theme="dark"] .badge-personal,
+[data-theme="dark"] [class*="tag--personal"],
+[data-theme="dark"] [class*="tag-personal"] {
+  background: rgba(16, 185, 129, 0.12) !important;
+  color: #6ee7b7 !important;
+  border: 1px solid rgba(16, 185, 129, 0.25) !important;
+}
+
+[data-theme="dark"] [class*="badge--pending"],
+[data-theme="dark"] [class*="badge-pending"] {
+  background: rgba(245, 158, 11, 0.12) !important;
+  color: #fcd34d !important;
+  border: 1px solid rgba(245, 158, 11, 0.25) !important;
+}
+
+[data-theme="dark"] [class*="badge--done"],
+[data-theme="dark"] [class*="badge-done"] {
+  background: rgba(16, 185, 129, 0.12) !important;
+  color: #34d399 !important;
+  border: 1px solid rgba(16, 185, 129, 0.25) !important;
+}
+
+[data-theme="dark"] [class*="badge--overdue"],
+[data-theme="dark"] [class*="badge-overdue"] {
+  background: rgba(239, 68, 68, 0.12) !important;
+  color: #fca5a5 !important;
+  border: 1px solid rgba(239, 68, 68, 0.25) !important;
+}
+
+/* ── 18. Page Header & Typography ────────────────────────────── */
 [data-theme="dark"] .page-header {
-  border-bottom-color: #252729 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
 }
 
-[data-theme="dark"] .page-header__title {
-  color: #e8eaed !important;
+[data-theme="dark"] .page-header__title,
+[data-theme="dark"] h1 {
+  color: #f8fafc !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
 }
 
-[data-theme="dark"] .page-header__desc {
-  color: #5a6068 !important;
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6 {
+  color: #f1f5f9 !important;
 }
 
-/* ── 17. User avatar & profile ───────────────────────────────── */
+[data-theme="dark"] .page-header__desc,
+[data-theme="dark"] p,
+[data-theme="dark"] .text-secondary {
+  color: #94a3b8 !important;
+}
+
+/* ── 19. User Avatar & Profile ───────────────────────────────── */
 [data-theme="dark"] .user-avatar {
-  background: #1a1c1e !important;
-  border: 1px solid #2f3235 !important;
-  box-shadow: none !important;
-  color: #2ecc71 !important;
+  background: #1a1e28 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #34d399 !important;
+  font-weight: 600 !important;
 }
 
 [data-theme="dark"] .user-avatar__indicator {
-  background: #2ecc71 !important;
-  box-shadow: 0 0 6px rgba(46, 204, 113, 0.5) !important;
-  border-color: #0d0f10 !important;
+  background: #10b981 !important;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.6) !important;
+  border-color: #0d0e14 !important;
 }
 
 [data-theme="dark"] .user-meta__name {
-  color: #c8ccd0 !important;
+  color: #f1f5f9 !important;
+  font-weight: 600 !important;
 }
 
 [data-theme="dark"] .user-meta__role {
-  color: #4a5158 !important;
+  color: #64748b !important;
 }
 
-/* ── 18. Dashboard greeting badge ────────────────────────────── */
-[data-theme="dark"] .dashboard__greeting-badge {
-  background: rgba(46, 204, 113, 0.08) !important;
-  color: #2ecc71 !important;
-  border: 1px solid rgba(46, 204, 113, 0.20) !important;
+/* ── 20. Modals, Dropdowns & Overlays ────────────────────────── */
+[data-theme="dark"] .modal,
+[data-theme="dark"] .modal-content,
+[data-theme="dark"] dialog {
+  background: #141720 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
 }
 
-/* ── 19. Sidebar icon buttons ────────────────────────────────── */
-[data-theme="dark"] .sidebar-icon-btn {
-  color: #4a5158 !important;
-  transition: all 0.12s ease !important;
+[data-theme="dark"] .modal-overlay,
+[data-theme="dark"] .modal-backdrop,
+[data-theme="dark"] .sidebar-backdrop {
+  background: rgba(0, 0, 0, 0.70) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
 }
 
-[data-theme="dark"] .sidebar-icon-btn:hover {
-  background: #1a1c1e !important;
-  border-color: #252729 !important;
-  color: #8b9099 !important;
-  box-shadow: none !important;
+[data-theme="dark"] .dropdown-menu,
+[data-theme="dark"] .popover {
+  background: #141720 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6) !important;
 }
 
-/* ── 20. Mobile top bar ──────────────────────────────────────── */
-[data-theme="dark"] .mobile-top-bar {
-  background: #0d0f10 !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  border-bottom-color: #252729 !important;
+/* ── 21. FAB Microphone ──────────────────────────────────────── */
+[data-theme="dark"] .fab-mic {
+  background: #10b981 !important;
+  border: 1px solid rgba(255, 255, 255, 0.20) !important;
+  color: #042f20 !important;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35) !important;
 }
 
-/* ── 21. Scrollbar — slim zinc track ────────────────────────── */
+[data-theme="dark"] .fab-mic svg {
+  stroke: #042f20 !important;
+}
+
+[data-theme="dark"] .fab-mic:hover {
+  background: #059669 !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 22px rgba(16, 185, 129, 0.45) !important;
+  transform: translateY(-2px) !important;
+}
+
+[data-theme="dark"] .fab-mic:hover svg {
+  stroke: #ffffff !important;
+}
+
+/* ── 22. Voice Notes ─────────────────────────────────────────── */
+[data-theme="dark"] .vnotes__item {
+  background: #141720 !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 8px !important;
+  transition: all 0.15s ease !important;
+}
+
+[data-theme="dark"] .vnotes__item:hover {
+  background: #191d28 !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+[data-theme="dark"] .vnotes__item.is-active {
+  background: rgba(16, 185, 129, 0.08) !important;
+  border-color: rgba(16, 185, 129, 0.25) !important;
+}
+
+[data-theme="dark"] .vnotes__transcript {
+  background: #0b0c10 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+}
+
+/* ── 23. Checkbox & Selection ────────────────────────────────── */
+[data-theme="dark"] input[type="checkbox"] {
+  accent-color: #10b981;
+}
+
+[data-theme="dark"] ::selection {
+  background: rgba(16, 185, 129, 0.30);
+  color: #ffffff;
+}
+
+[data-theme="dark"] :focus-visible {
+  outline: 2px solid #10b981 !important;
+  outline-offset: 2px !important;
+}
+
+/* ── 24. Scrollbar ───────────────────────────────────────────── */
 [data-theme="dark"] ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 
 [data-theme="dark"] ::-webkit-scrollbar-track {
@@ -465,192 +675,25 @@
 }
 
 [data-theme="dark"] ::-webkit-scrollbar-thumb {
-  background: #252729;
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 999px;
 }
 
 [data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
-  background: rgba(46, 204, 113, 0.35);
+  background: rgba(255, 255, 255, 0.22);
 }
 
-/* ── 22. Selection ───────────────────────────────────────────── */
-[data-theme="dark"] ::selection {
-  background: rgba(46, 204, 113, 0.25);
-  color: #e8eaed;
-}
-
-/* ── 23. Focus ring ──────────────────────────────────────────── */
-[data-theme="dark"] :focus-visible {
-  outline: 2px solid rgba(46, 204, 113, 0.55) !important;
-  outline-offset: 2px !important;
-  box-shadow: none !important;
-}
-
-/* ── 24. Checkbox ────────────────────────────────────────────── */
-[data-theme="dark"] input[type="checkbox"] {
-  accent-color: #2ecc71;
-}
-
-/* ── 25. Theme switch button ─────────────────────────────────── */
-[data-theme="dark"] .theme-switch-btn {
-  background: #161819 !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  border: 1px solid #252729 !important;
-  color: #8b9099 !important;
-  box-shadow: none !important;
-  transition: all 0.14s ease !important;
-}
-
-[data-theme="dark"] .theme-switch-btn:hover {
-  background: #1a1c1e !important;
-  border-color: rgba(46, 204, 113, 0.30) !important;
-  color: #c8ccd0 !important;
-  box-shadow: none !important;
-}
-
-/* ── 26. Skeleton shimmer ────────────────────────────────────── */
-[data-theme="dark"] .skeleton,
-[data-theme="dark"] [class*="skeleton"] {
-  background: linear-gradient(90deg,
-    #1a1c1e 25%,
-    #222426 50%,
-    #1a1c1e 75%) !important;
-  background-size: 200% 100% !important;
-  animation: dark-shimmer 1.8s infinite !important;
-}
-
-/* ── 27. FAB microphone button ───────────────────────────────── */
-[data-theme="dark"] .fab-mic {
-  background: rgba(46, 204, 113, 0.12) !important;
-  border: 1.5px solid rgba(46, 204, 113, 0.35) !important;
-  color: #2ecc71 !important;
-  box-shadow: none !important;
-  animation: none !important;
-}
-
-[data-theme="dark"] .fab-mic:hover {
-  background: rgba(46, 204, 113, 0.20) !important;
-  border-color: rgba(46, 204, 113, 0.55) !important;
-  box-shadow: 0 0 16px rgba(46, 204, 113, 0.14) !important;
-  filter: none !important;
-}
-
-/* ── 28. Voice note items ────────────────────────────────────── */
-[data-theme="dark"] .vnotes__item {
-  background: #161819 !important;
-  border-color: #252729 !important;
-  transition: all 0.14s ease !important;
-}
-
-[data-theme="dark"] .vnotes__item:hover {
-  background: #1a1c1e !important;
-  border-color: rgba(46, 204, 113, 0.25) !important;
-  box-shadow: none !important;
-}
-
-[data-theme="dark"] .vnotes__item.is-active {
-  background: rgba(46, 204, 113, 0.07) !important;
-  border-color: rgba(46, 204, 113, 0.30) !important;
-  box-shadow: none !important;
-}
-
-[data-theme="dark"] .vnotes__transcript {
-  background: #0d0f10 !important;
-  border-color: #252729 !important;
-}
-
-[data-theme="dark"] .vnotes__mic {
-  background: rgba(46, 204, 113, 0.12) !important;
-  border: 1.5px solid rgba(46, 204, 113, 0.30) !important;
-  color: #2ecc71 !important;
-  box-shadow: none !important;
-}
-
-/* ── 29. Assistant card ──────────────────────────────────────── */
-[data-theme="dark"] .assistant-card {
-  background: #161819 !important;
-  border-color: #252729 !important;
-  box-shadow: none !important;
-}
-
-/* ── 30. Do Now / overload banners ───────────────────────────── */
-[data-theme="dark"] .do-now,
-[data-theme="dark"] .do-this-now {
-  background: rgba(46, 204, 113, 0.06) !important;
-  border-color: rgba(46, 204, 113, 0.20) !important;
-  box-shadow: none !important;
-}
-
-[data-theme="dark"] .overload-banner {
-  background: rgba(224, 82, 82, 0.07) !important;
-  border-color: rgba(224, 82, 82, 0.22) !important;
-}
-
-/* ── 31. Page / section header ───────────────────────────────── */
-[data-theme="dark"] h1,
-[data-theme="dark"] h2,
-[data-theme="dark"] h3,
-[data-theme="dark"] h4,
-[data-theme="dark"] h5,
-[data-theme="dark"] h6 {
-  color: #e8eaed !important;
-}
-
-[data-theme="dark"] p,
-[data-theme="dark"] .text-secondary {
-  color: #8b9099 !important;
-}
-
-/* ── 32. Links ───────────────────────────────────────────────── */
+/* ── 25. Links & Interactive Details ─────────────────────────── */
 [data-theme="dark"] a:not(.nav-item):not(.btn):not(.brand-monogram) {
-  color: #2ecc71 !important;
-  transition: color 0.12s ease !important;
-  text-shadow: none !important;
+  color: #34d399 !important;
+  transition: color 0.15s ease !important;
 }
 
 [data-theme="dark"] a:not(.nav-item):not(.btn):not(.brand-monogram):hover {
-  color: #52d68a !important;
-  text-shadow: none !important;
+  color: #6ee7b7 !important;
 }
 
-/* ── 33. Dividers ────────────────────────────────────────────── */
 [data-theme="dark"] hr,
 [data-theme="dark"] [class*="divider"] {
-  border-color: #252729 !important;
-}
-
-/* ── 34. Toast / notification ────────────────────────────────── */
-[data-theme="dark"] .toast,
-[data-theme="dark"] [class*="toast"] {
-  background: #1e2022 !important;
-  border: 1px solid #2f3235 !important;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55) !important;
-  color: #c8ccd0 !important;
-}
-
-/* ── 35. Sidebar today — done stat ───────────────────────────── */
-[data-theme="dark"] .sidebar-today.has-overdue .sidebar-today__stat--overdue {
-  background: rgba(224, 82, 82, 0.10) !important;
-  border-color: rgba(224, 82, 82, 0.25) !important;
-  box-shadow: none !important;
-}
-
-[data-theme="dark"] .sidebar-today__stat--done .sidebar-today__num {
-  color: #2ecc71 !important;
-  text-shadow: none !important;
-}
-
-/* ── 36. Panel / auth card ───────────────────────────────────── */
-[data-theme="dark"] .panel,
-[data-theme="dark"] .auth-card {
-  background: #161819 !important;
-  border: 1px solid #252729 !important;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5) !important;
-}
-
-/* ── 37. App shell z-order ───────────────────────────────────── */
-[data-theme="dark"] .app-main-content {
-  position: relative !important;
-  z-index: 1 !important;
+  border-color: rgba(255, 255, 255, 0.06) !important;
 }
