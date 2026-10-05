@@ -508,9 +508,20 @@
 
 [data-theme="dark"] [class*="badge--pending"],
 [data-theme="dark"] [class*="badge-pending"] {
-  background: rgba(245, 158, 11, 0.12) !important;
-  color: #fcd34d !important;
-  border: 1px solid rgba(245, 158, 11, 0.25) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: #94a3b8 !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+}
+
+[data-theme="dark"] [class*="badge--pending"]:hover,
+[data-theme="dark"] [class*="badge-pending"]:hover {
+  background: rgba(255, 255, 255, 0.10) !important;
+  color: #f1f5f9 !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+[data-theme="dark"] .task-card__start-by--amber {
+  color: #fb923c !important;
 }
 
 [data-theme="dark"] [class*="badge--done"],
