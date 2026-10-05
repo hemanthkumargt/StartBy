@@ -153,7 +153,7 @@
 [data-theme="dark"] .btn-sidebar-add {
   background: #10b981 !important;
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  color: #042f20 !important;
+  color: #ffffff !important;
   font-weight: 600 !important;
   border-radius: 8px !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 12px rgba(16, 185, 129, 0.20) !important;
@@ -315,7 +315,7 @@
 [data-theme="dark"] .btn--primary {
   background: #10b981 !important;
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  color: #042f20 !important;
+  color: #ffffff !important;
   font-weight: 600 !important;
   border-radius: 8px !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 12px rgba(16, 185, 129, 0.20) !important;
@@ -326,7 +326,7 @@
 
 [data-theme="dark"] .btn-primary svg,
 [data-theme="dark"] .btn--primary svg {
-  stroke: #042f20 !important;
+  stroke: #ffffff !important;
 }
 
 [data-theme="dark"] .btn-primary:hover,
@@ -356,7 +356,7 @@
 [data-theme="dark"] .btn--ghost {
   background: rgba(255, 255, 255, 0.05) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  color: #cbd5e1 !important;
+  color: #ffffff !important;
   border-radius: 8px !important;
   transition: all 0.15s ease !important;
   box-shadow: none !important;
@@ -374,9 +374,9 @@
 
 [data-theme="dark"] .btn--danger,
 [data-theme="dark"] .btn-danger {
-  background: rgba(239, 68, 68, 0.12) !important;
-  border: 1px solid rgba(239, 68, 68, 0.30) !important;
-  color: #f87171 !important;
+  background: rgba(239, 68, 68, 0.18) !important;
+  border: 1px solid rgba(239, 68, 68, 0.35) !important;
+  color: #ffffff !important;
   border-radius: 8px !important;
   box-shadow: none !important;
 }
@@ -387,6 +387,15 @@
   color: #ffffff !important;
   border-color: #ef4444 !important;
   box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35) !important;
+}
+
+/* Universal Button Text Rule in Dark Mode */
+[data-theme="dark"] button,
+[data-theme="dark"] .btn,
+[data-theme="dark"] [class*="btn-"],
+[data-theme="dark"] [class*="btn--"],
+[data-theme="dark"] .lp-btn {
+  color: #ffffff !important;
 }
 
 /* ── 13. "Do This Now" Card — Hero Priority Strip ────────────── */
@@ -617,12 +626,12 @@
 [data-theme="dark"] .fab-mic {
   background: #10b981 !important;
   border: 1px solid rgba(255, 255, 255, 0.20) !important;
-  color: #042f20 !important;
+  color: #ffffff !important;
   box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35) !important;
 }
 
 [data-theme="dark"] .fab-mic svg {
-  stroke: #042f20 !important;
+  stroke: #ffffff !important;
 }
 
 [data-theme="dark"] .fab-mic:hover {
