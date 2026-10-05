@@ -12,9 +12,9 @@ const handlers = {}; // window event handlers by name
 globalThis.window = { addEventListener: (n, f) => (handlers[n] = f) };
 globalThis.navigator = { language: "en-IN" };
 globalThis.FormData = class {
-  append() {}
+  append() { }
 };
-globalThis.Blob = class {};
+globalThis.Blob = class { };
 globalThis.__api = async () => ({ text: "hello world" });
 
 const dir = mkdtempSync(join(tmpdir(), "startby-vin-"));
@@ -180,7 +180,7 @@ class FakeRecognition {
     FakeRecognition.instances.push(this);
     this.stopped = 0;
   }
-  start() {}
+  start() { }
   stop() {
     this.stopped += 1;
     queueMicrotask(() => this.onend?.());

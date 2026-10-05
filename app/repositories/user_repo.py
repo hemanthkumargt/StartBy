@@ -54,6 +54,19 @@ def delete_by_email(conn: sqlite3.Connection, email: str) -> None:
     conn.commit()
 
 
+def update_profile(
+    conn: sqlite3.Connection, user_id: int, *, name: str, email: str
+) -> sqlite3.Row | None:
+    """Update the user's display name and email address."""
+    cur = conn.execute(
+        "UPDATE users SET name = ?, email = ? WHERE id = ? RETURNING *",
+        (name, email, user_id),
+    )
+    row = cur.fetchone()
+    conn.commit()
+    return row
+
+
 def update_assistant_name(
     conn: sqlite3.Connection, user_id: int, assistant_name: str | None
 ) -> sqlite3.Row | None:

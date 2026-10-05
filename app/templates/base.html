@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="en" data-theme="{{ 'dark' if (current_user.is_authenticated and current_user.dark_mode) else ('light' if current_user.is_authenticated else (request.cookies.get('startby-theme') if request.cookies.get('startby-theme') in ('light', 'dark') else 'dark')) }}">
+<html lang="en"
+  data-theme="{{ 'dark' if (current_user.is_authenticated and current_user.dark_mode) else ('light' if current_user.is_authenticated else (request.cookies.get('startby-theme') if request.cookies.get('startby-theme') in ('light', 'dark') else 'dark')) }}">
 
 <head>
   <meta charset="utf-8">
@@ -13,15 +14,16 @@
   <meta name="apple-mobile-web-app-title" content="StartBy">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%236552c9'/%3E%3Cpath d='M10 7v18M15 8l10 8-10 8z' stroke='%23ffffff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%236552c9'/%3E%3Cpath d='M10 7v18M15 8l10 8-10 8z' stroke='%23ffffff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
   <script>
-    (function() {
+    (function () {
       try {
         var saved = localStorage.getItem('startby-theme');
         if (saved === 'light' || saved === 'dark') {
           document.documentElement.setAttribute('data-theme', saved);
         }
-      } catch (e) {}
+      } catch (e) { }
     })();
   </script>
   {% if current_user.is_authenticated %}
@@ -41,6 +43,7 @@
       background-color: var(--color-bg) !important;
       background-image: none !important;
     }
+
     .app-shell {
       background: var(--color-bg) !important;
     }
@@ -158,7 +161,14 @@
     }
 
     /* Sleek Cards (Hairline Borders & Dark Slate Surfaces) */
-    .card, .counter-card, .dashboard__quick-add, .dashboard__due-next, .settings-card, .activity-stream-card, .dashboard__analytics-card, .dashboard__shortcuts-card {
+    .card,
+    .counter-card,
+    .dashboard__quick-add,
+    .dashboard__due-next,
+    .settings-card,
+    .activity-stream-card,
+    .dashboard__analytics-card,
+    .dashboard__shortcuts-card {
       background: var(--color-surface) !important;
       border: 1px solid var(--color-border) !important;
       border-radius: 12px !important;
@@ -167,17 +177,23 @@
       transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
     }
 
-    .card:hover, .counter-card:hover, .dashboard__quick-add:hover, .dashboard__due-next:hover, .settings-card:hover, .dashboard__analytics-card:hover, .dashboard__shortcuts-card:hover {
+    .card:hover,
+    .counter-card:hover,
+    .dashboard__quick-add:hover,
+    .dashboard__due-next:hover,
+    .settings-card:hover,
+    .dashboard__analytics-card:hover,
+    .dashboard__shortcuts-card:hover {
       border-color: var(--color-border-hover) !important;
       box-shadow: var(--shadow-sm) !important;
       transform: none !important;
     }
 
-    [data-theme="dark"] .card, 
-    [data-theme="dark"] .counter-card, 
-    [data-theme="dark"] .dashboard__quick-add, 
-    [data-theme="dark"] .dashboard__due-next, 
-    [data-theme="dark"] .settings-card, 
+    [data-theme="dark"] .card,
+    [data-theme="dark"] .counter-card,
+    [data-theme="dark"] .dashboard__quick-add,
+    [data-theme="dark"] .dashboard__due-next,
+    [data-theme="dark"] .settings-card,
     [data-theme="dark"] .activity-stream-card,
     [data-theme="dark"] .dashboard__analytics-card,
     [data-theme="dark"] .dashboard__shortcuts-card {
@@ -186,10 +202,10 @@
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45) !important;
     }
 
-    [data-theme="dark"] .card:hover, 
-    [data-theme="dark"] .counter-card:hover, 
-    [data-theme="dark"] .dashboard__quick-add:hover, 
-    [data-theme="dark"] .dashboard__due-next:hover, 
+    [data-theme="dark"] .card:hover,
+    [data-theme="dark"] .counter-card:hover,
+    [data-theme="dark"] .dashboard__quick-add:hover,
+    [data-theme="dark"] .dashboard__due-next:hover,
     [data-theme="dark"] .settings-card:hover,
     [data-theme="dark"] .dashboard__analytics-card:hover,
     [data-theme="dark"] .dashboard__shortcuts-card:hover {
@@ -201,12 +217,15 @@
     .counter-card--completed {
       border-top: 2px solid var(--color-success) !important;
     }
+
     .counter-card--overdue {
       border-top: 2px solid var(--color-danger) !important;
     }
+
     .counter-card--pending {
       border-top: 2px solid var(--color-warning) !important;
     }
+
     .counter-card--total {
       border-top: 2px solid var(--color-info) !important;
     }
@@ -358,12 +377,14 @@
       box-shadow: none !important;
       line-height: 1 !important;
     }
+
     .tag-chip svg {
       width: 10px !important;
       height: 10px !important;
       color: var(--color-text-muted) !important;
       flex-shrink: 0 !important;
     }
+
     .badge {
       display: inline-flex !important;
       align-items: center !important;
@@ -377,36 +398,43 @@
       line-height: 1 !important;
       box-shadow: none !important;
     }
+
     .badge svg {
       width: 10px !important;
       height: 10px !important;
       flex-shrink: 0 !important;
     }
+
     .badge--overdue {
       background: rgba(244, 63, 94, 0.08) !important;
       border: 1px solid rgba(244, 63, 94, 0.25) !important;
       color: var(--color-danger) !important;
     }
+
     .badge--pending {
       background: rgba(var(--warning-rgb), 0.08) !important;
       border: 1px solid rgba(var(--warning-rgb), 0.25) !important;
       color: var(--color-warning) !important;
     }
+
     .badge--done {
       background: rgba(var(--success-rgb), 0.08) !important;
       border: 1px solid rgba(var(--success-rgb), 0.25) !important;
       color: var(--color-success-text) !important;
     }
+
     [data-theme="dark"] .badge--overdue {
       background: rgba(248, 113, 113, 0.12) !important;
       border-color: rgba(248, 113, 113, 0.3) !important;
       color: var(--color-danger-text) !important;
     }
+
     [data-theme="dark"] .badge--pending {
       background: rgba(var(--warning-rgb), 0.12) !important;
       border-color: rgba(var(--warning-rgb), 0.3) !important;
       color: var(--color-warning-text) !important;
     }
+
     [data-theme="dark"] .badge--done {
       background: rgba(52, 211, 153, 0.12) !important;
       border-color: rgba(52, 211, 153, 0.3) !important;
@@ -422,6 +450,7 @@
       font-size: 11px !important;
       font-weight: 500 !important;
     }
+
     .task-card__due svg {
       width: 11px !important;
       height: 11px !important;
@@ -712,8 +741,10 @@
 
       <a href="{{ url_for('pages.home_page') }}" class="brand-monogram">
         <div class="brand-monogram__logo">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6 4v16"/><path d="M11 5.5l9 6.5-9 6.5z"/>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 4v16" />
+            <path d="M11 5.5l9 6.5-9 6.5z" />
           </svg>
         </div>
         <span class="brand-monogram__name">StartBy</span>
@@ -748,8 +779,10 @@
       <div class="app-sidebar__header">
         <a href="{{ url_for('pages.home_page') }}" class="brand-monogram">
           <div class="brand-monogram__logo">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M6 4v16"/><path d="M11 5.5l9 6.5-9 6.5z"/>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M6 4v16" />
+              <path d="M11 5.5l9 6.5-9 6.5z" />
             </svg>
           </div>
           <span class="brand-monogram__text">
@@ -761,7 +794,8 @@
 
       <div class="sidebar-action-wrap">
         <a href="{{ url_for('pages.tasks_page') }}?new=1" class="btn-sidebar-add">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <line x1="12" y1="5" x2="12" y2="19"></line>
             <line x1="5" y1="12" x2="19" y2="12"></line>
           </svg>
@@ -772,27 +806,50 @@
       <nav class="app-sidebar__nav" aria-label="Main">
         <div class="nav-section-title">Workspace</div>
         <a href="{{ url_for('pages.home_page') }}"
-          class="nav-item {% if request.path == '/' %}nav-item--active{% endif %}"{% if request.path == '/' %} aria-current="page"{% endif %}>
-          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg></span>
+          class="nav-item {% if request.path == '/' %}nav-item--active{% endif %}" {% if request.path=='/' %}
+          aria-current="page" {% endif %}>
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="3" width="7" height="9"></rect>
+              <rect x="14" y="3" width="7" height="5"></rect>
+              <rect x="14" y="12" width="7" height="9"></rect>
+              <rect x="3" y="16" width="7" height="5"></rect>
+            </svg></span>
           <span>Dashboard</span>
         </a>
         <a href="{{ url_for('pages.tasks_page') }}"
-          class="nav-item {% if request.path == '/tasks' %}nav-item--active{% endif %}"{% if request.path == '/tasks' %} aria-current="page"{% endif %}>
-          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="m9 14 2 2 4-4"></path></svg></span>
+          class="nav-item {% if request.path == '/tasks' %}nav-item--active{% endif %}" {% if request.path=='/tasks' %}
+          aria-current="page" {% endif %}>
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+              <path d="m9 14 2 2 4-4"></path>
+            </svg></span>
           <span>My Tasks</span>
         </a>
         {% if feature_flags.smart_capture %}
         <a href="{{ url_for('pages.capture_page') }}"
-          class="nav-item {% if request.path == '/capture' %}nav-item--active{% endif %}"{% if request.path == '/capture' %} aria-current="page"{% endif %}>
-          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z"></path><path d="M19 15l.7 1.8L21.5 17.5l-1.8.7L19 20l-.7-1.8-1.8-.7 1.8-.7L19 15z"></path></svg></span>
+          class="nav-item {% if request.path == '/capture' %}nav-item--active{% endif %}" {% if request.path=='/capture'
+          %} aria-current="page" {% endif %}>
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z"></path>
+              <path d="M19 15l.7 1.8L21.5 17.5l-1.8.7L19 20l-.7-1.8-1.8-.7 1.8-.7L19 15z"></path>
+            </svg></span>
           <span>Smart Capture</span>
         </a>
         {% endif %}
 
-                {% if feature_flags.voice %}
+        {% if feature_flags.voice %}
         <a href="{{ url_for('pages.voice_notes_page') }}"
-          class="nav-item {% if request.path == '/voice' %}nav-item--active{% endif %}"{% if request.path == '/voice' %} aria-current="page"{% endif %}>
-          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0M12 18v4"></path></svg></span>
+          class="nav-item {% if request.path == '/voice' %}nav-item--active{% endif %}" {% if request.path=='/voice' %}
+          aria-current="page" {% endif %}>
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="9" y="2" width="6" height="12" rx="3"></rect>
+              <path d="M5 11a7 7 0 0 0 14 0M12 18v4"></path>
+            </svg></span>
           <span>Voice Notes</span>
         </a>
         {% endif %}
@@ -800,22 +857,39 @@
         {% if feature_flags.insights %}
         <div class="nav-section-title">Understand</div>
         <a href="{{ url_for('pages.insights_page') }}"
-          class="nav-item {% if request.path == '/insights' %}nav-item--active{% endif %}"{% if request.path == '/insights' %} aria-current="page"{% endif %}>
-          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></span>
+          class="nav-item {% if request.path == '/insights' %}nav-item--active{% endif %}" {% if
+          request.path=='/insights' %} aria-current="page" {% endif %}>
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="18" y1="20" x2="18" y2="10"></line>
+              <line x1="12" y1="20" x2="12" y2="4"></line>
+              <line x1="6" y1="20" x2="6" y2="14"></line>
+            </svg></span>
           <span>Insights</span>
         </a>
         {% endif %}
         {% if not feature_flags.insights %}<div class="nav-section-title">Understand</div>{% endif %}
         <a href="{{ url_for('pages.activity_page') }}"
-          class="nav-item {% if request.path == '/activity' %}nav-item--active{% endif %}"{% if request.path == '/activity' %} aria-current="page"{% endif %}>
-          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg></span>
+          class="nav-item {% if request.path == '/activity' %}nav-item--active{% endif %}" {% if
+          request.path=='/activity' %} aria-current="page" {% endif %}>
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+            </svg></span>
           <span>Activity Log</span>
         </a>
 
         <div class="nav-section-title">Account</div>
         <a href="{{ url_for('pages.settings_page') }}"
-          class="nav-item {% if request.path == '/settings' %}nav-item--active{% endif %}"{% if request.path == '/settings' %} aria-current="page"{% endif %}>
-          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></span>
+          class="nav-item {% if request.path == '/settings' %}nav-item--active{% endif %}" {% if
+          request.path=='/settings' %} aria-current="page" {% endif %}>
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+              </path>
+            </svg></span>
           <span>Settings</span>
         </a>
       </nav>
@@ -869,10 +943,13 @@
       <header class="app-top-header">
         <button class="theme-switch-btn" type="button" aria-label="Toggle theme">
           <span class="theme-icon">
-            <svg class="theme-svg theme-svg--moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="theme-svg theme-svg--moon" width="15" height="15" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
             </svg>
-            <svg class="theme-svg theme-svg--sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+            <svg class="theme-svg theme-svg--sun" width="15" height="15" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              style="display:none;">
               <circle cx="12" cy="12" r="5"></circle>
               <line x1="12" y1="1" x2="12" y2="3"></line>
               <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -898,35 +975,72 @@
   {% if current_user.is_authenticated %}
   <!-- Phone/tablet tab bar (hidden on desktop, where the sidebar is used) -->
   <nav class="bottom-nav" aria-label="Main">
-    <a href="{{ url_for('pages.home_page') }}" class="bottom-nav__item{% if request.path == '/' %} is-active{% endif %}"{% if request.path == '/' %} aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg><span>Home</span></a>
-    <a href="{{ url_for('pages.tasks_page') }}" class="bottom-nav__item{% if request.path == '/tasks' %} is-active{% endif %}"{% if request.path == '/tasks' %} aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span>Tasks</span></a>
+    <a href="{{ url_for('pages.home_page') }}" class="bottom-nav__item{% if request.path == '/' %} is-active{% endif %}"
+      {% if request.path=='/' %} aria-current="page" {% endif %}><svg viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="3" y="3" width="7" height="9" />
+        <rect x="14" y="3" width="7" height="5" />
+        <rect x="14" y="12" width="7" height="9" />
+        <rect x="3" y="16" width="7" height="5" />
+      </svg><span>Home</span></a>
+    <a href="{{ url_for('pages.tasks_page') }}"
+      class="bottom-nav__item{% if request.path == '/tasks' %} is-active{% endif %}" {% if request.path=='/tasks' %}
+      aria-current="page" {% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M9 11l3 3L22 4" />
+        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+      </svg><span>Tasks</span></a>
     {% if feature_flags.smart_capture %}
-    <a href="{{ url_for('pages.capture_page') }}" class="bottom-nav__item{% if request.path == '/capture' %} is-active{% endif %}"{% if request.path == '/capture' %} aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z"/></svg><span>Capture</span></a>
+    <a href="{{ url_for('pages.capture_page') }}"
+      class="bottom-nav__item{% if request.path == '/capture' %} is-active{% endif %}" {% if request.path=='/capture' %}
+      aria-current="page" {% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z" />
+      </svg><span>Capture</span></a>
     {% endif %}
     {% if feature_flags.insights %}
-    <a href="{{ url_for('pages.insights_page') }}" class="bottom-nav__item{% if request.path == '/insights' %} is-active{% endif %}"{% if request.path == '/insights' %} aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span>Insights</span></a>
+    <a href="{{ url_for('pages.insights_page') }}"
+      class="bottom-nav__item{% if request.path == '/insights' %} is-active{% endif %}" {% if request.path=='/insights'
+      %} aria-current="page" {% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="18" y1="20" x2="18" y2="10" />
+        <line x1="12" y1="20" x2="12" y2="4" />
+        <line x1="6" y1="20" x2="6" y2="14" />
+      </svg><span>Insights</span></a>
     {% endif %}
-    <a href="{{ url_for('pages.settings_page') }}" class="bottom-nav__item{% if request.path == '/settings' %} is-active{% endif %}"{% if request.path == '/settings' %} aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.2 4.2l2.8 2.8M17 17l2.8 2.8M1 12h4M19 12h4M4.2 19.8L7 17M17 7l2.8-2.8"/></svg><span>Settings</span></a>
+    <a href="{{ url_for('pages.settings_page') }}"
+      class="bottom-nav__item{% if request.path == '/settings' %} is-active{% endif %}" {% if request.path=='/settings'
+      %} aria-current="page" {% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="3" />
+        <path d="M12 1v4M12 19v4M4.2 4.2l2.8 2.8M17 17l2.8 2.8M1 12h4M19 12h4M4.2 19.8L7 17M17 7l2.8-2.8" />
+      </svg><span>Settings</span></a>
   </nav>
   {% endif %}
 
   {% if current_user.is_authenticated and feature_flags.voice and request.path not in ('/voice', '/') %}
-  <a href="{{ url_for('pages.voice_notes_page') }}" class="fab-mic" aria-label="Record a voice note" title="Record a voice note">
-    <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0M12 18v4"></path></svg>
+  <a href="{{ url_for('pages.voice_notes_page') }}" class="fab-mic" aria-label="Record a voice note"
+    title="Record a voice note">
+    <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2"
+      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="9" y="2" width="6" height="12" rx="3"></rect>
+      <path d="M5 11a7 7 0 0 0 14 0M12 18v4"></path>
+    </svg>
   </a>
   {% endif %}
 
   <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
   <script type="module" src="{{ url_for('static', filename='js/api.js') }}?v=4"></script>
   <script type="module" src="{{ url_for('static', filename='js/theme.js') }}?v=31"></script>
-  {% if current_user.is_authenticated %}<script type="module" src="{{ url_for('static', filename='js/sidebar.js') }}?v=1"></script>{% endif %}
+  {% if current_user.is_authenticated %}
+  <script type="module" src="{{ url_for('static', filename='js/sidebar.js') }}?v=1"></script>{% endif %}
   {% block scripts %}{% endblock %}
 
   <script>
     // Installable app: the worker only adds offline fallback + asset caching.
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(() => {});
+        navigator.serviceWorker.register('/sw.js').catch(() => { });
       });
     }
 
@@ -944,5 +1058,7 @@
     }
   </script>
 </body>
+
+</html>
 
 </html>

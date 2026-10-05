@@ -30,3 +30,19 @@ def update_me():
         **extra,
     )
     return jsonify(user), 200
+
+
+@bp.patch("/me/profile")
+@login_required
+def update_profile():
+    body = request.get_json(silent=True)
+    if not isinstance(body, dict):
+        raise ApiError("validation", "Request body must be JSON", 422)
+    user = user_service.update_profile(
+        get_db(),
+        user_id=current_user.id,
+        name=body.get("name"),
+        email=body.get("email"),
+    )
+    return jsonify(user), 200
+

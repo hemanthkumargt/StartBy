@@ -361,11 +361,11 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   }
 
-  .toggle-switch input:checked + .toggle-slider {
+  .toggle-switch input:checked+.toggle-slider {
     background-color: var(--color-primary);
   }
 
-  .toggle-switch input:checked + .toggle-slider::before {
+  .toggle-switch input:checked+.toggle-slider::before {
     transform: translateX(20px);
   }
 
@@ -474,7 +474,7 @@
     border-color: rgba(255, 255, 255, 0.12) !important;
   }
 
-  [data-theme="dark"] .toggle-switch input:checked + .toggle-slider {
+  [data-theme="dark"] .toggle-switch input:checked+.toggle-slider {
     background-color: #6366f1 !important;
     border-color: #6366f1 !important;
     box-shadow: 0 0 12px rgba(99, 102, 241, 0.5) !important;
@@ -493,9 +493,12 @@
 <section class="settings-view">
   <div class="settings-view__header">
     <h1 class="settings-view__title">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="3"></circle>
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        <path
+          d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+        </path>
       </svg>
       Settings & Preferences
     </h1>
@@ -507,7 +510,8 @@
     <div class="settings-card">
       <div class="settings-card__header">
         <div class="settings-card__icon-chip">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
           </svg>
         </div>
@@ -523,7 +527,8 @@
           <span class="settings-row__sublabel">Reduces eye fatigue with deep contrast and glowing accent colors.</span>
         </div>
         <label class="toggle-switch" for="dark-mode-checkbox">
-          <input id="dark-mode-checkbox" name="dark_mode" type="checkbox" role="switch" aria-label="Dark mode" {% if current_user.dark_mode %}checked{% endif %}>
+          <input id="dark-mode-checkbox" name="dark_mode" type="checkbox" role="switch" aria-label="Dark mode" {% if
+            current_user.dark_mode %}checked{% endif %}>
           <span class="toggle-slider"></span>
         </label>
       </div>
@@ -533,14 +538,16 @@
     <div class="settings-card">
       <div class="settings-card__header">
         <div class="settings-card__icon-chip">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <polyline points="12 6 12 12 16 14"></polyline>
           </svg>
         </div>
         <div class="settings-card__title-group">
           <h2 class="settings-card__title">Regional & Time Display</h2>
-          <p class="settings-card__desc">All task deadlines are preserved in UTC and localized to your display timezone.</p>
+          <p class="settings-card__desc">All task deadlines are preserved in UTC and localized to your display timezone.
+          </p>
         </div>
       </div>
 
@@ -549,17 +556,19 @@
         <div class="settings-select-wrapper">
           <select id="timezone-select" name="timezone" class="settings-select">
             {% for tz in timezones %}
-            <option value="{{ tz }}" {% if current_user.timezone == tz %}selected{% endif %}>{{ tz }}</option>
+            <option value="{{ tz }}" {% if current_user.timezone==tz %}selected{% endif %}>{{ tz }}</option>
             {% endfor %}
           </select>
           <div class="settings-select-chevron">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
           </div>
         </div>
         <div class="settings-control-hint">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="12" y1="16" x2="12" y2="12"></line>
             <line x1="12" y1="8" x2="12.01" y2="8"></line>
@@ -575,13 +584,15 @@
       <div class="settings-card__header">
         <div class="settings-card__title-group">
           <h2 class="settings-card__title">Voice assistant</h2>
-          <p class="settings-card__desc">Give your assistant any name you like. It introduces the briefing and answers to it. Leave blank to use the default ({{ assistant_default }}).</p>
+          <p class="settings-card__desc">Give your assistant any name you like. It introduces the briefing and answers
+            to it. Leave blank to use the default ({{ assistant_default }}).</p>
         </div>
       </div>
       <div class="settings-control-group">
         <label class="settings-control-label" for="assistant-name-input">Assistant name</label>
         <input id="assistant-name-input" name="assistant_name" type="text" maxlength="30" autocomplete="off"
-          class="settings-text-input" placeholder="{{ assistant_default }}" value="{{ current_user.assistant_name_custom or '' }}">
+          class="settings-text-input" placeholder="{{ assistant_default }}"
+          value="{{ current_user.assistant_name_custom or '' }}">
       </div>
     </div>
     {% endif %}
@@ -590,7 +601,8 @@
     <div class="settings-card">
       <div class="settings-card__header">
         <div class="settings-card__icon-chip">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
             <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
             <circle cx="12" cy="7" r="4"></circle>
           </svg>
@@ -603,36 +615,75 @@
 
       <div class="settings-profile-container">
         <div class="settings-profile-header">
-          <div class="settings-profile-avatar">
+          <div class="settings-profile-avatar" id="profile-avatar">
             {{ current_user.name[:2].upper() if current_user.name else 'ME' }}
           </div>
           <div class="settings-profile-id">
             <div class="settings-profile-name">
-              <span>{{ current_user.name }}</span>
+              <span id="profile-display-name">{{ current_user.name }}</span>
               <span class="settings-profile-status">
                 <span class="settings-profile-status-dot"></span>
                 Active
               </span>
             </div>
-            <p class="settings-profile-email">{{ current_user.email }}</p>
+            <p class="settings-profile-email" id="profile-display-email">{{ current_user.email }}</p>
+          </div>
+          <button type="button" id="profile-edit-btn" class="btn btn-secondary btn-sm"
+            style="margin-left:auto;gap:.35rem;display:flex;align-items:center;"
+            onclick="openProfileEdit()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+            Edit
+          </button>
+        </div>
+
+        <!-- Inline edit form — hidden by default -->
+        <div id="profile-edit-form" style="display:none; margin-top:1rem; border-top:1px solid var(--color-border-subtle); padding-top:1rem;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:.85rem; margin-bottom:.85rem;">
+            <div class="form-group" style="margin:0">
+              <label class="form-label" for="profile-name-input">Display Name</label>
+              <input id="profile-name-input" type="text" class="form-input"
+                value="{{ current_user.name }}" maxlength="80" autocomplete="name">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label" for="profile-email-input">Email Address
+                <span style="font-weight:400;color:var(--color-text-muted);font-size:.78rem;">
+                  — reminders go here
+                </span>
+              </label>
+              <input id="profile-email-input" type="email" class="form-input"
+                value="{{ current_user.email }}" maxlength="254" autocomplete="email">
+            </div>
+          </div>
+          <div id="profile-edit-error" style="display:none; color:var(--color-danger); font-size:.83rem; margin-bottom:.6rem;"></div>
+          <div style="display:flex; gap:.6rem;">
+            <button type="button" id="profile-save-btn" class="btn btn-primary btn-sm"
+              onclick="saveProfileEdit()">Save changes</button>
+            <button type="button" class="btn btn-secondary btn-sm"
+              onclick="cancelProfileEdit()">Cancel</button>
           </div>
         </div>
 
         <div class="settings-profile-grid">
           <div class="settings-prop-card">
             <span class="settings-prop-card__label">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
                 <rect width="20" height="16" x="2" y="4" rx="2"></rect>
                 <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
               </svg>
               Account Email
             </span>
-            <span class="settings-prop-card__value">{{ current_user.email }}</span>
+            <span class="settings-prop-card__value" id="profile-prop-email">{{ current_user.email }}</span>
           </div>
 
           <div class="settings-prop-card">
             <span class="settings-prop-card__label">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
                 <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
                 <path d="M3 5V19A9 3 0 0 0 21 19V5"></path>
                 <path d="M3 12A9 3 0 0 0 21 12"></path>
@@ -644,7 +695,8 @@
 
           <div class="settings-prop-card">
             <span class="settings-prop-card__label">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"></path>
               </svg>
               Authentication
@@ -653,21 +705,73 @@
           </div>
         </div>
       </div>
+
+      <script>
+        function openProfileEdit() {
+          document.getElementById('profile-edit-form').style.display = 'block';
+          document.getElementById('profile-edit-btn').style.display = 'none';
+          document.getElementById('profile-name-input').focus();
+        }
+        function cancelProfileEdit() {
+          document.getElementById('profile-edit-form').style.display = 'none';
+          document.getElementById('profile-edit-btn').style.display = 'flex';
+          document.getElementById('profile-edit-error').style.display = 'none';
+        }
+        async function saveProfileEdit() {
+          const saveBtn = document.getElementById('profile-save-btn');
+          const errEl  = document.getElementById('profile-edit-error');
+          const name   = document.getElementById('profile-name-input').value.trim();
+          const email  = document.getElementById('profile-email-input').value.trim();
+          errEl.style.display = 'none';
+          saveBtn.disabled = true;
+          saveBtn.textContent = 'Saving…';
+          try {
+            const res = await fetch('/api/me/profile', {
+              method: 'PATCH',
+              headers: {'Content-Type':'application/json',
+                        'X-CSRFToken': document.querySelector('meta[name="csrf-token"]')?.content ?? ''},
+              body: JSON.stringify({ name, email })
+            });
+            const data = await res.json();
+            if (!res.ok) {
+              errEl.textContent = data.message || 'Something went wrong.';
+              errEl.style.display = 'block';
+              return;
+            }
+            // Update display
+            document.getElementById('profile-display-name').textContent = data.name;
+            document.getElementById('profile-display-email').textContent = data.email;
+            document.getElementById('profile-prop-email').textContent = data.email;
+            const initials = data.name.slice(0,2).toUpperCase();
+            document.getElementById('profile-avatar').textContent = initials;
+            cancelProfileEdit();
+          } catch(e) {
+            errEl.textContent = 'Network error — please try again.';
+            errEl.style.display = 'block';
+          } finally {
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Save changes';
+          }
+        }
+      </script>
     </div>
+
 
     <div id="settings-error" class="form-error" role="alert" hidden></div>
 
     <!-- Actions Bar -->
     <div class="settings-actions">
       <p class="settings-actions__note">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round">
           <polyline points="20 6 9 17 4 12"></polyline>
         </svg>
         Preferences synchronize immediately across your active workspace.
       </p>
 
       <button type="submit" class="btn btn--primary">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round">
           <polyline points="20 6 9 17 4 12"></polyline>
         </svg>
         Save Preferences
@@ -681,7 +785,8 @@
     <div class="settings-card__header">
       <div>
         <h2 class="settings-card__title">Google Calendar</h2>
-        <p class="settings-card__desc">Add each pending task to your calendar as a block from its start time to its deadline. Completed or deleted tasks are removed again. Only events StartBy creates are touched.</p>
+        <p class="settings-card__desc">Add each pending task to your calendar as a block from its start time to its
+          deadline. Completed or deleted tasks are removed again. Only events StartBy creates are touched.</p>
       </div>
     </div>
     <p id="calendar-status" class="settings-card__desc" role="status">Checking connection…</p>

@@ -96,3 +96,40 @@ def update_settings(
     if new_assistant_name is not _UNSET:
         updated_row = user_repo.update_assistant_name(conn, user_id, new_assistant_name)
     return serialize_user(updated_row, include_assistant_name=include_assistant_name)
+
+
+def update_profile(
+    conn: sqlite3.Connection,
+    *,
+    user_id: int,
+    name: object = None,
+    email: object = None,
+) -> dict:
+    """Update display name and/or email. Email must be unique across all users."""
+    row = user_repo.find_by_id(conn, user_id)
+    if row is None:
+        raise ApiError("not_found", "User not found", 404)
+
+    new_name = row["name"]
+    new_email = row["email"]
+
+    if name is not None:
+        if not isinstance(name, str) or not name.strip():
+            raise ApiError("validation", "Name must be a non-empty string", 422)
+        new_name = " ".join(name.strip().split())
+        if len(new_name) > 80:
+            raise ApiError("validation", "Name must be 80 characters or fewer", 422)
+
+    if email is not None:
+        if not isinstance(email, str) or "@" not in email or len(email) > 254:
+            raise ApiError("validation", "Please enter a valid email address", 422)
+        new_email = email.strip().lower()
+        # Check uniqueness — skip if it's the same as their current email
+        if new_email != row["email"].lower():
+            existing = user_repo.find_by_email(conn, new_email)
+            if existing is not None:
+                raise ApiError("conflict", "That email is already in use", 409)
+
+    updated_row = user_repo.update_profile(conn, user_id, name=new_name, email=new_email)
+    return serialize_user(updated_row, include_assistant_name=False)
+

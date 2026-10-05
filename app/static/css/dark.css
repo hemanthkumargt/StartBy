@@ -1,0 +1,288 @@
+/* ================================================================
+   StartBy — Premium Dark Mode Glass System
+   Frosted glass surfaces · Atmospheric depth · Luminous accents
+   Applied only when [data-theme="dark"] is set on <html>.
+   ================================================================ */
+
+/* ── 1. Atmospheric background ─────────────────────────────────── */
+[data-theme="dark"] body {
+  background-color: #08080c !important;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 20% 10%, rgba(80, 60, 160, 0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 90%, rgba(30, 60, 120, 0.10) 0%, transparent 55%),
+    linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px) !important;
+  background-size: auto, auto, 28px 28px, 28px 28px !important;
+  background-attachment: fixed !important;
+}
+
+/* ── 2. Sidebar — frosted glass panel ─────────────────────────── */
+[data-theme="dark"] .app-sidebar {
+  background: rgba(10, 8, 18, 0.80) !important;
+  backdrop-filter: blur(24px) saturate(1.4) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(1.4) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.07) !important;
+  box-shadow: 2px 0 32px rgba(0, 0, 0, 0.65) !important;
+}
+
+[data-theme="dark"] .app-sidebar__header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="dark"] .app-sidebar__footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* ── 3. Brand logo ─────────────────────────────────────────────── */
+[data-theme="dark"] .brand-monogram__logo {
+  background: linear-gradient(135deg, #7c6af0 0%, #4f46e5 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 0 16px rgba(100, 80, 220, 0.35) !important;
+}
+
+/* ── 4. Nav items — glass pill style ──────────────────────────── */
+[data-theme="dark"] .nav-item {
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  color: rgba(210, 210, 225, 0.55) !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: all 0.18s ease !important;
+}
+
+[data-theme="dark"] .nav-item:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #eeeef5 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+[data-theme="dark"] .nav-item--active {
+  background: linear-gradient(135deg, rgba(100, 80, 220, 0.25) 0%, rgba(60, 50, 160, 0.15) 100%) !important;
+  border: 1px solid rgba(120, 100, 240, 0.32) !important;
+  color: #ccc8ff !important;
+  box-shadow: 0 0 0 1px rgba(100, 80, 220, 0.12) inset, 0 2px 12px rgba(80, 60, 200, 0.12) !important;
+  transform: none !important;
+}
+
+[data-theme="dark"] .nav-item--active .icon svg,
+[data-theme="dark"] .nav-item--active svg {
+  stroke: #b8b4ff !important;
+}
+
+/* ── 5. "+ New Task" button ────────────────────────────────────── */
+[data-theme="dark"] .btn-sidebar-add {
+  background: linear-gradient(135deg, #6552c9 0%, #4f46e5 100%) !important;
+  border: 1px solid rgba(120, 100, 240, 0.4) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 16px rgba(80, 60, 200, 0.35) !important;
+  transform: none !important;
+  transition: all 0.18s ease !important;
+}
+
+[data-theme="dark"] .btn-sidebar-add:hover {
+  background: linear-gradient(135deg, #7464d8 0%, #5a52ef 100%) !important;
+  box-shadow: 0 4px 24px rgba(80, 60, 200, 0.5) !important;
+  transform: translateY(-1px) !important;
+}
+
+[data-theme="dark"] .btn-sidebar-add:active {
+  transform: translateY(0) !important;
+}
+
+/* ── 6. Cards — frosted glass ─────────────────────────────────── */
+[data-theme="dark"] .card {
+  background: rgba(20, 17, 35, 0.55) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.45), 0 1px 0 rgba(255, 255, 255, 0.04) inset !important;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease !important;
+}
+
+[data-theme="dark"] .card:hover {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  background: rgba(22, 19, 38, 0.65) !important;
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.55), 0 1px 0 rgba(255, 255, 255, 0.06) inset !important;
+}
+
+/* ── 7. Form inputs ──────────────────────────────────────────── */
+[data-theme="dark"] .form-input,
+[data-theme="dark"] form input[type="text"],
+[data-theme="dark"] form input[type="email"],
+[data-theme="dark"] form input[type="password"],
+[data-theme="dark"] form input[type="datetime-local"],
+[data-theme="dark"] form input[type="search"],
+[data-theme="dark"] form input[type="date"],
+[data-theme="dark"] form select,
+[data-theme="dark"] form textarea,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  color: #eeeef0 !important;
+  transition: all 0.18s ease !important;
+}
+
+[data-theme="dark"] .form-input:focus,
+[data-theme="dark"] form input:focus,
+[data-theme="dark"] form select:focus,
+[data-theme="dark"] form textarea:focus,
+[data-theme="dark"] textarea:focus,
+[data-theme="dark"] select:focus {
+  background: rgba(255, 255, 255, 0.07) !important;
+  border-color: rgba(120, 100, 240, 0.5) !important;
+  box-shadow: 0 0 0 3px rgba(100, 80, 220, 0.12), 0 0 16px rgba(80, 60, 200, 0.08) !important;
+  outline: none !important;
+}
+
+[data-theme="dark"] form select option {
+  background: #16141e !important;
+  color: #eeeef0 !important;
+}
+
+/* ── 8. Primary buttons ──────────────────────────────────────── */
+[data-theme="dark"] .btn-primary {
+  background: linear-gradient(135deg, #6552c9 0%, #4f46e5 100%) !important;
+  border: 1px solid rgba(120, 100, 240, 0.4) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 12px rgba(80, 60, 200, 0.3) !important;
+  transition: all 0.18s ease !important;
+}
+
+[data-theme="dark"] .btn-primary:hover {
+  background: linear-gradient(135deg, #7464d8 0%, #5a52ef 100%) !important;
+  box-shadow: 0 4px 20px rgba(80, 60, 200, 0.45) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* ── 9. Secondary / ghost buttons ────────────────────────────── */
+[data-theme="dark"] .btn-secondary,
+[data-theme="dark"] .btn-ghost {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  color: #c8c8d8 !important;
+  transition: all 0.18s ease !important;
+}
+
+[data-theme="dark"] .btn-secondary:hover,
+[data-theme="dark"] .btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.09) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  color: #eeeef0 !important;
+}
+
+/* ── 10. Modal ───────────────────────────────────────────────── */
+[data-theme="dark"] .modal,
+[data-theme="dark"] .modal-content,
+[data-theme="dark"] dialog {
+  background: rgba(12, 10, 24, 0.90) !important;
+  backdrop-filter: blur(28px) saturate(1.5) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(1.5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(100, 80, 220, 0.10) inset !important;
+}
+
+[data-theme="dark"] .modal-overlay,
+[data-theme="dark"] .modal-backdrop,
+[data-theme="dark"] .sidebar-backdrop {
+  background: rgba(4, 4, 12, 0.75) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+}
+
+/* ── 11. Dropdown menus ──────────────────────────────────────── */
+[data-theme="dark"] .dropdown-menu,
+[data-theme="dark"] .popover {
+  background: rgba(16, 13, 28, 0.94) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75) !important;
+}
+
+/* ── 12. Task items ──────────────────────────────────────────── */
+[data-theme="dark"] .task-item,
+[data-theme="dark"] .task-card,
+[data-theme="dark"] [class*="task-row"] {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-color: rgba(255, 255, 255, 0.055) !important;
+  transition: background 0.15s ease, border-color 0.15s ease !important;
+}
+
+[data-theme="dark"] .task-item:hover,
+[data-theme="dark"] .task-card:hover,
+[data-theme="dark"] [class*="task-row"]:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
+}
+
+/* ── 13. Scrollbar ───────────────────────────────────────────── */
+[data-theme="dark"] ::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.10);
+  border-radius: 999px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.20);
+}
+
+/* ── 14. Selection ───────────────────────────────────────────── */
+[data-theme="dark"] ::selection {
+  background: rgba(100, 80, 220, 0.38);
+  color: #ffffff;
+}
+
+/* ── 15. Focus ring ──────────────────────────────────────────── */
+[data-theme="dark"] :focus-visible {
+  outline: 2px solid rgba(120, 100, 240, 0.6) !important;
+  outline-offset: 2px !important;
+}
+
+/* ── 16. Checkbox ────────────────────────────────────────────── */
+[data-theme="dark"] input[type="checkbox"] {
+  accent-color: #7c6af0;
+}
+
+/* ── 17. Theme toggle — glass pill ──────────────────────────── */
+[data-theme="dark"] .theme-switch-btn {
+  background: rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  color: #d0d0e0 !important;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-theme="dark"] .theme-switch-btn:hover {
+  background: rgba(255, 255, 255, 0.10) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ── 18. Skeleton shimmer ────────────────────────────────────── */
+[data-theme="dark"] .skeleton,
+[data-theme="dark"] [class*="skeleton"] {
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(255,255,255,0.08) 50%,
+    rgba(255,255,255,0.04) 75%) !important;
+  background-size: 200% 100% !important;
+  animation: dark-shimmer 1.8s infinite !important;
+}
+
+@keyframes dark-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
