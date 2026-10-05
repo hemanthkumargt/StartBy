@@ -2577,11 +2577,14 @@ html:not([data-theme="dark"]) .auth-brand-logo {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1.25rem;
-    align-items: start;
+    align-items: stretch;
   }
 
   .insights-grid .insights-card {
     margin-bottom: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
   }
 }
 
