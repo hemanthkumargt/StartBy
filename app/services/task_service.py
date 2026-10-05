@@ -88,9 +88,10 @@ def _validate_due_at(due_at: str | None) -> str | None:
         raise ApiError("validation", "due_at must be a date-time string", 422)
     try:
         normalized = timeutil.normalize_due_at(due_at)
-    except (ValueError, OverflowError) as exc:
+        year = int(normalized.split("-")[0])
+    except (ValueError, OverflowError, IndexError) as exc:
         raise ApiError("validation", "due_at must be a valid ISO-8601 datetime", 422) from exc
-    if not DUE_YEAR_MIN <= int(normalized[:4]) <= DUE_YEAR_MAX:
+    if not DUE_YEAR_MIN <= year <= DUE_YEAR_MAX:
         raise ApiError(
             "validation", f"Deadline year must be between {DUE_YEAR_MIN} and {DUE_YEAR_MAX}", 422
         )

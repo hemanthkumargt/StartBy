@@ -15,8 +15,9 @@ NODE = shutil.which("node")
 @pytest.mark.skipif(NODE is None, reason="node is not installed")
 @pytest.mark.parametrize("process_tz", ["America/New_York", "Asia/Tokyo", "UTC"])
 def test_browser_modules_pass_under_node(process_tz):
+    test_files = [str(p) for p in sorted((ROOT / "tests" / "js").glob("*.test.mjs"))]
     result = subprocess.run(
-        [NODE, "--test", "tests/js/"],
+        [NODE, "--test", *test_files],
         cwd=ROOT,
         capture_output=True,
         text=True,

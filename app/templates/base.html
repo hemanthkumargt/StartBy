@@ -984,38 +984,18 @@
         <rect x="14" y="12" width="7" height="9" />
         <rect x="3" y="16" width="7" height="5" />
       </svg><span>Home</span></a>
-    <a href="{{ url_for('pages.tasks_page') }}"
-      class="bottom-nav__item{% if request.path == '/tasks' %} is-active{% endif %}" {% if request.path=='/tasks' %}
-      aria-current="page" {% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    <a href="{{ url_for('pages.tasks_page') }}" class="bottom-nav__item{% if request.path == '/tasks' %} is-active{% endif %}"{% if request.path == '/tasks' %} aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M9 11l3 3L22 4" />
         <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
       </svg><span>Tasks</span></a>
     {% if feature_flags.smart_capture %}
-    <a href="{{ url_for('pages.capture_page') }}"
-      class="bottom-nav__item{% if request.path == '/capture' %} is-active{% endif %}" {% if request.path=='/capture' %}
-      aria-current="page" {% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z" />
-      </svg><span>Capture</span></a>
+    <a href="{{ url_for('pages.capture_page') }}" class="bottom-nav__item{% if request.path == '/capture' %} is-active{% endif %}"{% if request.path == '/capture' %} aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z" /></svg><span>Capture</span></a>
     {% endif %}
     {% if feature_flags.insights %}
-    <a href="{{ url_for('pages.insights_page') }}"
-      class="bottom-nav__item{% if request.path == '/insights' %} is-active{% endif %}" {% if request.path=='/insights'
-      %} aria-current="page" {% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <line x1="18" y1="20" x2="18" y2="10" />
-        <line x1="12" y1="20" x2="12" y2="4" />
-        <line x1="6" y1="20" x2="6" y2="14" />
-      </svg><span>Insights</span></a>
+    <a href="{{ url_for('pages.insights_page') }}" class="bottom-nav__item{% if request.path == '/insights' %} is-active{% endif %}"{% if request.path == '/insights' %} aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" /></svg><span>Insights</span></a>
     {% endif %}
-    <a href="{{ url_for('pages.settings_page') }}"
-      class="bottom-nav__item{% if request.path == '/settings' %} is-active{% endif %}" {% if request.path=='/settings'
-      %} aria-current="page" {% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <circle cx="12" cy="12" r="3" />
-        <path d="M12 1v4M12 19v4M4.2 4.2l2.8 2.8M17 17l2.8 2.8M1 12h4M19 12h4M4.2 19.8L7 17M17 7l2.8-2.8" />
-      </svg><span>Settings</span></a>
+    <a href="{{ url_for('pages.settings_page') }}" class="bottom-nav__item{% if request.path == '/settings' %} is-active{% endif %}"{% if request.path == '/settings' %} aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3" /><path d="M12 1v4M12 19v4M4.2 4.2l2.8 2.8M17 17l2.8 2.8M1 12h4M19 12h4M4.2 19.8L7 17M17 7l2.8-2.8" /></svg><span>Settings</span></a>
   </nav>
   {% endif %}
 

@@ -24,7 +24,10 @@ def to_iso(dt: datetime) -> str:
     own datetime('now') format so string comparison sorts correctly."""
     if dt.tzinfo is not None:
         dt = dt.astimezone(timezone.utc).replace(tzinfo=None)
-    return dt.strftime(UTC_FORMAT)
+    return (
+        f"{dt.year:04d}-{dt.month:02d}-{dt.day:02d}T"
+        f"{dt.hour:02d}:{dt.minute:02d}:{dt.second:02d}"
+    )
 
 
 def parse_iso(value: str) -> datetime:
