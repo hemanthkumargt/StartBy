@@ -1,367 +1,237 @@
 /* ================================================================
-   StartBy — AURORA DARK  ✦  Premium Deep-Space Theme
+   StartBy — TERMINAL DARK  ✦  Charcoal & Green Hacker Aesthetic
    ─────────────────────────────────────────────────────────────────
-   Palette  : Midnight Cosmos · Violet-Indigo Nebula · Cyan Aurora
-   Surfaces : Multi-layer glass, volumetric depth, soft bloom
-   Motion   : Micro-animations, shimmer, orbital pulse
+   Palette  : Deep Charcoal · Zinc Grey · Phosphor Green
+   Surfaces : Solid dark panels, hairline borders, no glow soup
+   Motion   : Subtle, purposeful — cursor blink, clean transitions
    Applied only when [data-theme="dark"] is set on <html>.
    ================================================================ */
 
-/* ── 0. Ambient animated background ─────────────────────────────── */
-@keyframes aurora-drift {
-  0%   { transform: translate(0, 0) scale(1); }
-  33%  { transform: translate(30px, -20px) scale(1.05); }
-  66%  { transform: translate(-20px, 15px) scale(0.97); }
-  100% { transform: translate(0, 0) scale(1); }
-}
-
-@keyframes aurora-drift-2 {
-  0%   { transform: translate(0, 0) scale(1); }
-  40%  { transform: translate(-25px, 20px) scale(1.04); }
-  80%  { transform: translate(15px, -10px) scale(0.98); }
-  100% { transform: translate(0, 0) scale(1); }
-}
-
+/* ── Keyframes ─────────────────────────────────────────────────── */
 @keyframes dark-shimmer {
   0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
 
-@keyframes glow-pulse {
-  0%, 100% { opacity: 0.6; }
-  50%       { opacity: 1; }
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
 }
 
-@keyframes float-up {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-3px); }
+@keyframes scan-line {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
 }
 
-@keyframes border-shimmer {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* ── 1. Atmospheric deep-space background ────────────────────────── */
+/* ── 1. Background — deep charcoal, no gradients ─────────────── */
 [data-theme="dark"] body {
-  background-color: #05040f !important;
-  background-image:
-    /* Top-left violet nebula */
-    radial-gradient(ellipse 70% 55% at -5% 5%,  rgba(108, 74, 220, 0.18) 0%, transparent 65%),
-    /* Top-right cyan aurora */
-    radial-gradient(ellipse 50% 40% at 105% 8%,  rgba(0, 212, 255, 0.10) 0%, transparent 55%),
-    /* Center-right indigo bloom */
-    radial-gradient(ellipse 40% 35% at 90% 45%,  rgba(79, 55, 185, 0.12) 0%, transparent 55%),
-    /* Bottom-left teal glow */
-    radial-gradient(ellipse 55% 40% at 10% 95%,  rgba(16, 185, 153, 0.07) 0%, transparent 55%),
-    /* Bottom-right faint pink */
-    radial-gradient(ellipse 45% 30% at 95% 95%,  rgba(168, 85, 247, 0.08) 0%, transparent 50%),
-    /* Micro star-grid */
-    linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px) !important;
-  background-size: auto, auto, auto, auto, auto, 32px 32px, 32px 32px !important;
-  background-attachment: fixed !important;
-  position: relative !important;
+  background-color: #111214 !important;
+  background-image: none !important;
 }
 
-/* Animated aurora orbs via pseudo — applied on the shell */
 [data-theme="dark"] .app-shell::before,
 [data-theme="dark"] .app-shell::after {
-  content: "" !important;
-  position: fixed !important;
-  border-radius: 50% !important;
-  pointer-events: none !important;
-  z-index: 0 !important;
-  will-change: transform !important;
+  content: none !important;
+  display: none !important;
 }
 
-[data-theme="dark"] .app-shell::before {
-  width: 600px !important;
-  height: 600px !important;
-  top: -180px !important;
-  left: -180px !important;
-  background: radial-gradient(circle, rgba(108, 74, 220, 0.14) 0%, transparent 70%) !important;
-  animation: aurora-drift 18s ease-in-out infinite !important;
-}
-
-[data-theme="dark"] .app-shell::after {
-  width: 500px !important;
-  height: 500px !important;
-  bottom: -120px !important;
-  right: -100px !important;
-  background: radial-gradient(circle, rgba(0, 212, 255, 0.09) 0%, transparent 70%) !important;
-  animation: aurora-drift-2 22s ease-in-out infinite !important;
-}
-
-/* ── 2. Sidebar — deep glass panel ──────────────────────────────── */
+/* ── 2. Sidebar — darker zinc panel ─────────────────────────── */
 [data-theme="dark"] .app-sidebar {
-  background: linear-gradient(
-    160deg,
-    rgba(12, 9, 26, 0.92) 0%,
-    rgba(8, 6, 20, 0.96) 100%
-  ) !important;
-  backdrop-filter: blur(28px) saturate(1.6) brightness(0.9) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(1.6) brightness(0.9) !important;
-  border-right: 1px solid rgba(108, 74, 220, 0.18) !important;
-  box-shadow:
-    2px 0 0 rgba(108, 74, 220, 0.06),
-    4px 0 40px rgba(0, 0, 0, 0.7),
-    inset -1px 0 0 rgba(255, 255, 255, 0.04) !important;
-  position: relative !important;
-  z-index: 100 !important;
+  background: #0d0f10 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-right: 1px solid #252729 !important;
+  box-shadow: 2px 0 0 #1a1c1e !important;
 }
 
 [data-theme="dark"] .app-sidebar__header {
-  border-bottom: 1px solid rgba(108, 74, 220, 0.16) !important;
-  background: rgba(108, 74, 220, 0.04) !important;
+  border-bottom: 1px solid #252729 !important;
+  background: transparent !important;
 }
 
 [data-theme="dark"] .app-sidebar__footer {
-  border-top: 1px solid rgba(108, 74, 220, 0.16) !important;
-  background: rgba(6, 4, 16, 0.6) !important;
+  border-top: 1px solid #252729 !important;
+  background: #0b0c0e !important;
 }
 
-/* ── 3. Brand logo — glowing gem ────────────────────────────────── */
+/* ── 3. Brand logo — green terminal block ───────────────────── */
 [data-theme="dark"] .brand-monogram__logo {
-  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 50%, #4c1d95 100%) !important;
-  border: 1px solid rgba(139, 92, 246, 0.4) !important;
+  background: #1a1c1e !important;
+  border: 1px solid #2ecc71 !important;
   box-shadow:
-    0 0 0 1px rgba(139, 92, 246, 0.15),
-    0 0 20px rgba(109, 40, 217, 0.45),
-    0 4px 16px rgba(0, 0, 0, 0.5) !important;
-  animation: glow-pulse 3.5s ease-in-out infinite !important;
+    0 0 0 1px rgba(46, 204, 113, 0.1),
+    0 0 12px rgba(46, 204, 113, 0.12) !important;
+  animation: none !important;
 }
 
 [data-theme="dark"] .brand-monogram__name {
-  background: linear-gradient(135deg, #e2d9ff 0%, #c4b5fd 50%, #a78bfa 100%) !important;
-  -webkit-background-clip: text !important;
-  background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
+  color: #e8eaed !important;
 }
 
 [data-theme="dark"] .brand-monogram__tag {
-  color: rgba(167, 139, 250, 0.55) !important;
+  color: #5a6068 !important;
 }
 
-/* ── 4. Nav section titles ───────────────────────────────────────── */
+/* ── 4. Nav section titles ──────────────────────────────────── */
 [data-theme="dark"] .nav-section-title {
-  color: rgba(167, 139, 250, 0.4) !important;
-  letter-spacing: 0.12em !important;
+  color: #4a5158 !important;
+  letter-spacing: 0.10em !important;
 }
 
-/* ── 5. Nav items — luminous glass pills ────────────────────────── */
+/* ── 5. Nav items — minimal, flat ───────────────────────────── */
 [data-theme="dark"] .nav-item {
   background: transparent !important;
   border: 1px solid transparent !important;
-  color: rgba(196, 181, 253, 0.5) !important;
+  color: #8b9099 !important;
   box-shadow: none !important;
   transform: none !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease !important;
 }
 
 [data-theme="dark"] .nav-item:hover {
-  background: rgba(108, 74, 220, 0.12) !important;
-  border-color: rgba(108, 74, 220, 0.22) !important;
-  color: #e2d9ff !important;
-  transform: translateX(2px) !important;
-  box-shadow: 0 2px 12px rgba(108, 74, 220, 0.1) !important;
+  background: #1a1c1e !important;
+  border-color: #252729 !important;
+  color: #c8ccd0 !important;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 [data-theme="dark"] .nav-item--active {
-  background: linear-gradient(
-    135deg,
-    rgba(109, 40, 217, 0.28) 0%,
-    rgba(76, 29, 149, 0.20) 100%
-  ) !important;
-  border: 1px solid rgba(139, 92, 246, 0.35) !important;
-  color: #d8b4fe !important;
-  box-shadow:
-    0 0 0 1px rgba(139, 92, 246, 0.15) inset,
-    0 4px 20px rgba(109, 40, 217, 0.18),
-    0 1px 0 rgba(255, 255, 255, 0.06) inset !important;
+  background: rgba(46, 204, 113, 0.08) !important;
+  border: 1px solid rgba(46, 204, 113, 0.22) !important;
+  color: #2ecc71 !important;
+  box-shadow: none !important;
   transform: none !important;
 }
 
 [data-theme="dark"] .nav-item--active::before {
-  background: linear-gradient(180deg, #a78bfa 0%, #7c3aed 100%) !important;
-  box-shadow: 0 0 8px rgba(167, 139, 250, 0.6) !important;
+  background: #2ecc71 !important;
+  box-shadow: none !important;
 }
 
 [data-theme="dark"] .nav-item--active .icon svg,
 [data-theme="dark"] .nav-item--active svg {
-  stroke: #c4b5fd !important;
-  filter: drop-shadow(0 0 4px rgba(167, 139, 250, 0.5)) !important;
+  stroke: #2ecc71 !important;
+  filter: none !important;
 }
 
 [data-theme="dark"] .nav-item:not(.nav-item--active) .icon svg {
-  stroke: rgba(167, 139, 250, 0.5) !important;
-  transition: stroke 0.2s ease, filter 0.2s ease !important;
+  stroke: #4a5158 !important;
+  transition: stroke 0.12s ease !important;
+  filter: none !important;
 }
 
 [data-theme="dark"] .nav-item:not(.nav-item--active):hover .icon svg {
-  stroke: #c4b5fd !important;
+  stroke: #8b9099 !important;
 }
 
-/* ── 6. Sidebar today card ──────────────────────────────────────── */
+/* ── 6. Sidebar today card ───────────────────────────────────── */
 [data-theme="dark"] .sidebar-today {
-  background: linear-gradient(
-    135deg,
-    rgba(18, 12, 38, 0.8) 0%,
-    rgba(12, 8, 28, 0.85) 100%
-  ) !important;
-  border: 1px solid rgba(108, 74, 220, 0.2) !important;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.04) !important;
+  background: #161819 !important;
+  border: 1px solid #252729 !important;
+  box-shadow: none !important;
 }
 
 [data-theme="dark"] .sidebar-today__stat {
-  background: rgba(108, 74, 220, 0.08) !important;
-  border: 1px solid rgba(108, 74, 220, 0.18) !important;
-  transition: all 0.2s ease !important;
+  background: #1a1c1e !important;
+  border: 1px solid #252729 !important;
+  transition: border-color 0.12s ease !important;
 }
 
 [data-theme="dark"] .sidebar-today__stat:hover {
-  background: rgba(108, 74, 220, 0.14) !important;
-  border-color: rgba(139, 92, 246, 0.3) !important;
+  background: #1e2022 !important;
+  border-color: #2ecc71 !important;
 }
 
 [data-theme="dark"] .sidebar-today__num {
-  color: #e2d9ff !important;
+  color: #e8eaed !important;
 }
 
-/* ── 7. "+ New Task" button — aurora gradient CTA ───────────────── */
+/* ── 7. "+ New Task" button — green terminal CTA ─────────────── */
 [data-theme="dark"] .btn-sidebar-add {
-  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 50%, #5b21b6 100%) !important;
-  border: 1px solid rgba(167, 139, 250, 0.3) !important;
-  color: #ffffff !important;
-  box-shadow:
-    0 4px 20px rgba(109, 40, 217, 0.45),
-    0 1px 0 rgba(255, 255, 255, 0.12) inset !important;
+  background: rgba(46, 204, 113, 0.10) !important;
+  border: 1px solid rgba(46, 204, 113, 0.30) !important;
+  color: #2ecc71 !important;
+  box-shadow: none !important;
   transform: none !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition: background 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease !important;
   position: relative !important;
   overflow: hidden !important;
 }
 
 [data-theme="dark"] .btn-sidebar-add::before {
-  content: "" !important;
-  position: absolute !important;
-  inset: 0 !important;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.08) 50%,
-    transparent 100%
-  ) !important;
-  transform: translateX(-100%) !important;
-  transition: transform 0.5s ease !important;
-}
-
-[data-theme="dark"] .btn-sidebar-add:hover::before {
-  transform: translateX(100%) !important;
+  content: none !important;
 }
 
 [data-theme="dark"] .btn-sidebar-add:hover {
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%) !important;
-  box-shadow:
-    0 6px 28px rgba(109, 40, 217, 0.6),
-    0 1px 0 rgba(255, 255, 255, 0.15) inset !important;
-  transform: translateY(-1px) !important;
+  background: rgba(46, 204, 113, 0.16) !important;
+  border-color: rgba(46, 204, 113, 0.50) !important;
+  box-shadow: 0 0 14px rgba(46, 204, 113, 0.12) !important;
+  transform: none !important;
 }
 
 [data-theme="dark"] .btn-sidebar-add:active {
-  transform: translateY(0) !important;
-  box-shadow: 0 2px 12px rgba(109, 40, 217, 0.4) !important;
+  background: rgba(46, 204, 113, 0.22) !important;
+  transform: none !important;
 }
 
-/* ── 8. Cards — volumetric glass ───────────────────────────────── */
+/* ── 8. Cards — clean zinc panels ───────────────────────────── */
 [data-theme="dark"] .card,
 [data-theme="dark"] .dashboard__quick-add,
 [data-theme="dark"] .dashboard__due-next {
-  background: linear-gradient(
-    145deg,
-    rgba(18, 13, 36, 0.75) 0%,
-    rgba(12, 9, 26, 0.80) 100%
-  ) !important;
-  backdrop-filter: blur(16px) saturate(1.3) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(1.3) !important;
-  border: 1px solid rgba(108, 74, 220, 0.15) !important;
-  box-shadow:
-    0 2px 20px rgba(0, 0, 0, 0.5),
-    0 1px 0 rgba(255, 255, 255, 0.04) inset,
-    0 -1px 0 rgba(0, 0, 0, 0.2) inset !important;
-  transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease !important;
+  background: #161819 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid #252729 !important;
+  box-shadow: none !important;
+  transition: border-color 0.14s ease !important;
   position: relative !important;
 }
 
 [data-theme="dark"] .card::before {
-  content: "" !important;
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  height: 1px !important;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(139, 92, 246, 0.25) 30%,
-    rgba(0, 212, 255, 0.15) 70%,
-    transparent 100%
-  ) !important;
-  border-radius: inherit !important;
-  pointer-events: none !important;
+  content: none !important;
+  display: none !important;
 }
 
 [data-theme="dark"] .card:hover {
-  border-color: rgba(139, 92, 246, 0.28) !important;
-  background: linear-gradient(
-    145deg,
-    rgba(22, 16, 42, 0.82) 0%,
-    rgba(15, 11, 30, 0.87) 100%
-  ) !important;
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.6),
-    0 0 0 1px rgba(139, 92, 246, 0.12),
-    0 1px 0 rgba(255, 255, 255, 0.06) inset !important;
+  border-color: #2f3235 !important;
+  background: #181a1b !important;
+  box-shadow: none !important;
 }
 
-/* ── 9. Counter / stat cards ───────────────────────────────────── */
+/* ── 9. Counter / stat cards ────────────────────────────────── */
 [data-theme="dark"] .counter-card {
-  background: linear-gradient(
-    145deg,
-    rgba(16, 11, 34, 0.80) 0%,
-    rgba(10, 7, 22, 0.85) 100%
-  ) !important;
-  border: 1px solid rgba(108, 74, 220, 0.16) !important;
-  box-shadow:
-    0 2px 16px rgba(0, 0, 0, 0.45),
-    0 1px 0 rgba(255, 255, 255, 0.04) inset !important;
-  transition: all 0.2s ease !important;
+  background: #161819 !important;
+  border: 1px solid #252729 !important;
+  box-shadow: none !important;
+  transition: border-color 0.14s ease !important;
 }
 
 [data-theme="dark"] .counter-card:hover {
-  border-color: rgba(139, 92, 246, 0.3) !important;
-  box-shadow:
-    0 6px 24px rgba(0, 0, 0, 0.55),
-    0 0 20px rgba(109, 40, 217, 0.08) !important;
+  border-color: rgba(46, 204, 113, 0.25) !important;
+  box-shadow: none !important;
 }
 
 [data-theme="dark"] .counter-card__value {
-  color: #e2d9ff !important;
-  text-shadow: 0 0 20px rgba(139, 92, 246, 0.2) !important;
+  color: #e8eaed !important;
+  text-shadow: none !important;
 }
 
 [data-theme="dark"] .counter-card--overdue .counter-card__value {
-  color: #fb923c !important;
-  text-shadow: 0 0 20px rgba(251, 146, 60, 0.3) !important;
+  color: #e05252 !important;
+  text-shadow: none !important;
 }
 
 [data-theme="dark"] .counter-card--completed .counter-card__icon {
-  background: rgba(16, 185, 129, 0.14) !important;
-  color: #34d399 !important;
+  background: rgba(46, 204, 113, 0.10) !important;
+  color: #2ecc71 !important;
 }
 
-/* ── 10. Form inputs — glassy fields ───────────────────────────── */
+/* ── 10. Form inputs — flat dark fields ─────────────────────── */
 [data-theme="dark"] .form-input,
 [data-theme="dark"] form input[type="text"],
 [data-theme="dark"] form input[type="email"],
@@ -373,11 +243,11 @@
 [data-theme="dark"] form textarea,
 [data-theme="dark"] textarea,
 [data-theme="dark"] select {
-  background: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid rgba(108, 74, 220, 0.2) !important;
-  color: #ede9ff !important;
-  transition: all 0.2s ease !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) inset !important;
+  background: #0d0f10 !important;
+  border: 1px solid #252729 !important;
+  color: #dde0e4 !important;
+  transition: border-color 0.14s ease, box-shadow 0.14s ease !important;
+  box-shadow: none !important;
 }
 
 [data-theme="dark"] .form-input:focus,
@@ -386,232 +256,205 @@
 [data-theme="dark"] form textarea:focus,
 [data-theme="dark"] textarea:focus,
 [data-theme="dark"] select:focus {
-  background: rgba(109, 40, 217, 0.06) !important;
-  border-color: rgba(139, 92, 246, 0.55) !important;
-  box-shadow:
-    0 0 0 3px rgba(109, 40, 217, 0.15),
-    0 0 20px rgba(109, 40, 217, 0.10),
-    0 2px 8px rgba(0, 0, 0, 0.25) inset !important;
+  background: #0d0f10 !important;
+  border-color: rgba(46, 204, 113, 0.50) !important;
+  box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.08) !important;
   outline: none !important;
 }
 
 [data-theme="dark"] .form-input::placeholder,
 [data-theme="dark"] form input::placeholder,
 [data-theme="dark"] form textarea::placeholder {
-  color: rgba(167, 139, 250, 0.3) !important;
+  color: #3e4348 !important;
 }
 
 [data-theme="dark"] form select option {
-  background: #0e0c1e !important;
-  color: #ede9ff !important;
+  background: #161819 !important;
+  color: #dde0e4 !important;
 }
 
-/* ── 11. Primary buttons — aurora gradient ──────────────────────── */
+/* ── 11. Primary buttons — green terminal ───────────────────── */
 [data-theme="dark"] .btn-primary,
 [data-theme="dark"] .btn--primary {
-  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%) !important;
-  border: 1px solid rgba(167, 139, 250, 0.3) !important;
-  color: #ffffff !important;
-  box-shadow:
-    0 4px 16px rgba(109, 40, 217, 0.4),
-    0 1px 0 rgba(255, 255, 255, 0.1) inset !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  background: rgba(46, 204, 113, 0.12) !important;
+  border: 1px solid rgba(46, 204, 113, 0.35) !important;
+  color: #2ecc71 !important;
+  box-shadow: none !important;
+  transition: all 0.14s ease !important;
   position: relative !important;
   overflow: hidden !important;
 }
 
 [data-theme="dark"] .btn-primary:hover,
 [data-theme="dark"] .btn--primary:hover {
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
-  box-shadow:
-    0 6px 24px rgba(109, 40, 217, 0.55),
-    0 1px 0 rgba(255, 255, 255, 0.14) inset !important;
-  transform: translateY(-1px) !important;
+  background: rgba(46, 204, 113, 0.18) !important;
+  border-color: rgba(46, 204, 113, 0.55) !important;
+  box-shadow: 0 0 16px rgba(46, 204, 113, 0.12) !important;
+  transform: none !important;
 }
 
 [data-theme="dark"] .btn-primary:active,
 [data-theme="dark"] .btn--primary:active {
-  transform: translateY(0) !important;
-  box-shadow: 0 2px 10px rgba(109, 40, 217, 0.4) !important;
+  background: rgba(46, 204, 113, 0.22) !important;
+  transform: none !important;
 }
 
-/* ── 12. Secondary / ghost buttons ─────────────────────────────── */
+/* ── 12. Secondary / ghost buttons ─────────────────────────── */
 [data-theme="dark"] .btn-secondary,
 [data-theme="dark"] .btn--secondary,
 [data-theme="dark"] .btn-ghost,
 [data-theme="dark"] .btn--ghost {
-  background: rgba(108, 74, 220, 0.06) !important;
-  border: 1px solid rgba(108, 74, 220, 0.2) !important;
-  color: #c4b5fd !important;
-  transition: all 0.2s ease !important;
+  background: #1a1c1e !important;
+  border: 1px solid #252729 !important;
+  color: #8b9099 !important;
+  transition: all 0.14s ease !important;
+  box-shadow: none !important;
 }
 
 [data-theme="dark"] .btn-secondary:hover,
 [data-theme="dark"] .btn--secondary:hover,
 [data-theme="dark"] .btn-ghost:hover,
 [data-theme="dark"] .btn--ghost:hover {
-  background: rgba(108, 74, 220, 0.14) !important;
-  border-color: rgba(139, 92, 246, 0.35) !important;
-  color: #e2d9ff !important;
-  box-shadow: 0 2px 12px rgba(109, 40, 217, 0.12) !important;
+  background: #1e2022 !important;
+  border-color: #2f3235 !important;
+  color: #c8ccd0 !important;
+  box-shadow: none !important;
 }
 
 /* Danger button */
 [data-theme="dark"] .btn--danger,
 [data-theme="dark"] .btn-danger {
-  background: linear-gradient(135deg, rgba(220, 38, 38, 0.8), rgba(185, 28, 28, 0.9)) !important;
-  border-color: rgba(252, 165, 165, 0.2) !important;
-  color: #ffffff !important;
-  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.3) !important;
+  background: rgba(224, 82, 82, 0.12) !important;
+  border: 1px solid rgba(224, 82, 82, 0.30) !important;
+  color: #e05252 !important;
+  box-shadow: none !important;
 }
 
 [data-theme="dark"] .btn--danger:hover,
 [data-theme="dark"] .btn-danger:hover {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.9), rgba(220, 38, 38, 1)) !important;
-  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4) !important;
+  background: rgba(224, 82, 82, 0.20) !important;
+  border-color: rgba(224, 82, 82, 0.50) !important;
 }
 
-/* ── 13. Modal — deep glass overlay ────────────────────────────── */
+/* ── 13. Modal — dark zinc overlay ──────────────────────────── */
 [data-theme="dark"] .modal,
 [data-theme="dark"] .modal-content,
 [data-theme="dark"] dialog {
-  background: linear-gradient(
-    145deg,
-    rgba(10, 7, 24, 0.95) 0%,
-    rgba(7, 5, 18, 0.97) 100%
-  ) !important;
-  backdrop-filter: blur(32px) saturate(1.6) !important;
-  -webkit-backdrop-filter: blur(32px) saturate(1.6) !important;
-  border: 1px solid rgba(108, 74, 220, 0.22) !important;
+  background: #161819 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid #2f3235 !important;
   box-shadow:
-    0 40px 100px rgba(0, 0, 0, 0.9),
-    0 0 0 1px rgba(139, 92, 246, 0.08) inset,
-    0 1px 0 rgba(255, 255, 255, 0.06) inset !important;
+    0 24px 64px rgba(0, 0, 0, 0.7),
+    0 1px 0 #252729 !important;
   position: relative !important;
 }
 
 [data-theme="dark"] .modal::before,
 [data-theme="dark"] dialog::before {
-  content: "" !important;
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  height: 1px !important;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(139, 92, 246, 0.4) 30%,
-    rgba(0, 212, 255, 0.2) 70%,
-    transparent 100%
-  ) !important;
-  pointer-events: none !important;
+  content: none !important;
+  display: none !important;
 }
 
 [data-theme="dark"] .modal-overlay,
 [data-theme="dark"] .modal-backdrop,
 [data-theme="dark"] .sidebar-backdrop {
-  background: rgba(2, 1, 10, 0.8) !important;
-  backdrop-filter: blur(6px) !important;
-  -webkit-backdrop-filter: blur(6px) !important;
+  background: rgba(0, 0, 0, 0.75) !important;
+  backdrop-filter: blur(3px) !important;
+  -webkit-backdrop-filter: blur(3px) !important;
 }
 
-/* ── 14. Dropdown menus ─────────────────────────────────────────── */
+/* ── 14. Dropdown menus ─────────────────────────────────────── */
 [data-theme="dark"] .dropdown-menu,
 [data-theme="dark"] .popover {
-  background: linear-gradient(
-    145deg,
-    rgba(12, 9, 26, 0.97) 0%,
-    rgba(8, 6, 20, 0.98) 100%
-  ) !important;
-  backdrop-filter: blur(24px) !important;
-  -webkit-backdrop-filter: blur(24px) !important;
-  border: 1px solid rgba(108, 74, 220, 0.22) !important;
-  box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.8),
-    0 1px 0 rgba(255, 255, 255, 0.05) inset !important;
+  background: #161819 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid #2f3235 !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6) !important;
 }
 
-/* ── 15. Task items / task cards ───────────────────────────────── */
+/* ── 15. Task items / task cards ────────────────────────────── */
 [data-theme="dark"] .task-item,
 [data-theme="dark"] .task-card,
 [data-theme="dark"] [class*="task-row"] {
-  background: rgba(255, 255, 255, 0.015) !important;
-  border-color: rgba(108, 74, 220, 0.14) !important;
-  transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease !important;
+  background: #161819 !important;
+  border-color: #252729 !important;
+  transition: background 0.12s ease, border-color 0.12s ease !important;
 }
 
 [data-theme="dark"] .task-item:hover,
 [data-theme="dark"] .task-card:hover,
 [data-theme="dark"] [class*="task-row"]:hover {
-  background: rgba(108, 74, 220, 0.07) !important;
-  border-color: rgba(139, 92, 246, 0.25) !important;
-  box-shadow: 0 4px 16px rgba(109, 40, 217, 0.08) !important;
+  background: #1a1c1e !important;
+  border-color: rgba(46, 204, 113, 0.20) !important;
+  box-shadow: none !important;
 }
 
-/* ── 16. Page / section header ─────────────────────────────────── */
+/* ── 16. Page header ─────────────────────────────────────────── */
 [data-theme="dark"] .page-header {
-  border-bottom-color: rgba(108, 74, 220, 0.18) !important;
+  border-bottom-color: #252729 !important;
 }
 
 [data-theme="dark"] .page-header__title {
-  color: #f0ecff !important;
+  color: #e8eaed !important;
 }
 
 [data-theme="dark"] .page-header__desc {
-  color: rgba(196, 181, 253, 0.55) !important;
+  color: #5a6068 !important;
 }
 
-/* ── 17. User avatar & profile ─────────────────────────────────── */
+/* ── 17. User avatar & profile ───────────────────────────────── */
 [data-theme="dark"] .user-avatar {
-  background: linear-gradient(135deg, #7c3aed, #5b21b6) !important;
-  border: 1px solid rgba(139, 92, 246, 0.35) !important;
-  box-shadow: 0 0 14px rgba(109, 40, 217, 0.35) !important;
+  background: #1a1c1e !important;
+  border: 1px solid #2f3235 !important;
+  box-shadow: none !important;
+  color: #2ecc71 !important;
 }
 
 [data-theme="dark"] .user-avatar__indicator {
-  background: #22d3ee !important;
-  box-shadow: 0 0 8px rgba(34, 211, 238, 0.7) !important;
-  border-color: #06040f !important;
+  background: #2ecc71 !important;
+  box-shadow: 0 0 6px rgba(46, 204, 113, 0.5) !important;
+  border-color: #0d0f10 !important;
 }
 
 [data-theme="dark"] .user-meta__name {
-  color: #e2d9ff !important;
+  color: #c8ccd0 !important;
 }
 
 [data-theme="dark"] .user-meta__role {
-  color: rgba(167, 139, 250, 0.5) !important;
+  color: #4a5158 !important;
 }
 
-/* ── 18. Dashboard greeting badge ──────────────────────────────── */
+/* ── 18. Dashboard greeting badge ────────────────────────────── */
 [data-theme="dark"] .dashboard__greeting-badge {
-  background: rgba(109, 40, 217, 0.16) !important;
-  color: #c4b5fd !important;
-  border: 1px solid rgba(139, 92, 246, 0.22) !important;
+  background: rgba(46, 204, 113, 0.08) !important;
+  color: #2ecc71 !important;
+  border: 1px solid rgba(46, 204, 113, 0.20) !important;
 }
 
-/* ── 19. Sidebar icon buttons ───────────────────────────────────── */
+/* ── 19. Sidebar icon buttons ────────────────────────────────── */
 [data-theme="dark"] .sidebar-icon-btn {
-  color: rgba(167, 139, 250, 0.5) !important;
-  transition: all 0.2s ease !important;
+  color: #4a5158 !important;
+  transition: all 0.12s ease !important;
 }
 
 [data-theme="dark"] .sidebar-icon-btn:hover {
-  background: rgba(108, 74, 220, 0.14) !important;
-  border-color: rgba(108, 74, 220, 0.25) !important;
-  color: #c4b5fd !important;
-  box-shadow: 0 2px 10px rgba(109, 40, 217, 0.12) !important;
+  background: #1a1c1e !important;
+  border-color: #252729 !important;
+  color: #8b9099 !important;
+  box-shadow: none !important;
 }
 
-/* ── 20. Mobile top bar ─────────────────────────────────────────── */
+/* ── 20. Mobile top bar ──────────────────────────────────────── */
 [data-theme="dark"] .mobile-top-bar {
-  background: rgba(8, 5, 20, 0.94) !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
-  border-bottom-color: rgba(108, 74, 220, 0.18) !important;
+  background: #0d0f10 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-bottom-color: #252729 !important;
 }
 
-/* ── 21. Scrollbar — subtle violet track ──────────────────────── */
+/* ── 21. Scrollbar — slim zinc track ────────────────────────── */
 [data-theme="dark"] ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -622,215 +465,192 @@
 }
 
 [data-theme="dark"] ::-webkit-scrollbar-thumb {
-  background: rgba(109, 40, 217, 0.25);
+  background: #252729;
   border-radius: 999px;
 }
 
 [data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 92, 246, 0.5);
+  background: rgba(46, 204, 113, 0.35);
 }
 
-/* ── 22. Selection ──────────────────────────────────────────────── */
+/* ── 22. Selection ───────────────────────────────────────────── */
 [data-theme="dark"] ::selection {
-  background: rgba(109, 40, 217, 0.45);
-  color: #ffffff;
+  background: rgba(46, 204, 113, 0.25);
+  color: #e8eaed;
 }
 
-/* ── 23. Focus ring — violet aurora ─────────────────────────────── */
+/* ── 23. Focus ring ──────────────────────────────────────────── */
 [data-theme="dark"] :focus-visible {
-  outline: 2px solid rgba(139, 92, 246, 0.7) !important;
+  outline: 2px solid rgba(46, 204, 113, 0.55) !important;
   outline-offset: 2px !important;
-  box-shadow: 0 0 0 4px rgba(109, 40, 217, 0.12) !important;
+  box-shadow: none !important;
 }
 
-/* ── 24. Checkbox & accent ──────────────────────────────────────── */
+/* ── 24. Checkbox ────────────────────────────────────────────── */
 [data-theme="dark"] input[type="checkbox"] {
-  accent-color: #8b5cf6;
+  accent-color: #2ecc71;
 }
 
-/* ── 25. Theme switch button ─────────────────────────────────────── */
+/* ── 25. Theme switch button ─────────────────────────────────── */
 [data-theme="dark"] .theme-switch-btn {
-  background: rgba(108, 74, 220, 0.10) !important;
-  backdrop-filter: blur(10px) !important;
-  -webkit-backdrop-filter: blur(10px) !important;
-  border: 1px solid rgba(108, 74, 220, 0.25) !important;
-  color: #c4b5fd !important;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255,255,255,0.04) inset !important;
-  transition: all 0.2s ease !important;
+  background: #161819 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid #252729 !important;
+  color: #8b9099 !important;
+  box-shadow: none !important;
+  transition: all 0.14s ease !important;
 }
 
 [data-theme="dark"] .theme-switch-btn:hover {
-  background: rgba(108, 74, 220, 0.18) !important;
-  border-color: rgba(139, 92, 246, 0.4) !important;
-  color: #e2d9ff !important;
-  box-shadow:
-    0 4px 16px rgba(109, 40, 217, 0.25),
-    0 0 0 1px rgba(255,255,255,0.06) inset !important;
+  background: #1a1c1e !important;
+  border-color: rgba(46, 204, 113, 0.30) !important;
+  color: #c8ccd0 !important;
+  box-shadow: none !important;
 }
 
-/* ── 26. Skeleton shimmer — aurora gradient ──────────────────────── */
+/* ── 26. Skeleton shimmer ────────────────────────────────────── */
 [data-theme="dark"] .skeleton,
 [data-theme="dark"] [class*="skeleton"] {
   background: linear-gradient(90deg,
-    rgba(108, 74, 220, 0.05) 25%,
-    rgba(139, 92, 246, 0.12) 50%,
-    rgba(108, 74, 220, 0.05) 75%) !important;
+    #1a1c1e 25%,
+    #222426 50%,
+    #1a1c1e 75%) !important;
   background-size: 200% 100% !important;
-  animation: dark-shimmer 2s infinite !important;
+  animation: dark-shimmer 1.8s infinite !important;
 }
 
-/* ── 27. FAB microphone button ───────────────────────────────────── */
+/* ── 27. FAB microphone button ───────────────────────────────── */
 [data-theme="dark"] .fab-mic {
-  background: linear-gradient(135deg, #7c3aed, #5b21b6) !important;
-  border: 2px solid rgba(167, 139, 250, 0.3) !important;
-  box-shadow:
-    0 8px 32px rgba(109, 40, 217, 0.5),
-    0 0 0 0 rgba(109, 40, 217, 0) !important;
-  animation: float-up 3s ease-in-out infinite !important;
+  background: rgba(46, 204, 113, 0.12) !important;
+  border: 1.5px solid rgba(46, 204, 113, 0.35) !important;
+  color: #2ecc71 !important;
+  box-shadow: none !important;
+  animation: none !important;
 }
 
 [data-theme="dark"] .fab-mic:hover {
-  box-shadow:
-    0 12px 40px rgba(109, 40, 217, 0.65),
-    0 0 20px rgba(139, 92, 246, 0.3) !important;
-  filter: brightness(1.1) !important;
+  background: rgba(46, 204, 113, 0.20) !important;
+  border-color: rgba(46, 204, 113, 0.55) !important;
+  box-shadow: 0 0 16px rgba(46, 204, 113, 0.14) !important;
+  filter: none !important;
 }
 
-/* ── 28. Voice note items ────────────────────────────────────────── */
+/* ── 28. Voice note items ────────────────────────────────────── */
 [data-theme="dark"] .vnotes__item {
-  background: rgba(18, 12, 38, 0.6) !important;
-  border-color: rgba(108, 74, 220, 0.18) !important;
-  transition: all 0.2s ease !important;
+  background: #161819 !important;
+  border-color: #252729 !important;
+  transition: all 0.14s ease !important;
 }
 
 [data-theme="dark"] .vnotes__item:hover {
-  background: rgba(108, 74, 220, 0.12) !important;
-  border-color: rgba(139, 92, 246, 0.35) !important;
-  box-shadow: 0 4px 16px rgba(109, 40, 217, 0.12) !important;
+  background: #1a1c1e !important;
+  border-color: rgba(46, 204, 113, 0.25) !important;
+  box-shadow: none !important;
 }
 
 [data-theme="dark"] .vnotes__item.is-active {
-  background: rgba(109, 40, 217, 0.18) !important;
-  border-color: rgba(139, 92, 246, 0.45) !important;
-  box-shadow: 0 4px 20px rgba(109, 40, 217, 0.2) !important;
+  background: rgba(46, 204, 113, 0.07) !important;
+  border-color: rgba(46, 204, 113, 0.30) !important;
+  box-shadow: none !important;
 }
 
 [data-theme="dark"] .vnotes__transcript {
-  background: rgba(108, 74, 220, 0.06) !important;
-  border-color: rgba(108, 74, 220, 0.18) !important;
+  background: #0d0f10 !important;
+  border-color: #252729 !important;
 }
 
 [data-theme="dark"] .vnotes__mic {
-  background: linear-gradient(135deg, #7c3aed, #5b21b6) !important;
-  box-shadow: 0 6px 24px rgba(109, 40, 217, 0.45) !important;
+  background: rgba(46, 204, 113, 0.12) !important;
+  border: 1.5px solid rgba(46, 204, 113, 0.30) !important;
+  color: #2ecc71 !important;
+  box-shadow: none !important;
 }
 
-/* ── 29. Assistant card ─────────────────────────────────────────── */
+/* ── 29. Assistant card ──────────────────────────────────────── */
 [data-theme="dark"] .assistant-card {
-  background: linear-gradient(
-    135deg,
-    rgba(16, 10, 36, 0.75) 0%,
-    rgba(10, 7, 24, 0.80) 100%
-  ) !important;
-  border-color: rgba(108, 74, 220, 0.2) !important;
-  box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.4),
-    0 1px 0 rgba(255,255,255,0.04) inset !important;
+  background: #161819 !important;
+  border-color: #252729 !important;
+  box-shadow: none !important;
 }
 
-/* ── 30. "Do This Now" / overload banners ───────────────────────── */
+/* ── 30. Do Now / overload banners ───────────────────────────── */
 [data-theme="dark"] .do-now,
 [data-theme="dark"] .do-this-now {
-  background: linear-gradient(
-    135deg,
-    rgba(109, 40, 217, 0.14) 0%,
-    rgba(76, 29, 149, 0.10) 100%
-  ) !important;
-  border-color: rgba(139, 92, 246, 0.25) !important;
-  box-shadow: 0 4px 20px rgba(109, 40, 217, 0.10) !important;
+  background: rgba(46, 204, 113, 0.06) !important;
+  border-color: rgba(46, 204, 113, 0.20) !important;
+  box-shadow: none !important;
 }
 
 [data-theme="dark"] .overload-banner {
-  background: rgba(251, 146, 60, 0.08) !important;
-  border-color: rgba(251, 146, 60, 0.22) !important;
+  background: rgba(224, 82, 82, 0.07) !important;
+  border-color: rgba(224, 82, 82, 0.22) !important;
 }
 
-/* ── 31. Status / tag badges ─────────────────────────────────────── */
-[data-theme="dark"] .badge,
-[data-theme="dark"] .tag,
-[data-theme="dark"] .tag-pill {
-  backdrop-filter: blur(6px) !important;
-}
-
-/* ── 32. Text color hierarchy ───────────────────────────────────── */
+/* ── 31. Page / section header ───────────────────────────────── */
 [data-theme="dark"] h1,
 [data-theme="dark"] h2,
 [data-theme="dark"] h3,
 [data-theme="dark"] h4,
 [data-theme="dark"] h5,
 [data-theme="dark"] h6 {
-  color: #f0ecff !important;
+  color: #e8eaed !important;
 }
 
 [data-theme="dark"] p,
 [data-theme="dark"] .text-secondary {
-  color: rgba(196, 181, 253, 0.75) !important;
+  color: #8b9099 !important;
 }
 
-/* ── 33. Links ──────────────────────────────────────────────────── */
+/* ── 32. Links ───────────────────────────────────────────────── */
 [data-theme="dark"] a:not(.nav-item):not(.btn):not(.brand-monogram) {
-  color: #a78bfa !important;
-  transition: color 0.15s ease, text-shadow 0.15s ease !important;
+  color: #2ecc71 !important;
+  transition: color 0.12s ease !important;
+  text-shadow: none !important;
 }
 
 [data-theme="dark"] a:not(.nav-item):not(.btn):not(.brand-monogram):hover {
-  color: #c4b5fd !important;
-  text-shadow: 0 0 8px rgba(167, 139, 250, 0.4) !important;
+  color: #52d68a !important;
+  text-shadow: none !important;
 }
 
-/* ── 34. Dividers and horizontal rules ──────────────────────────── */
+/* ── 33. Dividers ────────────────────────────────────────────── */
 [data-theme="dark"] hr,
 [data-theme="dark"] [class*="divider"] {
-  border-color: rgba(108, 74, 220, 0.18) !important;
+  border-color: #252729 !important;
 }
 
-/* ── 35. Toast / notification ───────────────────────────────────── */
+/* ── 34. Toast / notification ────────────────────────────────── */
 [data-theme="dark"] .toast,
 [data-theme="dark"] [class*="toast"] {
-  background: rgba(12, 9, 26, 0.96) !important;
-  border: 1px solid rgba(108, 74, 220, 0.25) !important;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255,255,255,0.05) inset !important;
-  color: #e2d9ff !important;
+  background: #1e2022 !important;
+  border: 1px solid #2f3235 !important;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55) !important;
+  color: #c8ccd0 !important;
 }
 
-/* ── 36. Sidebar today stat — overdue highlight ─────────────────── */
+/* ── 35. Sidebar today — done stat ───────────────────────────── */
 [data-theme="dark"] .sidebar-today.has-overdue .sidebar-today__stat--overdue {
-  background: rgba(251, 146, 60, 0.12) !important;
-  border-color: rgba(251, 146, 60, 0.28) !important;
-  box-shadow: 0 0 12px rgba(251, 146, 60, 0.08) inset !important;
+  background: rgba(224, 82, 82, 0.10) !important;
+  border-color: rgba(224, 82, 82, 0.25) !important;
+  box-shadow: none !important;
 }
 
 [data-theme="dark"] .sidebar-today__stat--done .sidebar-today__num {
-  color: #34d399 !important;
-  text-shadow: 0 0 10px rgba(52, 211, 153, 0.3) !important;
+  color: #2ecc71 !important;
+  text-shadow: none !important;
 }
 
-/* ── 37. 3D depth: main content subtle floating shadow ──────────── */
+/* ── 36. Panel / auth card ───────────────────────────────────── */
+[data-theme="dark"] .panel,
+[data-theme="dark"] .auth-card {
+  background: #161819 !important;
+  border: 1px solid #252729 !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ── 37. App shell z-order ───────────────────────────────────── */
 [data-theme="dark"] .app-main-content {
   position: relative !important;
   z-index: 1 !important;
-}
-
-/* ── 38. Panel hover shimmer effect ────────────────────────────── */
-[data-theme="dark"] .panel,
-[data-theme="dark"] .auth-card {
-  background: linear-gradient(
-    145deg,
-    rgba(18, 13, 36, 0.80) 0%,
-    rgba(12, 9, 26, 0.85) 100%
-  ) !important;
-  border: 1px solid rgba(108, 74, 220, 0.18) !important;
-  box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.5),
-    0 1px 0 rgba(255, 255, 255, 0.04) inset !important;
 }
