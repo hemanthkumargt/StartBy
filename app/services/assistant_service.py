@@ -31,7 +31,19 @@ def _rx(pattern: str) -> re.Pattern[str]:
     return re.compile(pattern, re.I)
 
 
-# Order matters: the first match wins (an "add ..." request must not be read as a question).
+def _titles(tasks: list[dict[str, Any]], tz_name: str, now_local: datetime) -> str:
+    parts = []
+    for t in tasks[:_LIST_LIMIT]:
+        when = (
+            briefing_service.say_time(t["due_at"], tz_name, now_local)
+            if t.get("due_at")
+            else "no due date"
+        )
+        parts.append(f"{briefing_service.spoken(t['title'])}, {when}")
+    more = len(tasks) - _LIST_LIMIT
+    return "; ".join(parts) + (f"; and {more} more" if more > 0 else "") + "."
+
+
 _INTENTS: list[tuple[str, re.Pattern[str]]] = [
     ("add", _rx(r"^\s*(?:please\s+)?(?:add|create|new task|remind me|i need to|note)\b")),
     ("explain", _rx(
@@ -54,6 +66,11 @@ _INTENTS: list[tuple[str, re.Pattern[str]]] = [
         r"\b(?:brief|briefing|summary|summari[sz]e|catch me up|what.?s going on"
         r"|good (?:morning|afternoon|evening))\b"
     )),
+    ("list", _rx(
+        r"\b(?:list|show|view|tell me|what are|display)\b.*\b(?:pending|task|work|item|todo)s?\b"
+        r"|\b(?:pending\s+(?:tasks|works|items|todos))\b"
+        r"|\b(?:my\s+(?:pending\s+)?(?:tasks|works|items|todos))\b"
+    )),
     ("help", _rx(r"\b(?:help|what can you do|what do you do)\b")),
 ]  # fmt: skip
 
@@ -72,15 +89,6 @@ def _period(text: str) -> str:
     if "week" in lowered:
         return "week"
     return "today"
-
-
-def _titles(tasks: list[dict[str, Any]], tz_name: str, now_local: datetime) -> str:
-    parts = []
-    for t in tasks[:_LIST_LIMIT]:
-        when = briefing_service.say_time(t["due_at"], tz_name, now_local)
-        parts.append(f"{briefing_service.spoken(t['title'])}, {when}")
-    more = len(tasks) - _LIST_LIMIT
-    return "; ".join(parts) + (f"; and {more} more" if more > 0 else "") + "."
 
 
 def strip_wake_name(text: str, assistant_name: str) -> str:
@@ -197,6 +205,28 @@ def answer(
             else "Start-by is the due time minus your estimate, stretched by your usual pace and "
             "a fifteen percent buffer. Add an estimate to a task and I'll show the working."
         )
+    elif intent == "list":
+        lowered = question.lower()
+        if "overdue" in lowered or "late" in lowered:
+            hits = [t for t in pending if t.get("is_overdue")]
+            if not hits:
+                reply = "You have no overdue tasks."
+            else:
+                formatted = _titles(hits, tz_name, now_local)
+                reply = f"You have {plural(len(hits), 'overdue task')}: {formatted}"
+        elif "done" in lowered or "complet" in lowered or "finish" in lowered:
+            done = task_service.list_tasks(conn, user_id=user_id, status="done", flags=flags)
+            if not done:
+                reply = "You haven't completed any tasks yet."
+            else:
+                formatted = _titles(done, tz_name, now_local)
+                reply = f"You've completed {plural(len(done), 'task')}: {formatted}"
+        else:
+            if not pending:
+                reply = "You have no pending tasks. Your slate is clear!"
+            else:
+                formatted = _titles(pending, tz_name, now_local)
+                reply = f"You have {plural(len(pending), 'pending task')}: {formatted}"
     else:
         reply = "Sorry, I didn't follow that. " + _HELP
         intent = "unknown"

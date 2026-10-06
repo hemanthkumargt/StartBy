@@ -540,6 +540,8 @@ def test_ask_flag_off_and_auth(client, app):
         ("why is this the start time", "explain"),
         ("explain how start by is calculated", "explain"),
         ("brief me", "brief"), ("good morning", "brief"),
+        ("list me the pending works", "list"), ("show my pending tasks", "list"),
+        ("what are my pending tasks", "list"),
         ("add submit report by friday", "add"), ("remind me to call mom", "add"),
         ("help", "help"), ("what can you do", "help"),
         ("what is the weather", "unknown"), ("sing me a song", "unknown"),
@@ -599,6 +601,22 @@ def test_counts(voice_client):
     assert (
         ask(voice_client, "how many tasks have I completed")["answer"] == "You've completed 1 task."
     )
+
+
+@freeze_time(MORNING)
+def test_list_pending_tasks(voice_client):
+    res_empty = ask(voice_client, "list me the pending works")
+    assert res_empty["intent"] == "list"
+    assert "no pending tasks" in res_empty["answer"]
+
+    add(voice_client, "Lab report", "2026-10-04T10:00:00")
+    add(voice_client, "DBMS viva", "2026-10-05T04:00:00")
+
+    res = ask(voice_client, "list me the pending works")
+    assert res["intent"] == "list"
+    assert "2 pending tasks" in res["answer"]
+    assert "Lab report" in res["answer"]
+    assert "DBMS viva" in res["answer"]
 
 
 @freeze_time(MORNING)
